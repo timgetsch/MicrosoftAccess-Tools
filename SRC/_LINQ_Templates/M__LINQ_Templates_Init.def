@@ -1,0 +1,120 @@
+'---------------------------------------------------------------------------------------
+'          __    _____   ______       ___       _____ ____    __
+'         / /   /  _/ | / / __ \     |__ \     / ___// __ \  / /
+'        / /    / //  |/ / / / /     __/ /     \__ \/ / / / / /
+'       / /____/ // /|  / /_/ /     / __/     ___/ / /_/ / / /___
+' _____/_____/___/_/ |_/\___\_\____/____/____/____/\___\_\/_____/
+'/_____/                     /_____/   /_____/
+'
+' (c) Tim Getsch
+' @author timgetsch@commitcs.com
+' @license MIT (http://www.opensource.org/licenses/mit-license.php)
+'---------------------------------------------------------------------------------------
+Option Compare Database
+Option Explicit
+
+Public Const cn_TEMPLATE As Integer = -1
+
+Public Function Init_BaseModules(NewClassName As String)
+10        On Error GoTo PROC_ERROR
+          
+20        AddReferenceADODB ' This is needed by cls_LINQ_Base
+30        AddModuleIfMissing "modLogError"
+40        AddModuleIfMissing "StringBuilder"
+50        AddModuleIfMissing "cls_LINQ_SQLProcedureHelper"
+60        AddModuleIfMissing "cls_LINQ_Base"
+70        AddModuleIfMissing "dbc"
+80        AddModuleIfMissing "cls_LINQ_TEMPLATE", NewClassName
+
+PROC_EXIT:
+90        Exit Function
+
+PROC_ERROR:
+100       LogError "_LINQ_Templates_Init", "Init_LINQ", Erl, Err.Number, Err.Description
+110       Resume PROC_EXIT
+120       Resume
+End Function
+
+Private Sub AddModuleIfMissing(ModuleName As String, Optional NewName As String = "")
+10        On Error GoTo PROC_ERROR
+
+20        If NewName = "" Then NewName = ModuleName
+          
+30        If Not IsObjectInCol(CurrentProject.AllModules, NewName) Then
+40            DoCmd.CopyObject CurrentDb.Name, NewName, acModule, ModuleName
+50        End If
+
+PROC_EXIT:
+60        Exit Sub
+
+PROC_ERROR:
+70        LogError "_LINQ_Templates_Init", "AddModuleIfMissing", Erl, Err.Number, Err.Description
+80        Resume PROC_EXIT
+90        Resume
+End Sub
+
+Public Function IsObjectInCol(col As Object, ByVal Index) As Boolean
+10        On Error Resume Next
+          Dim val As Object
+20        Set val = col.Item(Index)
+30        IsObjectInCol = Err.Number = 0
+40        Err.Clear
+End Function
+
+Private Sub AddReferenceIfNecessary(Guid As String, Major As Long, Minor As Long)
+          Dim vbpCurrent As VBProject
+10        On Error GoTo PROC_ERROR
+
+20        Set vbpCurrent = CurrentVBProject()
+          
+          Dim r As VBIDE.Reference
+30        For Each r In vbpCurrent.References
+40            If r.Guid = Guid Then
+50                Exit Sub
+60            End If
+70        Next
+          
+80        vbpCurrent.References.AddFromGuid Guid, Major, Minor
+
+PROC_EXIT:
+90        Exit Sub
+
+PROC_ERROR:
+100       LogError "_LINQ_Templates_Init", "AddReferenceIfNecessary", Erl, Err.Number, Err.Description
+110       Resume PROC_EXIT
+120       Resume
+End Sub
+
+Private Function AddReferenceADODB()
+10        On Error GoTo PROC_ERROR
+
+20        AddReferenceIfNecessary "{2A75196C-D9EB-4129-B803-931327F72D5C}", 2, 8
+
+PROC_EXIT:
+30        Exit Function
+
+PROC_ERROR:
+40        LogError "_LINQ_Templates_Init", "AddReferenceADODB", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Function
+
+Private Function CurrentVBProject() As VBProject
+          Dim p As VBProject
+10        On Error GoTo PROC_ERROR
+
+20        For Each p In Application.VBE.VBProjects
+30            If p.FileName = CurrentDb.Name Then
+40                Set CurrentVBProject = p
+50                Exit Function
+60            End If
+70        Next
+
+PROC_EXIT:
+80        Exit Function
+
+PROC_ERROR:
+90        LogError "_LINQ_Templates_Init", "CurrentVBProject", Erl, Err.Number, Err.Description
+100       Resume PROC_EXIT
+110       Resume
+End Function

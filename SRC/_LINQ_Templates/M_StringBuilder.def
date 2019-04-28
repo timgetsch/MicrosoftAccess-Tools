@@ -1,0 +1,161 @@
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = False
+'--------------------------------------------------------------------------------------
+' StringBuilder v0.1.1
+' (c) Tim Getsch
+'
+' StringBuilder makes it easy to efficiently build large strings.
+' It is a light weight implementation of System.Text.StringBuilder.
+'
+' Usage:
+'
+' ```VB.net
+'        Dim sb As New StringBuilder
+'
+'        ' Append "DEF" to the end of the StringBuilder.
+'        sb.Append("DEF")
+'
+'        ' Display the number of characters in the StringBuilder and its string.
+'        Debug.Print sb.Length & " chars:" & sb.Text
+'
+'        ' Append a newline
+'        sb.AppendLine("")
+'
+'        ' Append Text with a newline
+'        sb.AppendLine("ABC")
+'
+'        ' Display the number of characters in the StringBuilder and its string.
+'        Debug.Print sb.Length & " chars:" & sb.Text
+' ```
+'
+' @class StringBuilder
+' @author timgetsch@commitcs.com
+' @license MIT (http://www.opensource.org/licenses/mit-license.php)
+'---------------------------------------------------------------------------------------
+Option Compare Database
+Option Explicit
+
+Private m_lLength As Long
+Private m_colText As Collection
+Private m_strText As String
+
+Private Sub Class_Initialize()
+10        On Error GoTo PROC_ERROR
+
+20        Clear
+
+PROC_EXIT:
+30        Exit Sub
+
+PROC_ERROR:
+40        LogError "StringBuilder", "Class_Initialize", Erl, Err.Number, Err.Description, , True, True
+50        Resume PROC_EXIT
+60        Resume
+End Sub
+
+Public Sub Append(Text As String)
+
+10        On Error GoTo PROC_ERROR
+
+          Dim lIncLen As Long
+20        lIncLen = Len(Text)
+30        If lIncLen = 0 Then Exit Sub
+
+40        m_strText = ""
+50        m_colText.Add Text
+          
+60        m_lLength = m_lLength + lIncLen
+          
+PROC_EXIT:
+70        Exit Sub
+
+PROC_ERROR:
+80        LogError "StringBuilder", "Append", Erl, Err.Number, Err.Description, Text, True, True
+90        Resume PROC_EXIT
+100       Resume
+End Sub
+
+Public Sub AppendLine(Text As String)
+10        On Error GoTo PROC_ERROR
+
+20        Append Text & vbCrLf
+
+PROC_EXIT:
+30        Exit Sub
+
+PROC_ERROR:
+40        LogError "StringBuilder", "AppendLine", Erl, Err.Number, Err.Description, Text, True, True
+50        Resume PROC_EXIT
+60        Resume
+End Sub
+
+Public Property Get Length() As Integer
+10        On Error GoTo PROC_ERROR
+
+20        Length = m_lLength
+
+PROC_EXIT:
+30        Exit Property
+
+PROC_ERROR:
+40        LogError "StringBuilder", "Length", Erl, Err.Number, Err.Description, , True, True
+50        Resume PROC_EXIT
+60        Resume
+End Property
+
+Public Property Get Text() As String
+10        On Error GoTo PROC_ERROR
+          
+20        If Len(m_strText) = 0 Then
+30            m_strText = JoinCollection(m_colText, "")
+40        End If
+          
+50        Text = m_strText
+          
+PROC_EXIT:
+60        Exit Property
+
+PROC_ERROR:
+70        LogError "StringBuilder", "Text", Erl, Err.Number, Err.Description, , True, True
+80        Resume PROC_EXIT
+90        Resume
+End Property
+
+Public Sub Clear()
+10        On Error GoTo PROC_ERROR
+          
+20        m_strText = ""
+30        m_lLength = 0
+40        Set m_colText = New Collection
+
+PROC_EXIT:
+50        Exit Sub
+
+PROC_ERROR:
+60        LogError "StringBuilder", "Clear", Erl, Err.Number, Err.Description, , True, True
+70        Resume PROC_EXIT
+80        Resume
+End Sub
+
+Private Function JoinCollection(col As Collection, Delimiter As String) As String
+10        On Error GoTo PROC_ERROR
+20        If col.Count = 0 Then
+30            Exit Function
+40        End If
+          Dim arr() As String
+50        ReDim arr(1 To col.Count)
+          Dim i As Long
+60        For i = 1 To col.Count
+70            arr(i) = col(i)
+80        Next
+90        JoinCollection = Join(arr, Delimiter)
+PROC_EXIT:
+100       Exit Function
+          
+PROC_ERROR:
+110       LogError "StringBuilder", "JoinCollection", Erl, Err.Number, Err.Description
+120       Resume PROC_EXIT
+130       Resume
+End Function
