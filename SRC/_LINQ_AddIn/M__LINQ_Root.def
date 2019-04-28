@@ -1,0 +1,30 @@
+'---------------------------------------------------------------------------------------
+'          __    _____   ______       ___       _____ ____    __
+'         / /   /  _/ | / / __ \     |__ \     / ___// __ \  / /
+'        / /    / //  |/ / / / /     __/ /     \__ \/ / / / / /
+'       / /____/ // /|  / /_/ /     / __/     ___/ / /_/ / / /___
+' _____/_____/___/_/ |_/\___\_\____/____/____/____/\___\_\/_____/
+'/_____/                     /_____/   /_____/
+'
+' (c) Tim Getsch
+' @author timgetsch@commitcs.com
+' @license MIT (http://www.opensource.org/licenses/mit-license.php)
+'---------------------------------------------------------------------------------------
+Option Compare Database
+Option Explicit
+
+Public Const TOOL_VERSION As String = "0.1.4"
+
+Public Function Edit_LinqRemoteConnections()
+10        On Error GoTo PROC_ERROR
+
+20        DoCmd.OpenForm LINQ_REMOTE_CONNECTIONS
+
+PROC_EXIT:
+30        Exit Function
+
+PROC_ERROR:
+40        LogError "_LINQ", "Edit_LinqRemoteConnections", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Function

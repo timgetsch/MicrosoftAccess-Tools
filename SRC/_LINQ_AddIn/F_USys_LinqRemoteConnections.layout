@@ -1,0 +1,786 @@
+Version =20
+VersionRequired =20
+Begin Form
+    DividingLines = NotDefault
+    AllowDesignChanges = NotDefault
+    ScrollBars =0
+    PictureAlignment =2
+    DatasheetGridlinesBehavior =3
+    GridX =24
+    GridY =24
+    Width =15000
+    DatasheetFontHeight =11
+    ItemSuffix =166
+    Right =11220
+    Bottom =12360
+    DatasheetGridlinesColor =15062992
+    RecordSource ="USys_LinqRemoteConnections"
+    Caption ="_LINQ Remote Connections"
+    OnOpen ="[Event Procedure]"
+    DatasheetFontName ="Calibri"
+    AllowDatasheetView =0
+    FilterOnLoad =0
+    OrderByOnLoad =0
+    SplitFormOrientation =1
+    SplitFormSplitterBar =0
+    SplitFormSize =540
+    OrderByOnLoad =0
+    SplitFormOrientation =1
+    SplitFormSplitterBar =0
+    SplitFormSize =540
+    DatasheetBackColor12 =-2147483643
+    ShowPageMargins =0
+    DisplayOnSharePointSite =1
+    DatasheetAlternateBackColor =16053492
+    DatasheetGridlinesColor12 =15062992
+    FitToScreen =1
+    Begin
+        Begin Label
+            BackStyle =0
+            FontSize =11
+            FontName ="Calibri"
+            ForeTint =60.0
+            GridlineShade =65.0
+        End
+        Begin Image
+            BackStyle =0
+            OldBorderStyle =0
+            BorderLineStyle =0
+            SizeMode =3
+            PictureAlignment =2
+            BorderColor =16777215
+            BorderShade =90.0
+            GridlineShade =65.0
+        End
+        Begin CommandButton
+            FontSize =11
+            FontWeight =400
+            FontName ="Calibri"
+            ForeShade =50.0
+            GridlineShade =65.0
+            BackColor =-2147483633
+            BorderLineStyle =0
+            BorderShade =90.0
+        End
+        Begin CheckBox
+            BorderLineStyle =0
+            LabelX =230
+            LabelY =-30
+            BorderShade =90.0
+            GridlineShade =65.0
+        End
+        Begin TextBox
+            FELineBreak = NotDefault
+            BorderLineStyle =0
+            LabelX =-1800
+            FontSize =11
+            FontName ="Calibri"
+            AsianLineBreak =1
+            BorderShade =90.0
+            ForeShade =50.0
+            GridlineShade =65.0
+        End
+        Begin EmptyCell
+            Height =240
+            GridlineShade =65.0
+        End
+        Begin FormHeader
+            Height =547
+            BackColor =15849926
+            Name ="FormHeader"
+            AutoHeight =1
+            AlternateBackShade =95.0
+            BackTint =20.0
+            Begin
+                Begin Label
+                    OverlapFlags =85
+                    TextAlign =1
+                    TextFontFamily =18
+                    Left =300
+                    Top =60
+                    Width =5340
+                    Height =465
+                    FontSize =18
+                    BorderColor =8210719
+                    ForeColor =8210719
+                    Name ="Auto_Header0"
+                    Caption ="_LINQ_2_SQL Remote Connections"
+                    FontName ="Cambria"
+                    GroupTable =2
+                    GridlineColor =10921638
+                    LayoutCachedLeft =300
+                    LayoutCachedTop =60
+                    LayoutCachedWidth =5640
+                    LayoutCachedHeight =525
+                    LayoutGroup =2
+                    ForeTint =100.0
+                    GroupTable =2
+                End
+            End
+        End
+        Begin Section
+            Height =2115
+            Name ="Detail"
+            AlternateBackColor =15921906
+            AlternateBackShade =95.0
+            Begin
+                Begin TextBox
+                    OverlapFlags =85
+                    TextAlign =1
+                    IMESentenceMode =3
+                    Left =2460
+                    Top =120
+                    Width =1380
+                    Height =338
+                    ColumnWidth =765
+                    LeftMargin =44
+                    TopMargin =22
+                    RightMargin =44
+                    BottomMargin =22
+                    BorderColor =12835293
+                    ForeColor =4138256
+                    Name ="ID"
+                    ControlSource ="ID"
+                    GroupTable =1
+                    GridlineColor =10921638
+
+                    LayoutCachedLeft =2460
+                    LayoutCachedTop =120
+                    LayoutCachedWidth =3840
+                    LayoutCachedHeight =458
+                    ColumnStart =1
+                    ColumnEnd =1
+                    LayoutGroup =1
+                    GroupTable =1
+                    Begin
+                        Begin Label
+                            OverlapFlags =85
+                            TextAlign =1
+                            Left =300
+                            Top =120
+                            Width =2098
+                            Height =338
+                            LeftMargin =44
+                            TopMargin =22
+                            RightMargin =44
+                            BottomMargin =22
+                            BorderColor =16777215
+                            ForeColor =8355711
+                            Name ="Label0"
+                            Caption ="ID"
+                            GroupTable =1
+                            GridlineColor =10921638
+                            LayoutCachedLeft =300
+                            LayoutCachedTop =120
+                            LayoutCachedWidth =2398
+                            LayoutCachedHeight =458
+                            LayoutGroup =1
+                            ForeTint =50.0
+                            GroupTable =1
+                        End
+                    End
+                End
+                Begin TextBox
+                    OverlapFlags =85
+                    TextAlign =1
+                    IMESentenceMode =3
+                    Left =6060
+                    Top =120
+                    Width =2940
+                    Height =338
+                    ColumnWidth =1740
+                    TabIndex =1
+                    LeftMargin =44
+                    TopMargin =22
+                    RightMargin =44
+                    BottomMargin =22
+                    BorderColor =12835293
+                    ForeColor =4138256
+                    Name ="Description"
+                    ControlSource ="Description"
+                    GroupTable =1
+                    GridlineColor =10921638
+
+                    LayoutCachedLeft =6060
+                    LayoutCachedTop =120
+                    LayoutCachedWidth =9000
+                    LayoutCachedHeight =458
+                    ColumnStart =3
+                    ColumnEnd =4
+                    LayoutGroup =1
+                    GroupTable =1
+                    Begin
+                        Begin Label
+                            OverlapFlags =85
+                            TextAlign =1
+                            Left =3900
+                            Top =120
+                            Width =2098
+                            Height =338
+                            LeftMargin =44
+                            TopMargin =22
+                            RightMargin =44
+                            BottomMargin =22
+                            BorderColor =16777215
+                            ForeColor =8355711
+                            Name ="Label3"
+                            Caption ="Description"
+                            GroupTable =1
+                            GridlineColor =10921638
+                            LayoutCachedLeft =3900
+                            LayoutCachedTop =120
+                            LayoutCachedWidth =5998
+                            LayoutCachedHeight =458
+                            ColumnStart =2
+                            ColumnEnd =2
+                            LayoutGroup =1
+                            ForeTint =50.0
+                            GroupTable =1
+                        End
+                    End
+                End
+                Begin TextBox
+                    OverlapFlags =85
+                    TextAlign =1
+                    IMESentenceMode =3
+                    Left =2460
+                    Top =525
+                    Width =6540
+                    Height =338
+                    TabIndex =2
+                    LeftMargin =44
+                    TopMargin =22
+                    RightMargin =44
+                    BottomMargin =22
+                    BorderColor =12835293
+                    ForeColor =4138256
+                    Name ="Server"
+                    ControlSource ="Server"
+                    GroupTable =1
+                    GridlineColor =10921638
+
+                    LayoutCachedLeft =2460
+                    LayoutCachedTop =525
+                    LayoutCachedWidth =9000
+                    LayoutCachedHeight =863
+                    RowStart =1
+                    RowEnd =1
+                    ColumnStart =1
+                    ColumnEnd =4
+                    LayoutGroup =1
+                    GroupTable =1
+                    Begin
+                        Begin Label
+                            OverlapFlags =85
+                            TextAlign =1
+                            Left =300
+                            Top =525
+                            Width =2098
+                            Height =338
+                            LeftMargin =44
+                            TopMargin =22
+                            RightMargin =44
+                            BottomMargin =22
+                            BorderColor =16777215
+                            ForeColor =8355711
+                            Name ="Label6"
+                            Caption ="Server"
+                            GroupTable =1
+                            GridlineColor =10921638
+                            LayoutCachedLeft =300
+                            LayoutCachedTop =525
+                            LayoutCachedWidth =2398
+                            LayoutCachedHeight =863
+                            RowStart =1
+                            RowEnd =1
+                            LayoutGroup =1
+                            ForeTint =50.0
+                            GroupTable =1
+                        End
+                    End
+                End
+                Begin TextBox
+                    OverlapFlags =85
+                    TextAlign =1
+                    IMESentenceMode =3
+                    Left =2460
+                    Top =930
+                    Width =3538
+                    Height =338
+                    ColumnWidth =2820
+                    TabIndex =3
+                    LeftMargin =44
+                    TopMargin =22
+                    RightMargin =44
+                    BottomMargin =22
+                    BorderColor =12835293
+                    ForeColor =4138256
+                    Name ="Database"
+                    ControlSource ="Database"
+                    GroupTable =1
+                    GridlineColor =10921638
+
+                    LayoutCachedLeft =2460
+                    LayoutCachedTop =930
+                    LayoutCachedWidth =5998
+                    LayoutCachedHeight =1268
+                    RowStart =2
+                    RowEnd =2
+                    ColumnStart =1
+                    ColumnEnd =2
+                    LayoutGroup =1
+                    GroupTable =1
+                    Begin
+                        Begin Label
+                            OverlapFlags =85
+                            TextAlign =1
+                            Left =300
+                            Top =930
+                            Width =2098
+                            Height =338
+                            LeftMargin =44
+                            TopMargin =22
+                            RightMargin =44
+                            BottomMargin =22
+                            BorderColor =16777215
+                            ForeColor =8355711
+                            Name ="Label9"
+                            Caption ="Database"
+                            GroupTable =1
+                            GridlineColor =10921638
+                            LayoutCachedLeft =300
+                            LayoutCachedTop =930
+                            LayoutCachedWidth =2398
+                            LayoutCachedHeight =1268
+                            RowStart =2
+                            RowEnd =2
+                            LayoutGroup =1
+                            ForeTint =50.0
+                            GroupTable =1
+                        End
+                    End
+                End
+                Begin CheckBox
+                    OverlapFlags =85
+                    Left =8640
+                    Top =930
+                    Width =360
+                    Height =338
+                    TabIndex =4
+                    BorderColor =12835293
+                    Name ="Trusted"
+                    ControlSource ="Trusted"
+                    GroupTable =1
+                    GridlineColor =10921638
+
+                    LayoutCachedLeft =8640
+                    LayoutCachedTop =930
+                    LayoutCachedWidth =9000
+                    LayoutCachedHeight =1268
+                    RowStart =2
+                    RowEnd =2
+                    ColumnStart =4
+                    ColumnEnd =4
+                    LayoutGroup =1
+                    GroupTable =1
+                    Begin
+                        Begin Label
+                            OverlapFlags =85
+                            TextAlign =1
+                            Left =6060
+                            Top =930
+                            Width =2520
+                            Height =338
+                            LeftMargin =44
+                            TopMargin =22
+                            RightMargin =44
+                            BottomMargin =22
+                            BorderColor =16777215
+                            ForeColor =8355711
+                            Name ="Label12"
+                            Caption ="Trusted (Windows Auth)"
+                            GroupTable =1
+                            GridlineColor =10921638
+                            LayoutCachedLeft =6060
+                            LayoutCachedTop =930
+                            LayoutCachedWidth =8580
+                            LayoutCachedHeight =1268
+                            RowStart =2
+                            RowEnd =2
+                            ColumnStart =3
+                            ColumnEnd =3
+                            LayoutGroup =1
+                            ForeTint =50.0
+                            GroupTable =1
+                        End
+                    End
+                End
+                Begin TextBox
+                    OverlapFlags =85
+                    TextAlign =1
+                    IMESentenceMode =3
+                    Left =2460
+                    Top =1335
+                    Width =1380
+                    Height =345
+                    ColumnWidth =3300
+                    TabIndex =5
+                    LeftMargin =44
+                    TopMargin =22
+                    RightMargin =44
+                    BottomMargin =22
+                    BorderColor =12835293
+                    ForeColor =4138256
+                    Name ="UserName"
+                    ControlSource ="UserName"
+                    ConditionalFormat = Begin
+                        0x0100000076000000010000000100000000000000000000000a00000000000000 ,
+                        0x00000000ffffff00000000000000000000000000000000000000000000000000 ,
+                        0x0000000000000000000000000000000000000000000000000000000000000000 ,
+                        0x5b0054007200750073007400650064005d0000000000
+                    End
+                    GroupTable =1
+                    GridlineColor =10921638
+
+                    LayoutCachedLeft =2460
+                    LayoutCachedTop =1335
+                    LayoutCachedWidth =3840
+                    LayoutCachedHeight =1680
+                    RowStart =3
+                    RowEnd =3
+                    ColumnStart =1
+                    ColumnEnd =1
+                    LayoutGroup =1
+                    ConditionalFormat14 = Begin
+                        0x01000100000001000000000000000000000000000000ffffff00090000005b00 ,
+                        0x54007200750073007400650064005d0000000000000000000000000000000000 ,
+                        0x0000000000
+                    End
+                    GroupTable =1
+                    Begin
+                        Begin Label
+                            OverlapFlags =85
+                            TextAlign =1
+                            Left =300
+                            Top =1335
+                            Width =2098
+                            Height =345
+                            LeftMargin =44
+                            TopMargin =22
+                            RightMargin =44
+                            BottomMargin =22
+                            BorderColor =16777215
+                            ForeColor =8355711
+                            Name ="Label15"
+                            Caption ="UserName"
+                            GroupTable =1
+                            GridlineColor =10921638
+                            LayoutCachedLeft =300
+                            LayoutCachedTop =1335
+                            LayoutCachedWidth =2398
+                            LayoutCachedHeight =1680
+                            RowStart =3
+                            RowEnd =3
+                            LayoutGroup =1
+                            ForeTint =50.0
+                            GroupTable =1
+                        End
+                    End
+                End
+                Begin TextBox
+                    OverlapFlags =85
+                    TextAlign =1
+                    IMESentenceMode =3
+                    Left =6060
+                    Top =1335
+                    Width =2940
+                    Height =345
+                    TabIndex =6
+                    LeftMargin =44
+                    TopMargin =22
+                    RightMargin =44
+                    BottomMargin =22
+                    BorderColor =12835293
+                    ForeColor =4138256
+                    Name ="Password"
+                    ControlSource ="Password"
+                    BeforeUpdate ="[Event Procedure]"
+                    InputMask ="Password"
+                    ConditionalFormat = Begin
+                        0x0100000076000000010000000100000000000000000000000a00000000000000 ,
+                        0x00000000ffffff00000000000000000000000000000000000000000000000000 ,
+                        0x0000000000000000000000000000000000000000000000000000000000000000 ,
+                        0x5b0054007200750073007400650064005d0000000000
+                    End
+                    GroupTable =1
+                    GridlineColor =10921638
+
+                    LayoutCachedLeft =6060
+                    LayoutCachedTop =1335
+                    LayoutCachedWidth =9000
+                    LayoutCachedHeight =1680
+                    RowStart =3
+                    RowEnd =3
+                    ColumnStart =3
+                    ColumnEnd =4
+                    LayoutGroup =1
+                    ConditionalFormat14 = Begin
+                        0x01000100000001000000000000000000000000000000ffffff00090000005b00 ,
+                        0x54007200750073007400650064005d0000000000000000000000000000000000 ,
+                        0x0000000000
+                    End
+                    GroupTable =1
+                    Begin
+                        Begin Label
+                            OverlapFlags =85
+                            TextAlign =1
+                            Left =3900
+                            Top =1335
+                            Width =2098
+                            Height =345
+                            LeftMargin =44
+                            TopMargin =22
+                            RightMargin =44
+                            BottomMargin =22
+                            BorderColor =16777215
+                            ForeColor =8355711
+                            Name ="Label18"
+                            Caption ="Password"
+                            GroupTable =1
+                            GridlineColor =10921638
+                            LayoutCachedLeft =3900
+                            LayoutCachedTop =1335
+                            LayoutCachedWidth =5998
+                            LayoutCachedHeight =1680
+                            RowStart =3
+                            RowEnd =3
+                            ColumnStart =2
+                            ColumnEnd =2
+                            LayoutGroup =1
+                            ForeTint =50.0
+                            GroupTable =1
+                        End
+                    End
+                End
+                Begin TextBox
+                    OverlapFlags =85
+                    TextAlign =1
+                    IMESentenceMode =3
+                    Left =2460
+                    Top =1740
+                    Width =1380
+                    Height =345
+                    ColumnWidth =2100
+                    TabIndex =7
+                    LeftMargin =44
+                    TopMargin =22
+                    RightMargin =44
+                    BottomMargin =22
+                    BorderColor =12835293
+                    ForeColor =4138256
+                    Name ="LinkedTablePrefix"
+                    ControlSource ="LinkedTablePrefix"
+                    GroupTable =1
+                    GridlineColor =10921638
+
+                    LayoutCachedLeft =2460
+                    LayoutCachedTop =1740
+                    LayoutCachedWidth =3840
+                    LayoutCachedHeight =2085
+                    RowStart =4
+                    RowEnd =4
+                    ColumnStart =1
+                    ColumnEnd =1
+                    LayoutGroup =1
+                    GroupTable =1
+                    Begin
+                        Begin Label
+                            OverlapFlags =85
+                            TextAlign =1
+                            Left =300
+                            Top =1740
+                            Width =2098
+                            Height =345
+                            LeftMargin =44
+                            TopMargin =22
+                            RightMargin =44
+                            BottomMargin =22
+                            BorderColor =16777215
+                            ForeColor =8355711
+                            Name ="Label27"
+                            Caption ="LinkedTablePrefix"
+                            GroupTable =1
+                            GridlineColor =10921638
+                            LayoutCachedLeft =300
+                            LayoutCachedTop =1740
+                            LayoutCachedWidth =2398
+                            LayoutCachedHeight =2085
+                            RowStart =4
+                            RowEnd =4
+                            LayoutGroup =1
+                            ForeTint =50.0
+                            GroupTable =1
+                        End
+                    End
+                End
+                Begin TextBox
+                    OverlapFlags =85
+                    TextAlign =1
+                    IMESentenceMode =3
+                    Left =6060
+                    Top =1740
+                    Width =2940
+                    Height =345
+                    ColumnWidth =1920
+                    TabIndex =8
+                    LeftMargin =44
+                    TopMargin =22
+                    RightMargin =44
+                    BottomMargin =22
+                    BorderColor =12835293
+                    ForeColor =4138256
+                    Name ="CodeClassName"
+                    ControlSource ="CodeClassName"
+                    GroupTable =1
+                    GridlineColor =10921638
+
+                    LayoutCachedLeft =6060
+                    LayoutCachedTop =1740
+                    LayoutCachedWidth =9000
+                    LayoutCachedHeight =2085
+                    RowStart =4
+                    RowEnd =4
+                    ColumnStart =3
+                    ColumnEnd =4
+                    LayoutGroup =1
+                    GroupTable =1
+                    Begin
+                        Begin Label
+                            OverlapFlags =85
+                            TextAlign =1
+                            Left =3900
+                            Top =1740
+                            Width =2098
+                            Height =345
+                            LeftMargin =44
+                            TopMargin =22
+                            RightMargin =44
+                            BottomMargin =22
+                            BorderColor =16777215
+                            ForeColor =8355711
+                            Name ="Label30"
+                            Caption ="CodeClassName"
+                            GroupTable =1
+                            GridlineColor =10921638
+                            LayoutCachedLeft =3900
+                            LayoutCachedTop =1740
+                            LayoutCachedWidth =5998
+                            LayoutCachedHeight =2085
+                            RowStart =4
+                            RowEnd =4
+                            ColumnStart =2
+                            ColumnEnd =2
+                            LayoutGroup =1
+                            ForeTint =50.0
+                            GroupTable =1
+                        End
+                    End
+                End
+                Begin CommandButton
+                    OverlapFlags =85
+                    AccessKey =71
+                    Left =9420
+                    Top =120
+                    Width =2100
+                    Height =345
+                    TabIndex =9
+                    ForeColor =4138256
+                    Name ="cmdGenerateCode"
+                    Caption ="&Generate Code"
+                    OnClick ="[Event Procedure]"
+                    UnicodeAccessKey =71
+                    GroupTable =5
+                    GridlineColor =10921638
+
+                    LayoutCachedLeft =9420
+                    LayoutCachedTop =120
+                    LayoutCachedWidth =11520
+                    LayoutCachedHeight =465
+                    LayoutGroup =3
+                    BorderColor =12835293
+                    GroupTable =5
+                    WebImagePaddingLeft =2
+                    WebImagePaddingTop =2
+                    WebImagePaddingRight =1
+                    WebImagePaddingBottom =1
+                End
+                Begin CommandButton
+                    OverlapFlags =85
+                    AccessKey =67
+                    Left =9420
+                    Top =525
+                    Width =2100
+                    Height =345
+                    TabIndex =10
+                    ForeColor =4138256
+                    Name ="cmdCreateLinkedTable"
+                    Caption ="&Create Linked Table"
+                    OnClick ="[Event Procedure]"
+                    UnicodeAccessKey =67
+                    GroupTable =5
+                    GridlineColor =10921638
+
+                    LayoutCachedLeft =9420
+                    LayoutCachedTop =525
+                    LayoutCachedWidth =11520
+                    LayoutCachedHeight =870
+                    RowStart =1
+                    RowEnd =1
+                    LayoutGroup =3
+                    BorderColor =12835293
+                    GroupTable =5
+                    WebImagePaddingLeft =2
+                    WebImagePaddingTop =2
+                    WebImagePaddingRight =1
+                    WebImagePaddingBottom =1
+                End
+                Begin CommandButton
+                    OverlapFlags =85
+                    AccessKey =82
+                    Left =9420
+                    Top =930
+                    Width =2100
+                    Height =345
+                    TabIndex =11
+                    ForeColor =4138256
+                    Name ="cmdRelinkTable"
+                    Caption ="&Relink Table"
+                    OnClick ="[Event Procedure]"
+                    UnicodeAccessKey =82
+                    GroupTable =5
+                    GridlineColor =10921638
+
+                    LayoutCachedLeft =9420
+                    LayoutCachedTop =930
+                    LayoutCachedWidth =11520
+                    LayoutCachedHeight =1275
+                    RowStart =2
+                    RowEnd =2
+                    LayoutGroup =3
+                    BorderColor =12835293
+                    GroupTable =5
+                    WebImagePaddingLeft =2
+                    WebImagePaddingTop =2
+                    WebImagePaddingRight =1
+                    WebImagePaddingBottom =1
+                End
+            End
+        End
+        Begin FormFooter
+            Height =0
+            Name ="FormFooter"
+            AutoHeight =1
+            AlternateBackShade =95.0
+        End
+    End
+End
