@@ -10,7 +10,7 @@
     <AllowSpecialKeys name="AllowSpecialKeys" type="1" value="True" sort="1"/>
     <AllowToolbarChanges name="AllowToolbarChanges" type="1" value="True" sort="1"/>
     <ANSIQueryMode name="ANSI Query Mode" type="4" value="0" sort="1"/>
-    <AppTitle name="AppTitle" type="10" value="_LINQ 2 SQL Templates Source" sort="1"/>
+    <AppTitle name="AppTitle" type="10" value="_LINQ_2_SQL Templates Source" sort="1"/>
     <AutoCompact name="Auto Compact" type="4" value="0" sort="1"/>
     <Build name="Build" type="4" value="1015" sort="1"/>
     <DesignWithData name="DesignWithData" type="1" value="True" sort="1"/>
@@ -50,15 +50,15 @@
     <WebDesignMode name="WebDesignMode" type="2" value="0" sort="1"/>
   </CurrentDb>
   <SummaryInfo context="2">
-    <Author name="Author" type="10" value="Microsoft Access Team" sort="3"/>
-    <Company name="Company" type="10" value="Northwind Traders" sort="3"/>
-    <Title name="Title" type="10" value="Northwind Traders" sort="3"/>
+    <Author name="Author" type="10" value="Tim Getsch" sort="3"/>
+    <Company name="Company" type="10" value="Commit CS" sort="3"/>
+    <Title name="Title" type="10" value="_LINQ_2_SQL Templates" sort="3"/>
   </SummaryInfo>
   <UserDefined context="3">
     <NWVersion name="NWVersion" type="10" value="11.0" sort="4"/>
   </UserDefined>
   <ActiveVBProject context="4">
-    <Description name="Description" type="10" value="_LINQ2SQL Add-In" sort="5"/>
+    <Description name="Description" type="10" value="_LINQ_2_SQL Templates" sort="5"/>
     <Name name="Name" type="10" value="_LINQ_Templates" sort="5"/>
   </ActiveVBProject>
   <References context="6">
