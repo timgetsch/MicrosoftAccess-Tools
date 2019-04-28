@@ -1,0 +1,79 @@
+'---------------------------------------------------------------------------------------
+'          __    _____   ______       ___       _____ ____    __
+'         / /   /  _/ | / / __ \     |__ \     / ___// __ \  / /
+'        / /    / //  |/ / / / /     __/ /     \__ \/ / / / / /
+'       / /____/ // /|  / /_/ /     / __/     ___/ / /_/ / / /___
+' _____/_____/___/_/ |_/\___\_\____/____/____/____/\___\_\/_____/
+'/_____/                     /_____/   /_____/
+'
+' (c) Tim Getsch
+' @author timgetsch@commitcs.com
+' @license MIT (http://www.opensource.org/licenses/mit-license.php)
+'---------------------------------------------------------------------------------------
+Option Compare Database
+Option Explicit
+
+Public Function Init_NullableDataTypes()
+10        On Error GoTo PROC_ERROR
+
+20        AddModuleIfMissing "BooleanQ"
+30        AddModuleIfMissing "ByteQ"
+40        AddModuleIfMissing "CurrencyQ"
+50        AddModuleIfMissing "DateQ"
+60        AddModuleIfMissing "DoubleQ"
+70        AddModuleIfMissing "IntegerQ"
+80        AddModuleIfMissing "LongQ"
+90        AddModuleIfMissing "SingleQ"
+100       AddModuleIfMissing "StringQ"
+110       AddModuleIfMissing "VariantQ"
+120       AddModuleIfMissing "ConversionQ"
+
+PROC_EXIT:
+130       Exit Function
+
+PROC_ERROR:
+140       LogError "NullableDataTypes_Init", "Init_LINQ", Erl, Err.Number, Err.Description
+150       Resume PROC_EXIT
+160       Resume
+End Function
+
+Private Sub AddModuleIfMissing(ModuleName As String)
+10        On Error GoTo PROC_ERROR
+
+20        If Not IsObjectInCol(CurrentProject.AllModules, ModuleName) Then
+30            DoCmd.CopyObject CurrentDb.Name, ModuleName, acModule, ModuleName
+40        End If
+
+PROC_EXIT:
+50        Exit Sub
+
+PROC_ERROR:
+60        LogError "NullableDataTypes_Init", "AddModuleIfMissing", Erl, Err.Number, Err.Description
+70        Resume PROC_EXIT
+80        Resume
+End Sub
+
+Private Function IsObjectInCol(col As Object, ByVal Index) As Boolean
+10        On Error Resume Next
+          Dim val As Object
+20        Set val = col.Item(Index)
+30        IsObjectInCol = Err.Number = 0
+40        Err.Clear
+End Function
+
+Private Function LogError(ObjectName As String, _
+                         ProcedureName As String, _
+                         LineNumber As Long, _
+                         ErrorNumber As Long, _
+                         Description As String, _
+                         Optional ExtraInfo As Variant = Null, _
+                         Optional fSilent As Boolean = False, _
+                         Optional fRaiseError As Boolean = False, _
+                         Optional iSecondsToSleep As Integer = 1) As Boolean
+    Dim strMessage As String
+    strMessage = ObjectName & "." & ProcedureName & " line " & LineNumber & vbCrLf & vbCrLf & ErrorNumber & " - " & Description & vbCrLf & ExtraInfo
+    Debug.Print strMessage
+    MsgBox strMessage, vbOKOnly + vbExclamation, "Error"
+    Debug.Assert False
+    LogError = True
+End Function

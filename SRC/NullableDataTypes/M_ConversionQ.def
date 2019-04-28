@@ -1,0 +1,133 @@
+'--------------------------------------------------------------------------------------
+' ConversionQ v0.1.1
+' (c) Tim Getsch
+'
+' ConversionQ is the nullable version of Conversion
+'
+' @class ConversionQ
+' @author timgetsch@commitcs.com
+' @license MIT (http://www.opensource.org/licenses/mit-license.php)
+'---------------------------------------------------------------------------------------
+Option Compare Database
+Option Explicit
+
+Public Function CBoolQ(Value As Variant) As BooleanQ
+    Dim v As New BooleanQ
+    v = Value
+    Set CBoolQ = v
+End Function
+
+Public Function CByteQ(Value As Variant) As ByteQ
+    Dim v As New ByteQ
+    v = Value
+    Set CByteQ = v
+End Function
+
+Public Function CCurQ(Value As Variant) As CurrencyQ
+    Dim v As New CurrencyQ
+    v = Value
+    Set CCurQ = v
+End Function
+
+Public Function CDateQ(Value As Variant) As DateQ
+    Dim v As New DateQ
+    v = Value
+    Set CDateQ = v
+End Function
+
+Public Function CDblQ(Value As Variant) As DoubleQ
+    Dim v As New DoubleQ
+    v = Value
+    Set CDblQ = v
+End Function
+
+Public Function CIntQ(Value As Variant) As IntegerQ
+    Dim v As New IntegerQ
+    v = Value
+    Set CIntQ = v
+End Function
+
+Public Function CLngQ(Value As Variant) As LongQ
+    Dim v As New LongQ
+    v = Value
+    Set CLngQ = v
+End Function
+
+Public Function CSngQ(Value As Variant) As SingleQ
+    Dim v As New SingleQ
+    v = Value
+    Set CSngQ = v
+End Function
+
+Public Function CStrQ(Value As Variant) As StringQ
+    Dim v As New StringQ
+    v = Value
+    Set CStrQ = v
+End Function
+
+Public Function CVarQ(Value As Variant) As VariantQ
+    Dim v As New VariantQ
+    v = Value
+    Set CVarQ = v
+End Function
+
+
+Public Function BooleanQ(Value As Boolean) As BooleanQ
+    Dim v As New BooleanQ
+    v = Value
+    Set BooleanQ = v
+End Function
+
+Public Function ByteQ(Value As Byte) As ByteQ
+    Dim v As New ByteQ
+    v = Value
+    Set ByteQ = v
+End Function
+
+Public Function CurrencyQ(Value As Currency) As CurrencyQ
+    Dim v As New CurrencyQ
+    v = Value
+    Set CurrencyQ = v
+End Function
+
+Public Function DateQ(Value As Date) As DateQ
+    Dim v As New DateQ
+    v = Value
+    Set DateQ = v
+End Function
+
+Public Function DoubleQ(Value As Double) As DoubleQ
+    Dim v As New DoubleQ
+    v = Value
+    Set DoubleQ = v
+End Function
+
+Public Function IntegerQ(Value As Integer) As IntegerQ
+    Dim v As New IntegerQ
+    v = Value
+    Set IntegerQ = v
+End Function
+
+Public Function LongQ(Value As Long) As LongQ
+    Dim v As New LongQ
+    v = Value
+    Set LongQ = v
+End Function
+
+Public Function SingleQ(Value As Single) As SingleQ
+    Dim v As New SingleQ
+    v = Value
+    Set SingleQ = v
+End Function
+
+Public Function StringQ(Value As String) As StringQ
+    Dim v As New StringQ
+    v = Value
+    Set StringQ = v
+End Function
+
+Public Function VariantQ(Value As Variant) As VariantQ
+    Dim v As New VariantQ
+    v = Value
+    Set VariantQ = v
+End Function

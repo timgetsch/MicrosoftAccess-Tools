@@ -1,0 +1,56 @@
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = False
+'--------------------------------------------------------------------------------------
+' IntegerQ v0.1.1
+' (c) Tim Getsch
+'
+' IntegerQ is the nullable version of Integer
+'
+' @class IntegerQ
+' @author timgetsch@commitcs.com
+' @license MIT (http://www.opensource.org/licenses/mit-license.php)
+'---------------------------------------------------------------------------------------
+Option Compare Database
+Option Explicit
+
+Private m_HasValue As Boolean
+Private m_Value As Integer
+
+Public Property Get HasValue() As Boolean
+    HasValue = m_HasValue
+End Property
+
+Public Property Get Value() As Integer
+    If Not m_HasValue Then
+        Err.Raise 1, "Integer?", "Nullable object has no value."
+    Else
+        Value = m_Value
+    End If
+End Property
+
+Public Function GetValueOrDefault(Optional DefaultValue As Integer = 0) As Integer
+    If Me.HasValue Then
+        GetValueOrDefault = Me.Value
+    Else
+        GetValueOrDefault = DefaultValue
+    End If
+End Function
+
+Public Property Let SetValue(Value As Variant)
+Attribute SetValue.VB_UserMemId = 0
+    m_HasValue = False
+    If Not IsNull(Value) Then
+        m_Value = CInt(Value)
+        m_HasValue = True
+    End If
+End Property
+
+Public Property Get SetValue() As Variant
+    If m_HasValue Then
+        SetValue = m_Value
+    Else
+        SetValue = Null
+    End If
+End Property
