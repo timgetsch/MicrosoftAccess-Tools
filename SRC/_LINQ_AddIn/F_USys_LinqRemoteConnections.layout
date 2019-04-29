@@ -9,9 +9,9 @@ Begin Form
     PictureType =2
     GridX =24
     GridY =24
-    Width =11100
+    Width =11040
     DatasheetFontHeight =11
-    ItemSuffix =499
+    ItemSuffix =514
     Right =17055
     Bottom =12360
     DatasheetGridlinesColor =15062992
@@ -106,7 +106,7 @@ Begin Form
             GridlineShade =65.0
         End
         Begin FormHeader
-            Height =1080
+            Height =1087
             BackColor =13233915
             Name ="FormHeader"
             AlternateBackShade =95.0
@@ -116,20 +116,20 @@ Begin Form
                     TextAlign =1
                     Left =300
                     Top =60
-                    Width =5340
+                    Width =4440
                     Height =465
                     FontSize =18
                     FontWeight =700
                     BorderColor =8210719
                     ForeColor =3160910
                     Name ="Auto_Header0"
-                    Caption ="_LINQ_2_SQL Connections"
+                    Caption ="_LINQ 2 SQL Connections"
                     FontName ="Franklin Gothic Medium"
                     GroupTable =2
                     GridlineColor =10921638
                     LayoutCachedLeft =300
                     LayoutCachedTop =60
-                    LayoutCachedWidth =5640
+                    LayoutCachedWidth =4740
                     LayoutCachedHeight =525
                     LayoutGroup =1
                     ThemeFontIndex =0
@@ -137,12 +137,50 @@ Begin Form
                     ForeTint =100.0
                     GroupTable =2
                 End
+                Begin CommandButton
+                    FontUnderline = NotDefault
+                    OverlapFlags =85
+                    Left =8580
+                    Top =660
+                    Width =2280
+                    Height =405
+                    ForeColor =2039725
+                    Name ="cmdCheckForUpdates"
+                    Caption ="Check for Updates"
+                    OnClick ="[Event Procedure]"
+                    FontName ="Franklin Gothic Book"
+                    GroupTable =8
+                    HorizontalAnchor =1
+                    BackStyle =0
+
+                    CursorOnHover =1
+                    LayoutCachedLeft =8580
+                    LayoutCachedTop =660
+                    LayoutCachedWidth =10860
+                    LayoutCachedHeight =1065
+                    LayoutGroup =3
+                    ForeThemeColorIndex =10
+                    ForeShade =100.0
+                    BackColor =16777215
+                    BackThemeColorIndex =1
+                    OldBorderStyle =0
+                    BorderColor =8355711
+                    BorderThemeColorIndex =0
+                    BorderTint =50.0
+                    BorderShade =100.0
+                    ThemeFontIndex =1
+                    GroupTable =8
+                    WebImagePaddingLeft =2
+                    WebImagePaddingTop =2
+                    WebImagePaddingRight =2
+                    WebImagePaddingBottom =2
+                End
                 Begin Label
                     FontUnderline = NotDefault
                     OverlapFlags =85
-                    TextAlign =2
-                    Left =5040
-                    Top =720
+                    TextAlign =3
+                    Left =5100
+                    Top =120
                     Width =5820
                     Height =300
                     BorderColor =8355711
@@ -153,10 +191,10 @@ Begin Form
                     HyperlinkAddress ="mailto:timgetsch@commitcs.com"
                     GridlineColor =10921638
                     HorizontalAnchor =1
-                    LayoutCachedLeft =5040
-                    LayoutCachedTop =720
-                    LayoutCachedWidth =10860
-                    LayoutCachedHeight =1020
+                    LayoutCachedLeft =5100
+                    LayoutCachedTop =120
+                    LayoutCachedWidth =10920
+                    LayoutCachedHeight =420
                     ThemeFontIndex =1
                     BackThemeColorIndex =1
                     BorderThemeColorIndex =0
@@ -280,7 +318,7 @@ Begin Form
                             BorderColor =16777215
                             ForeColor =8355711
                             Name ="Label3"
-                            Caption ="Description"
+                            Caption ="Connection Name"
                             GroupTable =6
                             LayoutCachedLeft =240
                             LayoutCachedTop =120
@@ -531,7 +569,7 @@ Begin Form
                             BorderColor =16777215
                             ForeColor =8355711
                             Name ="Label15"
-                            Caption ="UserName"
+                            Caption ="User Name"
                             GroupTable =6
                             LayoutCachedLeft =240
                             LayoutCachedTop =1755
@@ -671,7 +709,7 @@ Begin Form
                             BorderColor =16777215
                             ForeColor =8355711
                             Name ="Label27"
-                            Caption ="LinkedTablePrefix"
+                            Caption ="Linked Table Prefix"
                             GroupTable =6
                             LayoutCachedLeft =240
                             LayoutCachedTop =2160
@@ -734,7 +772,7 @@ Begin Form
                             BorderColor =16777215
                             ForeColor =8355711
                             Name ="Label30"
-                            Caption ="CodeClassName"
+                            Caption ="Code Class Name"
                             GroupTable =6
                             LayoutCachedLeft =5280
                             LayoutCachedTop =2160
@@ -919,7 +957,7 @@ Begin Form
                             BorderColor =16777215
                             ForeColor =8355711
                             Name ="Label176"
-                            Caption ="SqlServerDriver"
+                            Caption ="Sql Server Driver"
                             GroupTable =6
                             LayoutCachedLeft =240
                             LayoutCachedTop =525

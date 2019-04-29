@@ -28,7 +28,7 @@ Option Explicit
 Public Function GetSQL(ProcedureName As String, Parameters As ADODB.Parameters) As String
 10        On Error GoTo PROC_ERROR
           
-          Dim sb As New StringBuilder
+          Dim sb As New cls_LINQ_2_SQL__StringBuilder
           Dim p As ADODB.Parameter
 20        For Each p In Parameters
 30            Select Case p.Direction

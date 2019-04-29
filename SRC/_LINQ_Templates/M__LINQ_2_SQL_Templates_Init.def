@@ -19,12 +19,12 @@ Public Function Init_BaseModules(NewClassName As String)
 10        On Error GoTo PROC_ERROR
           
 20        AddReferenceADODB ' This is needed by cls_LINQ_Base
-30        AddModuleIfMissing "modLogError"
-40        AddModuleIfMissing "StringBuilder"
-50        AddModuleIfMissing "cls_LINQ_SQLProcedureHelper"
-60        AddModuleIfMissing "cls_LINQ_Base"
-70        AddModuleIfMissing "dbc"
-80        AddModuleIfMissing "cls_LINQ_TEMPLATE", NewClassName
+30        AddModuleIfMissing "mod_LINQ_2_SQL_LogError"
+40        AddModuleIfMissing "cls_LINQ_2_SQL__StringBuilder"
+50        AddModuleIfMissing "cls_LINQ_2_SQL__SqlGenerator"
+60        AddModuleIfMissing "cls_LINQ_2_SQL__BaseClass"
+70        AddModuleIfMissing "cls_LINQ_2_SQL__Databases"
+80        AddModuleIfMissing "cls_LINQ_2_SQL_TEMPLATE", NewClassName
 
 PROC_EXIT:
 90        Exit Function

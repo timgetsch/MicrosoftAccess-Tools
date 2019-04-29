@@ -1,0 +1,35 @@
+Option Compare Database
+Option Explicit
+
+' This was created by the _LINQ 2 SQL Add-In, but it is intended for you to customize as you wish.
+Public dbc As New cls_LINQ_2_SQL__Databases
+
+' This was created by the _LINQ 2 SQL Add-In, but it is intended for you to customize with your own cancelable sleep UI.
+Private Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+Public Function CancelableSleep(ByVal Seconds As Double, Reason As String) As Boolean
+    Echo False, Reason
+    Sleep Seconds * 1000
+    Echo True
+    CancelableSleep = True
+End Function
+
+' This was created by the _LINQ 2 SQL Add-In, but it is intended for you to customize with your own error handling.
+Public Function LogError(ObjectName As String, _
+                         ProcedureName As String, _
+                         LineNumber As Long, _
+                         ErrorNumber As Long, _
+                         Description As String, _
+                         Optional ExtraInfo As Variant = Null, _
+                         Optional fSilent As Boolean = False, _
+                         Optional fRaiseError As Boolean = False, _
+                         Optional dblSleepForSeconds As Double = 1#) As Boolean
+                         
+    Dim strMessage As String
+    strMessage = ObjectName & "." & ProcedureName & " line " & LineNumber & vbCrLf & vbCrLf & ErrorNumber & " - " & Description & vbCrLf & ExtraInfo
+    Debug.Print strMessage
+    If Not fSilent Then MsgBox strMessage, vbOKOnly + vbExclamation, "Error"
+    Debug.Assert False
+    If dblSleepForSeconds <> 0 Then CancelableSleep dblSleepForSeconds, "Logged Error"
+    If fRaiseError Then Err.Raise ErrorNumber, , Description
+    LogError = True
+End Function

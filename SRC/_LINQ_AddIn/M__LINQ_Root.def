@@ -13,8 +13,6 @@
 Option Compare Database
 Option Explicit
 
-Public Const TOOL_VERSION As String = "0.1.4"
-
 Public Function Edit_LinqRemoteConnections()
 10        On Error GoTo PROC_ERROR
 

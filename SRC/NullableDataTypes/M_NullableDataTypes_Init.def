@@ -66,10 +66,7 @@ Private Function LogError(ObjectName As String, _
                          LineNumber As Long, _
                          ErrorNumber As Long, _
                          Description As String, _
-                         Optional ExtraInfo As Variant = Null, _
-                         Optional fSilent As Boolean = False, _
-                         Optional fRaiseError As Boolean = False, _
-                         Optional iSecondsToSleep As Integer = 1) As Boolean
+                         Optional ExtraInfo As Variant = Null) As Boolean
     Dim strMessage As String
     strMessage = ObjectName & "." & ProcedureName & " line " & LineNumber & vbCrLf & vbCrLf & ErrorNumber & " - " & Description & vbCrLf & ExtraInfo
     Debug.Print strMessage

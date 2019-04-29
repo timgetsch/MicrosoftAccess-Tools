@@ -52,7 +52,6 @@ Private m_Conn As ADODB.Connection
 Private m_ConnectionID As Integer
 Private m_ConnectionString As String
 Private m_CodeClassName As String
-Private Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
 Private Const LINQ_REMOTE_CONNECTIONS As String = "USys_LinqRemoteConnections"
 
@@ -100,21 +99,6 @@ PROC_ERROR:
 90        LogError "cls_LINQ_Base", "GetAppTitle", Erl, Err.Number, Err.Description
 100       Resume PROC_EXIT
 110       Resume
-End Function
-
-Private Function CancelableSleep(ByVal Seconds As Long, Reason As String) As Boolean
-10        On Error GoTo PROC_ERROR
-
-20        Sleep Seconds * 1000
-30        CancelableSleep = True
-
-PROC_EXIT:
-40        Exit Function
-
-PROC_ERROR:
-50        LogError "cls_LINQ_Base", "CancelableSleep", Erl, Err.Number, Err.Description
-60        Resume PROC_EXIT
-70        Resume
 End Function
 
 Public Property Get Connection() As ADODB.Connection
