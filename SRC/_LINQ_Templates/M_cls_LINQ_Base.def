@@ -55,10 +55,8 @@ Private m_CodeClassName As String
 Private Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 
 Private Const LINQ_REMOTE_CONNECTIONS As String = "USys_LinqRemoteConnections"
-Private Const SQL_SERVER_DRIVER As String = "SQL Server Native Client 11.0"
-'Private Const SQL_SERVER_DRIVER As String = "ODBC Driver 13 for SQL Server"
 
-Private Function GetSQLConnectString(strServer As String, strDatabase As String, fTrustedConnection As Boolean, strDescription As String, UserID, Password) As String
+Private Function GetSQLConnectString(strSqlServerDriver As String, strServer As String, strDatabase As String, fTrustedConnection As Boolean, strDescription As String, UserID, Password) As String
 10        On Error GoTo PROC_ERROR
           
 20        If strServer = "" And strDatabase = "" Then
@@ -66,7 +64,7 @@ Private Function GetSQLConnectString(strServer As String, strDatabase As String,
 40        Else
 50            GetSQLConnectString = "ODBC" & _
                           IIf(strDescription <> "", ";Description=" & strDescription, "") & _
-                          ";DRIVER=" & SQL_SERVER_DRIVER & _
+                          ";DRIVER=" & strSqlServerDriver & _
                           ";SERVER=" & strServer & _
                           ";DATABASE=" & strDatabase & _
                           IIf(fTrustedConnection, ";Trusted_Connection=Yes", "") & _
@@ -143,7 +141,7 @@ Public Sub Initialize(ConnectionID As Integer, Optional ProcedureName As String)
 30        Set db = CurrentDb()
 40        Set rs = db.OpenRecordset("SELECT * FROM [" & LINQ_REMOTE_CONNECTIONS & "] WHERE ID=" & m_ConnectionID)
 50        If rs.RecordCount = 1 Then
-60            m_ConnectionString = GetSQLConnectString(rs!Server, rs!Database, rs!Trusted, rs!Description, Nz(rs!UserName), Nz(rs!Password))
+60            m_ConnectionString = GetSQLConnectString(rs!SqlServerDriver, rs!Server, rs!Database, rs!Trusted, rs!Description, Nz(rs!UserName), Nz(rs!Password))
 70            m_CodeClassName = Nz(rs!CodeClassName)
 80        ElseIf ConnectionID <> 0 Then
 90            Err.Raise 1, , "UNKNOWN DatabaseConnection"

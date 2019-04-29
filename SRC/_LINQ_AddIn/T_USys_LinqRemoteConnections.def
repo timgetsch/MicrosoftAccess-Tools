@@ -2,18 +2,19 @@
 <TableDef name="USys_LinqRemoteConnections" foreign="False">
   <Properties/>
   <SQL>CREATE TABLE [USys_LinqRemoteConnections] (
-[ID] LONG NOT NULL,
-[Description] TEXT (255),
+[ID] LONG,
+[Description] TEXT (255) NOT NULL,
 [Server] TEXT (50) NOT NULL,
 [Database] TEXT (50) NOT NULL,
-[Trusted] BIT DEFAULT No,
+[Trusted] BIT DEFAULT Yes,
 [UserName] TEXT (50),
 [Password] TEXT (50),
 [IsConnected] BIT DEFAULT 0,
 [ReconnectTableName] TEXT (255),
 [LinkedTablePrefix] TEXT (255),
 [CodeClassName] TEXT (255) NOT NULL,
-[EnumName] TEXT (255));</SQL>
+[EnumName] TEXT (255),
+[SqlServerDriver] TEXT (255));</SQL>
   <Attributes value="0">
     <dbHiddenObject value="False"/>
     <dbAttachExclusive value="False"/>
@@ -39,7 +40,7 @@
       <DefaultValue name="DefaultValue" type="12" value=""/>
       <ValidationRule name="ValidationRule" type="12" value=""/>
       <ValidationText name="ValidationText" type="12" value=""/>
-      <Required name="Required" type="1" value="True"/>
+      <Required name="Required" type="1" value="False"/>
       <AllowZeroLength name="AllowZeroLength" type="1" value="False"/>
       <AppendOnly name="AppendOnly" type="1" value="False"/>
       <Expression name="Expression" type="12" value=""/>
@@ -72,7 +73,7 @@
       <DefaultValue name="DefaultValue" type="12" value=""/>
       <ValidationRule name="ValidationRule" type="12" value=""/>
       <ValidationText name="ValidationText" type="12" value=""/>
-      <Required name="Required" type="1" value="False"/>
+      <Required name="Required" type="1" value="True"/>
       <AllowZeroLength name="AllowZeroLength" type="1" value="True"/>
       <AppendOnly name="AppendOnly" type="1" value="False"/>
       <Expression name="Expression" type="12" value=""/>
@@ -164,7 +165,7 @@
     <Field_4 name="Trusted">
       <Value name="Value" type="1"/>
       <Attributes name="Attributes" type="4" value="1"/>
-      <CollatingOrder name="CollatingOrder" type="3" value="1033"/>
+      <CollatingOrder name="CollatingOrder" type="3" value="1024"/>
       <Type name="Type" type="3" value="1"/>
       <Name name="Name" type="12" value="Trusted"/>
       <OrdinalPosition name="OrdinalPosition" type="3" value="4"/>
@@ -174,7 +175,7 @@
       <ValidateOnSet name="ValidateOnSet" type="1"/>
       <DataUpdatable name="DataUpdatable" type="1" value="False"/>
       <ForeignName name="ForeignName" type="12"/>
-      <DefaultValue name="DefaultValue" type="12" value="No"/>
+      <DefaultValue name="DefaultValue" type="12" value="Yes"/>
       <ValidationRule name="ValidationRule" type="12" value=""/>
       <ValidationText name="ValidationText" type="12" value=""/>
       <Required name="Required" type="1" value="False"/>
@@ -268,7 +269,7 @@
     <Field_7 name="IsConnected">
       <Value name="Value" type="1"/>
       <Attributes name="Attributes" type="4" value="1"/>
-      <CollatingOrder name="CollatingOrder" type="3" value="1033"/>
+      <CollatingOrder name="CollatingOrder" type="3" value="1024"/>
       <Type name="Type" type="3" value="1"/>
       <Name name="Name" type="12" value="IsConnected"/>
       <OrdinalPosition name="OrdinalPosition" type="3" value="7"/>
@@ -438,11 +439,47 @@
       <ResultType name="ResultType" type="2" value="0"/>
       <CurrencyLCID name="CurrencyLCID" type="4" value="0"/>
     </Field_11>
+    <Field_12 name="SqlServerDriver">
+      <Value name="Value" type="10"/>
+      <Attributes name="Attributes" type="4" value="2"/>
+      <CollatingOrder name="CollatingOrder" type="3" value="1033"/>
+      <Type name="Type" type="3" value="10"/>
+      <Name name="Name" type="12" value="SqlServerDriver"/>
+      <OrdinalPosition name="OrdinalPosition" type="3" value="12"/>
+      <Size name="Size" type="4" value="255"/>
+      <SourceField name="SourceField" type="12" value="SqlServerDriver"/>
+      <SourceTable name="SourceTable" type="12" value="USys_LinqRemoteConnections"/>
+      <ValidateOnSet name="ValidateOnSet" type="1"/>
+      <DataUpdatable name="DataUpdatable" type="1" value="False"/>
+      <ForeignName name="ForeignName" type="12"/>
+      <DefaultValue name="DefaultValue" type="12" value=""/>
+      <ValidationRule name="ValidationRule" type="12" value=""/>
+      <ValidationText name="ValidationText" type="12" value=""/>
+      <Required name="Required" type="1" value="False"/>
+      <AllowZeroLength name="AllowZeroLength" type="1" value="True"/>
+      <AppendOnly name="AppendOnly" type="1" value="False"/>
+      <Expression name="Expression" type="12" value=""/>
+      <FieldSize name="FieldSize" type="4"/>
+      <OriginalValue name="OriginalValue" type="10"/>
+      <VisibleValue name="VisibleValue" type="10"/>
+      <ColumnWidth name="ColumnWidth" type="3" value="-1"/>
+      <ColumnOrder name="ColumnOrder" type="3" value="0"/>
+      <ColumnHidden name="ColumnHidden" type="1" value="False"/>
+      <DisplayControl name="DisplayControl" type="3" value="109"/>
+      <IMEMode name="IMEMode" type="2" value="0"/>
+      <IMESentenceMode name="IMESentenceMode" type="2" value="3"/>
+      <UnicodeCompression name="UnicodeCompression" type="1" value="True"/>
+      <TextAlign name="TextAlign" type="2" value="0"/>
+      <AggregateType name="AggregateType" type="4" value="-1"/>
+      <ResultType name="ResultType" type="2" value="0"/>
+      <CurrencyLCID name="CurrencyLCID" type="4" value="0"/>
+      <RowSource name="RowSource" type="10" value="&quot;SQL Server Native Client 10.0&quot;;&quot;SQL Server Native Client 11.0&quot;;&quot;ODBC Driver 13 for SQL Server&quot;"/>
+    </Field_12>
   </FieldDefs>
   <Indexes>
     <Index_0 name="CodeClassName">
       <Name value="CodeClassName"/>
-      <Unique value="false"/>
+      <Unique value="true"/>
       <Clustered value="false"/>
       <Primary value="false"/>
       <Foreign value="false"/>

@@ -21,7 +21,7 @@
     <NavPaneClosed name="NavPane Closed" type="4" value="0" sort="1"/>
     <NavPaneSortBy name="NavPane Sort By" type="4" value="1" sort="1"/>
     <NavPaneViewBy name="NavPane View By" type="4" value="0" sort="1"/>
-    <NavPaneWidth name="NavPane Width" type="4" value="676" sort="1"/>
+    <NavPaneWidth name="NavPane Width" type="4" value="287" sort="1"/>
     <PagesFixed name="PagesFixed" type="10" value="true" sort="1"/>
     <PerformNameAutoCorrect name="Perform Name AutoCorrect" type="4" value="0" sort="1"/>
     <PicturePropertyStorageFormat name="Picture Property Storage Format" type="4" value="1" sort="1"/>
@@ -40,7 +40,7 @@
     <ShowDocumentTabs name="ShowDocumentTabs" type="1" value="True" sort="1"/>
     <StartUpShowDBWindow name="StartUpShowDBWindow" type="1" value="True" sort="1"/>
     <StartUpShowStatusBar name="StartUpShowStatusBar" type="1" value="True" sort="1"/>
-    <ThemeResourceName name="Theme Resource Name" type="10" value="Office Theme" sort="1"/>
+    <ThemeResourceName name="Theme Resource Name" type="10" value="Trek" sort="1"/>
     <ThemedFormControls name="Themed Form Controls" type="4" value="1" sort="1"/>
     <TrackNameAutoCorrectInfo name="Track Name AutoCorrect Info" type="4" value="1" sort="1"/>
     <UseDefaultConnectionFile name="Use Default Connection File" type="4" value="0" sort="1"/>
