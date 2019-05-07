@@ -21,7 +21,7 @@ Option Explicit
 Private Sub cmdCheckForUpdates_Click()
 10        On Error GoTo PROC_ERROR
 
-20        FollowHyperlink "https://github.com/TimGetsch/MicrosoftAccess-Tools"
+20        FollowHyperlink LINQ_SOURCE_URL
 
 PROC_EXIT:
 30        Exit Sub

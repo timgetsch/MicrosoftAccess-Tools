@@ -21,7 +21,7 @@
     <NavPaneClosed name="NavPane Closed" type="4" value="0" sort="1"/>
     <NavPaneSortBy name="NavPane Sort By" type="4" value="1" sort="1"/>
     <NavPaneViewBy name="NavPane View By" type="4" value="0" sort="1"/>
-    <NavPaneWidth name="NavPane Width" type="4" value="287" sort="1"/>
+    <NavPaneWidth name="NavPane Width" type="4" value="460" sort="1"/>
     <PagesFixed name="PagesFixed" type="10" value="true" sort="1"/>
     <PerformNameAutoCorrect name="Perform Name AutoCorrect" type="4" value="0" sort="1"/>
     <PicturePropertyStorageFormat name="Picture Property Storage Format" type="4" value="1" sort="1"/>
@@ -65,7 +65,7 @@
   <References context="6">
     <Reference>
       <Name value="_LINQ_Core 0.0"/>
-      <FullPath value="%Userprofile%\Source\Repos\MicrosoftAccess-Tools\_LINQ_AddIn\_LINQ\_LINQ_Core.accde"/>
+      <FullPath value="%Userprofile%\source\repos\MicrosoftAccess-Tools\_LINQ_2_SQL_AddIn\_LINQ\_LINQ_Core.accde"/>
       <Position value="11"/>
       <GUID value=""/>
       <Major value="0"/>
@@ -73,7 +73,7 @@
     </Reference>
     <Reference>
       <Name value="_LINQ_Templates 0.0"/>
-      <FullPath value="%Userprofile%\Source\Repos\MicrosoftAccess-Tools\_LINQ_AddIn\_LINQ\_LINQ_Templates.accdb"/>
+      <FullPath value="%Userprofile%\source\repos\MicrosoftAccess-Tools\_LINQ_2_SQL_AddIn\_LINQ\_LINQ_Templates.accdb"/>
       <Position value="9"/>
       <GUID value=""/>
       <Major value="0"/>
@@ -105,7 +105,7 @@
     </Reference>
     <Reference>
       <Name value="NullableDataTypes 0.0"/>
-      <FullPath value="%Userprofile%\Source\Repos\MicrosoftAccess-Tools\_LINQ_AddIn\_LINQ\NullableDataTypes.accdb"/>
+      <FullPath value="%Userprofile%\source\repos\MicrosoftAccess-Tools\_LINQ_2_SQL_AddIn\_LINQ\NullableDataTypes.accdb"/>
       <Position value="10"/>
       <GUID value=""/>
       <Major value="0"/>
@@ -129,7 +129,7 @@
     </Reference>
     <Reference>
       <Name value="VBIDE 5.3"/>
-      <FullPath value="%CommonProgramFiles%\Microsoft Shared\VBA\VBA6\VBE6EXT.OLB"/>
+      <FullPath value="%ProgramFiles%\Microsoft Office\root\VFS\ProgramFilesCommonX86\Microsoft Shared\VBA\VBA6\VBE6EXT.OLB"/>
       <Position value="6"/>
       <GUID value="{0002E157-0000-0000-C000-000000000046}"/>
       <Major value="5"/>
