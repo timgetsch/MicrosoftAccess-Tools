@@ -11,9 +11,9 @@ Begin Form
     GridY =24
     Width =11040
     DatasheetFontHeight =11
-    ItemSuffix =514
+    ItemSuffix =525
     Right =17055
-    Bottom =12360
+    Bottom =12405
     DatasheetGridlinesColor =15062992
     Picture ="RS_img_ButtonBarBackground"
     RecordSource ="USys_LinqRemoteConnections"
@@ -206,7 +206,7 @@ Begin Form
             End
         End
         Begin Section
-            Height =3120
+            Height =3345
             BackColor =13233915
             Name ="Detail"
             AlternateBackColor =13233915
@@ -458,82 +458,14 @@ Begin Form
                 End
                 Begin CheckBox
                     OverlapFlags =85
-                    Left =7800
-                    Top =1350
-                    Width =3060
-                    Height =345
-                    TabIndex =5
-                    BorderColor =12835293
-                    Name ="Trusted"
-                    ControlSource ="Trusted"
-                    GroupTable =6
-
-                    LayoutCachedLeft =7800
-                    LayoutCachedTop =1350
-                    LayoutCachedWidth =10860
-                    LayoutCachedHeight =1695
-                    RowStart =3
-                    RowEnd =3
-                    ColumnStart =3
-                    ColumnEnd =3
-                    LayoutGroup =2
-                    GroupTable =6
-                    Begin
-                        Begin Label
-                            OverlapFlags =85
-                            TextAlign =3
-                            Left =5280
-                            Top =1350
-                            Width =2460
-                            Height =345
-                            LeftMargin =44
-                            TopMargin =22
-                            RightMargin =44
-                            BottomMargin =22
-                            BorderColor =16777215
-                            ForeColor =8355711
-                            Name ="Label12"
-                            Caption ="Trusted (Windows Auth)"
-                            GroupTable =6
-                            LayoutCachedLeft =5280
-                            LayoutCachedTop =1350
-                            LayoutCachedWidth =7740
-                            LayoutCachedHeight =1695
-                            RowStart =3
-                            RowEnd =3
-                            ColumnStart =2
-                            ColumnEnd =2
-                            LayoutGroup =2
-                            ForeThemeColorIndex =0
-                            ForeTint =50.0
-                            GroupTable =6
-                        End
-                    End
-                End
-                Begin TextBox
-                    OverlapFlags =85
-                    TextAlign =1
-                    IMESentenceMode =3
                     Left =2760
                     Top =1755
                     Width =2460
                     Height =345
-                    ColumnWidth =3300
                     TabIndex =6
-                    LeftMargin =44
-                    TopMargin =22
-                    RightMargin =44
-                    BottomMargin =22
                     BorderColor =12835293
-                    ForeColor =4210752
-                    Name ="UserName"
-                    ControlSource ="UserName"
-                    ConditionalFormat = Begin
-                        0x0100000076000000010000000100000000000000000000000a00000000000000 ,
-                        0x00000000ffffff00000000000000000000000000000000000000000000000000 ,
-                        0x0000000000000000000000000000000000000000000000000000000000000000 ,
-                        0x5b0054007200750073007400650064005d0000000000
-                    End
+                    Name ="Trusted"
+                    ControlSource ="Trusted"
                     GroupTable =6
 
                     LayoutCachedLeft =2760
@@ -545,14 +477,6 @@ Begin Form
                     ColumnStart =1
                     ColumnEnd =1
                     LayoutGroup =2
-                    ForeThemeColorIndex =0
-                    ForeTint =75.0
-                    ForeShade =100.0
-                    ConditionalFormat14 = Begin
-                        0x01000100000001000000000000000000000000000000ffffff00090000005b00 ,
-                        0x54007200750073007400650064005d0000000000000000000000000000000000 ,
-                        0x0000000000
-                    End
                     GroupTable =6
                     Begin
                         Begin Label
@@ -568,8 +492,8 @@ Begin Form
                             BottomMargin =22
                             BorderColor =16777215
                             ForeColor =8355711
-                            Name ="Label15"
-                            Caption ="User Name"
+                            Name ="Label12"
+                            Caption ="Trusted (Windows Auth)"
                             GroupTable =6
                             LayoutCachedLeft =240
                             LayoutCachedTop =1755
@@ -588,11 +512,85 @@ Begin Form
                     OverlapFlags =85
                     TextAlign =1
                     IMESentenceMode =3
+                    Left =2760
+                    Top =2160
+                    Width =2460
+                    Height =345
+                    ColumnWidth =3300
+                    TabIndex =7
+                    LeftMargin =44
+                    TopMargin =22
+                    RightMargin =44
+                    BottomMargin =22
+                    BorderColor =12835293
+                    ForeColor =4210752
+                    Name ="UserName"
+                    ControlSource ="UserName"
+                    ConditionalFormat = Begin
+                        0x0100000076000000010000000100000000000000000000000a00000000000000 ,
+                        0x00000000ffffff00000000000000000000000000000000000000000000000000 ,
+                        0x0000000000000000000000000000000000000000000000000000000000000000 ,
+                        0x5b0054007200750073007400650064005d0000000000
+                    End
+                    GroupTable =6
+
+                    LayoutCachedLeft =2760
+                    LayoutCachedTop =2160
+                    LayoutCachedWidth =5220
+                    LayoutCachedHeight =2505
+                    RowStart =5
+                    RowEnd =5
+                    ColumnStart =1
+                    ColumnEnd =1
+                    LayoutGroup =2
+                    ForeThemeColorIndex =0
+                    ForeTint =75.0
+                    ForeShade =100.0
+                    ConditionalFormat14 = Begin
+                        0x01000100000001000000000000000000000000000000ffffff00090000005b00 ,
+                        0x54007200750073007400650064005d0000000000000000000000000000000000 ,
+                        0x0000000000
+                    End
+                    GroupTable =6
+                    Begin
+                        Begin Label
+                            OverlapFlags =85
+                            TextAlign =1
+                            Left =240
+                            Top =2160
+                            Width =2460
+                            Height =345
+                            LeftMargin =44
+                            TopMargin =22
+                            RightMargin =44
+                            BottomMargin =22
+                            BorderColor =16777215
+                            ForeColor =8355711
+                            Name ="Label15"
+                            Caption ="User Name"
+                            GroupTable =6
+                            LayoutCachedLeft =240
+                            LayoutCachedTop =2160
+                            LayoutCachedWidth =2700
+                            LayoutCachedHeight =2505
+                            RowStart =5
+                            RowEnd =5
+                            LayoutGroup =2
+                            ForeThemeColorIndex =0
+                            ForeTint =50.0
+                            GroupTable =6
+                        End
+                    End
+                End
+                Begin TextBox
+                    OverlapFlags =85
+                    TextAlign =1
+                    IMESentenceMode =3
                     Left =7800
-                    Top =1755
+                    Top =2160
                     Width =3060
                     Height =345
-                    TabIndex =7
+                    TabIndex =8
                     LeftMargin =44
                     TopMargin =22
                     RightMargin =44
@@ -612,11 +610,11 @@ Begin Form
                     GroupTable =6
 
                     LayoutCachedLeft =7800
-                    LayoutCachedTop =1755
+                    LayoutCachedTop =2160
                     LayoutCachedWidth =10860
-                    LayoutCachedHeight =2100
-                    RowStart =4
-                    RowEnd =4
+                    LayoutCachedHeight =2505
+                    RowStart =5
+                    RowEnd =5
                     ColumnStart =3
                     ColumnEnd =3
                     LayoutGroup =2
@@ -634,7 +632,7 @@ Begin Form
                             OverlapFlags =85
                             TextAlign =3
                             Left =5280
-                            Top =1755
+                            Top =2160
                             Width =2460
                             Height =345
                             LeftMargin =44
@@ -647,11 +645,11 @@ Begin Form
                             Caption ="Password"
                             GroupTable =6
                             LayoutCachedLeft =5280
-                            LayoutCachedTop =1755
+                            LayoutCachedTop =2160
                             LayoutCachedWidth =7740
-                            LayoutCachedHeight =2100
-                            RowStart =4
-                            RowEnd =4
+                            LayoutCachedHeight =2505
+                            RowStart =5
+                            RowEnd =5
                             ColumnStart =2
                             ColumnEnd =2
                             LayoutGroup =2
@@ -666,11 +664,11 @@ Begin Form
                     TextAlign =1
                     IMESentenceMode =3
                     Left =2760
-                    Top =2160
+                    Top =2565
                     Width =2460
                     Height =345
                     ColumnWidth =2100
-                    TabIndex =8
+                    TabIndex =9
                     LeftMargin =44
                     TopMargin =22
                     RightMargin =44
@@ -682,11 +680,11 @@ Begin Form
                     GroupTable =6
 
                     LayoutCachedLeft =2760
-                    LayoutCachedTop =2160
+                    LayoutCachedTop =2565
                     LayoutCachedWidth =5220
-                    LayoutCachedHeight =2505
-                    RowStart =5
-                    RowEnd =5
+                    LayoutCachedHeight =2910
+                    RowStart =6
+                    RowEnd =6
                     ColumnStart =1
                     ColumnEnd =1
                     LayoutGroup =2
@@ -699,7 +697,7 @@ Begin Form
                             OverlapFlags =85
                             TextAlign =1
                             Left =240
-                            Top =2160
+                            Top =2565
                             Width =2460
                             Height =345
                             LeftMargin =44
@@ -712,11 +710,11 @@ Begin Form
                             Caption ="Linked Table Prefix"
                             GroupTable =6
                             LayoutCachedLeft =240
-                            LayoutCachedTop =2160
+                            LayoutCachedTop =2565
                             LayoutCachedWidth =2700
-                            LayoutCachedHeight =2505
-                            RowStart =5
-                            RowEnd =5
+                            LayoutCachedHeight =2910
+                            RowStart =6
+                            RowEnd =6
                             LayoutGroup =2
                             ForeThemeColorIndex =0
                             ForeTint =50.0
@@ -729,11 +727,11 @@ Begin Form
                     TextAlign =1
                     IMESentenceMode =3
                     Left =7800
-                    Top =2160
+                    Top =2565
                     Width =3060
                     Height =345
                     ColumnWidth =1920
-                    TabIndex =9
+                    TabIndex =10
                     LeftMargin =44
                     TopMargin =22
                     RightMargin =44
@@ -745,11 +743,11 @@ Begin Form
                     GroupTable =6
 
                     LayoutCachedLeft =7800
-                    LayoutCachedTop =2160
+                    LayoutCachedTop =2565
                     LayoutCachedWidth =10860
-                    LayoutCachedHeight =2505
-                    RowStart =5
-                    RowEnd =5
+                    LayoutCachedHeight =2910
+                    RowStart =6
+                    RowEnd =6
                     ColumnStart =3
                     ColumnEnd =3
                     LayoutGroup =2
@@ -762,7 +760,7 @@ Begin Form
                             OverlapFlags =85
                             TextAlign =3
                             Left =5280
-                            Top =2160
+                            Top =2565
                             Width =2460
                             Height =345
                             LeftMargin =44
@@ -775,11 +773,11 @@ Begin Form
                             Caption ="Code Class Name"
                             GroupTable =6
                             LayoutCachedLeft =5280
-                            LayoutCachedTop =2160
+                            LayoutCachedTop =2565
                             LayoutCachedWidth =7740
-                            LayoutCachedHeight =2505
-                            RowStart =5
-                            RowEnd =5
+                            LayoutCachedHeight =2910
+                            RowStart =6
+                            RowEnd =6
                             ColumnStart =2
                             ColumnEnd =2
                             LayoutGroup =2
@@ -793,10 +791,10 @@ Begin Form
                     OverlapFlags =93
                     AccessKey =71
                     Left =7800
-                    Top =2565
+                    Top =2970
                     Width =3060
                     Height =345
-                    TabIndex =12
+                    TabIndex =13
                     ForeColor =16777215
                     Name ="cmdGenerateCode"
                     Caption ="&Generate Code"
@@ -805,11 +803,11 @@ Begin Form
                     GroupTable =6
 
                     LayoutCachedLeft =7800
-                    LayoutCachedTop =2565
+                    LayoutCachedTop =2970
                     LayoutCachedWidth =10860
-                    LayoutCachedHeight =2910
-                    RowStart =6
-                    RowEnd =6
+                    LayoutCachedHeight =3315
+                    RowStart =7
+                    RowEnd =7
                     ColumnStart =3
                     ColumnEnd =3
                     LayoutGroup =2
@@ -845,10 +843,10 @@ Begin Form
                     OverlapFlags =85
                     AccessKey =67
                     Left =240
-                    Top =2565
+                    Top =2970
                     Width =2460
                     Height =345
-                    TabIndex =10
+                    TabIndex =11
                     ForeColor =4138256
                     Name ="cmdCreateLinkedTable"
                     Caption ="&Create Linked Table"
@@ -857,11 +855,11 @@ Begin Form
                     GroupTable =6
 
                     LayoutCachedLeft =240
-                    LayoutCachedTop =2565
+                    LayoutCachedTop =2970
                     LayoutCachedWidth =2700
-                    LayoutCachedHeight =2910
-                    RowStart =6
-                    RowEnd =6
+                    LayoutCachedHeight =3315
+                    RowStart =7
+                    RowEnd =7
                     LayoutGroup =2
                     BorderColor =12835293
                     GroupTable =6
@@ -874,10 +872,10 @@ Begin Form
                     OverlapFlags =85
                     AccessKey =82
                     Left =2760
-                    Top =2565
+                    Top =2970
                     Width =2460
                     Height =345
-                    TabIndex =11
+                    TabIndex =12
                     ForeColor =4138256
                     Name ="cmdRelinkTable"
                     Caption ="&Relink Table"
@@ -886,11 +884,11 @@ Begin Form
                     GroupTable =6
 
                     LayoutCachedLeft =2760
-                    LayoutCachedTop =2565
+                    LayoutCachedTop =2970
                     LayoutCachedWidth =5220
-                    LayoutCachedHeight =2910
-                    RowStart =6
-                    RowEnd =6
+                    LayoutCachedHeight =3315
+                    RowStart =7
+                    RowEnd =7
                     ColumnStart =1
                     ColumnEnd =1
                     LayoutGroup =2
@@ -974,21 +972,121 @@ Begin Form
                 End
                 Begin EmptyCell
                     Left =5280
-                    Top =2565
+                    Top =2970
                     Width =2460
                     Height =345
                     Name ="EmptyCell490"
                     GroupTable =6
                     LayoutCachedLeft =5280
-                    LayoutCachedTop =2565
+                    LayoutCachedTop =2970
                     LayoutCachedWidth =7740
-                    LayoutCachedHeight =2910
-                    RowStart =6
-                    RowEnd =6
+                    LayoutCachedHeight =3315
+                    RowStart =7
+                    RowEnd =7
                     ColumnStart =2
                     ColumnEnd =2
                     LayoutGroup =2
                     GroupTable =6
+                End
+                Begin EmptyCell
+                    Left =5280
+                    Top =1755
+                    Width =2460
+                    Height =345
+                    Name ="EmptyCell518"
+                    GroupTable =6
+                    LayoutCachedLeft =5280
+                    LayoutCachedTop =1755
+                    LayoutCachedWidth =7740
+                    LayoutCachedHeight =2100
+                    RowStart =4
+                    RowEnd =4
+                    ColumnStart =2
+                    ColumnEnd =2
+                    LayoutGroup =2
+                    GroupTable =6
+                End
+                Begin EmptyCell
+                    Left =7800
+                    Top =1755
+                    Width =3060
+                    Height =345
+                    Name ="EmptyCell519"
+                    GroupTable =6
+                    LayoutCachedLeft =7800
+                    LayoutCachedTop =1755
+                    LayoutCachedWidth =10860
+                    LayoutCachedHeight =2100
+                    RowStart =4
+                    RowEnd =4
+                    ColumnStart =3
+                    ColumnEnd =3
+                    LayoutGroup =2
+                    GroupTable =6
+                End
+                Begin TextBox
+                    OverlapFlags =85
+                    TextAlign =1
+                    IMESentenceMode =3
+                    Left =7800
+                    Top =1350
+                    Width =3060
+                    Height =345
+                    TabIndex =5
+                    LeftMargin =44
+                    TopMargin =22
+                    RightMargin =44
+                    BottomMargin =22
+                    BorderColor =12835293
+                    ForeColor =4210752
+                    Name ="Schema"
+                    ControlSource ="Schema"
+                    GroupTable =6
+
+                    LayoutCachedLeft =7800
+                    LayoutCachedTop =1350
+                    LayoutCachedWidth =10860
+                    LayoutCachedHeight =1695
+                    RowStart =3
+                    RowEnd =3
+                    ColumnStart =3
+                    ColumnEnd =3
+                    LayoutGroup =2
+                    ForeThemeColorIndex =0
+                    ForeTint =75.0
+                    ForeShade =100.0
+                    GroupTable =6
+                    Begin
+                        Begin Label
+                            OverlapFlags =85
+                            TextAlign =3
+                            Left =5280
+                            Top =1350
+                            Width =2460
+                            Height =345
+                            LeftMargin =44
+                            TopMargin =22
+                            RightMargin =44
+                            BottomMargin =22
+                            BorderColor =16777215
+                            ForeColor =8355711
+                            Name ="Label520"
+                            Caption ="Schema"
+                            GroupTable =6
+                            LayoutCachedLeft =5280
+                            LayoutCachedTop =1350
+                            LayoutCachedWidth =7740
+                            LayoutCachedHeight =1695
+                            RowStart =3
+                            RowEnd =3
+                            ColumnStart =2
+                            ColumnEnd =2
+                            LayoutGroup =2
+                            ForeThemeColorIndex =0
+                            ForeTint =50.0
+                            GroupTable =6
+                        End
+                    End
                 End
             End
         End
