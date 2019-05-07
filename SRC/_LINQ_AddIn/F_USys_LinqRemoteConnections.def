@@ -244,15 +244,63 @@ Private Sub Form_Open(Cancel As Integer)
 40            DoCmd.CopyObject CurrentDb.Name, LINQ_REMOTE_CONNECTIONS, acTable, LINQ_REMOTE_CONNECTIONS
 50        End If
           
-60        Set Me.Recordset = CurrentDb.OpenRecordset(LINQ_REMOTE_CONNECTIONS, dbOpenDynaset)
-
+          Dim dbSource As DAO.Database
+60        Set dbSource = CodeDb
+          
+          Dim dbDest As DAO.Database
+70        Set dbDest = CurrentDb
+          
+          Dim tdfSource As DAO.TableDef
+80        Set tdfSource = dbSource.TableDefs(LINQ_REMOTE_CONNECTIONS)
+          
+          Dim rs As DAO.Recordset
+90        Set rs = dbDest.OpenRecordset(LINQ_REMOTE_CONNECTIONS, dbOpenDynaset)
+          
+          ' Make sure the schema is in sync
+          Dim fldSource As DAO.Field
+100       For Each fldSource In tdfSource.Fields
+110           If Not IsObjectInCol(rs.Fields, fldSource.Name) Then
+120               rs.Close
+130               Set rs = Nothing
+                  
+                  Dim tdfDest As TableDef
+140               Set tdfDest = dbDest.TableDefs(LINQ_REMOTE_CONNECTIONS)
+                  
+                  ' Add the field and set the default
+                  Dim fldNew As DAO.Field
+150               Set fldNew = tdfDest.CreateField(fldSource.Name, fldSource.Type, fldSource.Size)
+160               fldNew.DefaultValue = fldSource.DefaultValue
+                  
+170               tdfDest.Fields.Append fldNew
+                  
+180               If fldSource.Required Then ' Set all the existing fields before making it required
+190                   Set rs = dbDest.OpenRecordset(LINQ_REMOTE_CONNECTIONS, dbOpenDynaset)
+200                   While Not rs.EOF
+210                       rs.Edit
+220                       rs.Fields(fldSource.Name) = Eval(fldSource.DefaultValue)
+230                       rs.Update
+240                       rs.MoveNext
+250                   Wend
+260                   rs.Close
+270                   Set rs = Nothing
+280                   tdfDest.Fields(fldSource.Name).Required = True
+290               End If
+              
+300               Set rs = dbDest.OpenRecordset(LINQ_REMOTE_CONNECTIONS, dbOpenDynaset)
+310           End If
+320       Next
+                      
+330       Set Me.Recordset = rs
+          
 PROC_EXIT:
-70        Exit Sub
+340       Set dbDest = Nothing
+350       Set dbSource = Nothing
+360       Exit Sub
 
 PROC_ERROR:
-80        LogError "Form__LinqRemoteConnections", "Form_Open", Erl, Err.Number, Err.Description
-90        Resume PROC_EXIT
-100       Resume
+370       LogError "Form__LinqRemoteConnections", "Form_Open", Erl, Err.Number, Err.Description
+380       Resume PROC_EXIT
+390       Resume
 End Sub
 
 Private Sub Password_BeforeUpdate(Cancel As Integer)
