@@ -30,7 +30,7 @@ PROC_EXIT:
 90        Exit Function
 
 PROC_ERROR:
-100       LogError "_LINQ_Templates_Init", "Init_LINQ", Erl, Err.Number, Err.Description
+100       LogError "_LINQ_2_SQL_Templates_Init", "Init_LINQ", Erl, Err.Number, Err.Description
 110       Resume PROC_EXIT
 120       Resume
 End Function
@@ -48,7 +48,7 @@ PROC_EXIT:
 60        Exit Sub
 
 PROC_ERROR:
-70        LogError "_LINQ_Templates_Init", "AddModuleIfMissing", Erl, Err.Number, Err.Description
+70        LogError "_LINQ_2_SQL_Templates_Init", "AddModuleIfMissing", Erl, Err.Number, Err.Description
 80        Resume PROC_EXIT
 90        Resume
 End Sub
@@ -80,7 +80,7 @@ PROC_EXIT:
 90        Exit Sub
 
 PROC_ERROR:
-100       LogError "_LINQ_Templates_Init", "AddReferenceIfNecessary", Erl, Err.Number, Err.Description
+100       LogError "_LINQ_2_SQL_Templates_Init", "AddReferenceIfNecessary", Erl, Err.Number, Err.Description
 110       Resume PROC_EXIT
 120       Resume
 End Sub
@@ -94,7 +94,7 @@ PROC_EXIT:
 30        Exit Function
 
 PROC_ERROR:
-40        LogError "_LINQ_Templates_Init", "AddReferenceADODB", Erl, Err.Number, Err.Description
+40        LogError "_LINQ_2_SQL_Templates_Init", "AddReferenceADODB", Erl, Err.Number, Err.Description
 50        Resume PROC_EXIT
 60        Resume
 End Function
@@ -114,7 +114,7 @@ PROC_EXIT:
 80        Exit Function
 
 PROC_ERROR:
-90        LogError "_LINQ_Templates_Init", "CurrentVBProject", Erl, Err.Number, Err.Description
+90        LogError "_LINQ_2_SQL_Templates_Init", "CurrentVBProject", Erl, Err.Number, Err.Description
 100       Resume PROC_EXIT
 110       Resume
 End Function

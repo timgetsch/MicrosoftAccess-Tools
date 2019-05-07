@@ -83,7 +83,7 @@ PROC_EXIT:
 420       Exit Function
 
 PROC_ERROR:
-430       LogError "cls_LINQ_SQLProcedureHelper", "GetSQL", Erl, Err.Number, Err.Description
+430       LogError "cls_LINQ_2_SQL__SqlGenerator", "GetSQL", Erl, Err.Number, Err.Description
 440       Resume PROC_EXIT
 450       Resume
 End Function
@@ -148,7 +148,7 @@ PROC_EXIT:
 520       Exit Function
 
 PROC_ERROR:
-530       LogError "cls_LINQ_SQLProcedureHelper", "GetSQLDataType", Erl, Err.Number, Err.Description
+530       LogError "cls_LINQ_2_SQL__SqlGenerator", "GetSQLDataType", Erl, Err.Number, Err.Description
 540       Resume PROC_EXIT
 550       Resume
 End Function
@@ -167,7 +167,7 @@ PROC_EXIT:
 90        Exit Function
 
 PROC_ERROR:
-100       LogError "cls_LINQ_SQLProcedureHelper", "GetSize", Erl, Err.Number, Err.Description
+100       LogError "cls_LINQ_2_SQL__SqlGenerator", "GetSize", Erl, Err.Number, Err.Description
 110       Resume PROC_EXIT
 120       Resume
 
@@ -206,7 +206,7 @@ PROC_EXIT:
 230       Exit Function
 
 PROC_ERROR:
-240       LogError "cls_LINQ_SQLProcedureHelper", "ConvertADOValueToSQLText", Erl, Err.Number, Err.Description
+240       LogError "cls_LINQ_2_SQL__SqlGenerator", "ConvertADOValueToSQLText", Erl, Err.Number, Err.Description
 250       Resume PROC_EXIT
 260       Resume
 End Function
@@ -224,7 +224,7 @@ PROC_EXIT:
 70        Exit Function
 
 PROC_ERROR:
-80        LogError "cls_LINQ_SQLProcedureHelper", "QuoteString", Erl, Err.Number, Err.Description
+80        LogError "cls_LINQ_2_SQL__SqlGenerator", "QuoteString", Erl, Err.Number, Err.Description
 90        Resume PROC_EXIT
 100       Resume
 End Function
@@ -252,7 +252,7 @@ PROC_EXIT:
 130       Exit Function
 
 PROC_ERROR:
-140       LogError "cls_LINQ_SQLProcedureHelper", "BinaryToHex", Erl, Err.Number, Err.Description
+140       LogError "cls_LINQ_2_SQL__SqlGenerator", "BinaryToHex", Erl, Err.Number, Err.Description
 150       Resume PROC_EXIT
 160       Resume
 
@@ -283,7 +283,7 @@ PROC_EXIT:
 150       Exit Function
 
 PROC_ERROR:
-160       LogError "cls_LINQ_SQLProcedureHelper", "ConvertDateToSqlString", Erl, Err.Number, Err.Description
+160       LogError "cls_LINQ_2_SQL__SqlGenerator", "ConvertDateToSqlString", Erl, Err.Number, Err.Description
 170       Resume PROC_EXIT
 180       Resume
 End Function

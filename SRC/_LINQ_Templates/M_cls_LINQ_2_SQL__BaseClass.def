@@ -76,7 +76,7 @@ PROC_EXIT:
 70        Exit Function
           
 PROC_ERROR:
-80        LogError "cls_LINQ_Base", "GetSQLConnectString", Erl, Err.Number, Err.Description
+80        LogError "cls_LINQ_2_SQL__BaseClass", "GetSQLConnectString", Erl, Err.Number, Err.Description
 90        Resume PROC_EXIT
 100       Resume
 End Function
@@ -96,7 +96,7 @@ PROC_EXIT:
 80        Exit Function
 
 PROC_ERROR:
-90        LogError "cls_LINQ_Base", "GetAppTitle", Erl, Err.Number, Err.Description
+90        LogError "cls_LINQ_2_SQL__BaseClass", "GetAppTitle", Erl, Err.Number, Err.Description
 100       Resume PROC_EXIT
 110       Resume
 End Function
@@ -110,7 +110,7 @@ PROC_EXIT:
 30        Exit Property
 
 PROC_ERROR:
-40        LogError "cls_LINQ_Base", "Connection", Erl, Err.Number, Err.Description
+40        LogError "cls_LINQ_2_SQL__BaseClass", "Connection", Erl, Err.Number, Err.Description
 50        Resume PROC_EXIT
 60        Resume
 End Property
@@ -146,23 +146,22 @@ PROC_ERROR:
 170           CancelableSleep 3, "Waiting for connectivity: " & m_CodeClassName & "." & ProcedureName
 180           Resume CONNECT_TO_DATABASE
 190       Case Else
-200           LogError "cls_LINQ_Base", "Class_Initialize", Erl, Err.Number, Err.Description
+200           LogError "cls_LINQ_2_SQL__BaseClass", "Class_Initialize", Erl, Err.Number, Err.Description
 210           Resume PROC_EXIT
 220           Resume
 230       End Select
 End Sub
 
-
 Private Sub Class_Initialize()
 10        On Error GoTo PROC_ERROR
 
-20        m_CodeClassName = "cls_LINQ_Base"
+20        m_CodeClassName = "cls_LINQ_2_SQL__BaseClass"
 
 PROC_EXIT:
 30        Exit Sub
 
 PROC_ERROR:
-40        LogError "cls_LINQ_Base", "Class_Initialize", Erl, Err.Number, Err.Description
+40        LogError "cls_LINQ_2_SQL__BaseClass", "Class_Initialize", Erl, Err.Number, Err.Description
 50        Resume PROC_EXIT
 60        Resume
 End Sub
@@ -179,7 +178,7 @@ PROC_EXIT:
 60        Exit Sub
 
 PROC_ERROR:
-70        LogError "cls_LINQ_Base", "Class_Terminate", Erl, Err.Number, Err.Description, , True
+70        LogError "cls_LINQ_2_SQL__BaseClass", "Class_Terminate", Erl, Err.Number, Err.Description, , True
 80        Resume PROC_EXIT
 90        Resume
 End Sub
@@ -204,7 +203,7 @@ PROC_ERROR:
           Case 1 ' ReConnect Canceled
 120           Err.Raise Err.Number, Err.Source, Err.Description
 130       Case Else
-140           LogError "cls_LINQ_Base", "ReConnect", Erl, Err.Number, Err.Description
+140           LogError "cls_LINQ_2_SQL__BaseClass", "ReConnect", Erl, Err.Number, Err.Description
 150           Resume PROC_EXIT
 160           Resume
 170       End Select
@@ -237,14 +236,13 @@ PROC_EXIT:
 120       Exit Function
 
 PROC_ERROR:
-130       If HandleError("cls_LINQ_Base", "ExecuteCommand", Erl, Err.Number, Err.Description, strExtraInfo, ErrorOption) Then
+130       If HandleError("cls_LINQ_2_SQL__BaseClass", "ExecuteCommand", Erl, Err.Number, Err.Description, strExtraInfo, ErrorOption) Then
 140           cmd.ActiveConnection = m_Conn
 150           Resume
 160       End If
 170       Resume PROC_EXIT
 180       Resume
 End Function
-
 
 ' Return True if we are supposed to retry
 Public Function HandleError(ObjectName As String, ProcedureName As String, ErrorLine As Long, ErrNumber As Long, ErrDescription As String, ExtraInfo As String, ErrorOption As enErrorOption) As Boolean
@@ -293,7 +291,7 @@ Public Function HandleError(ObjectName As String, ProcedureName As String, Error
                   ' Ignore anything else
 330           End Select
 340       Case Else
-350           LogError "cls_LINQ_Base", "HandleError", Erl, LOG_CASE_ELSE, LOG_CASE_ELSE_DESC, ErrorOption, False, True
+350           LogError "cls_LINQ_2_SQL__BaseClass", "HandleError", Erl, LOG_CASE_ELSE, LOG_CASE_ELSE_DESC, ErrorOption, False, True
 360       End Select
 End Function
 
@@ -314,7 +312,7 @@ PROC_EXIT:
 90        Exit Function
 
 PROC_ERROR:
-100       LogError "cls_LINQ_Base", "ConvertToInMemoryRecordsets", Erl, Err.Number, Err.Description
+100       LogError "cls_LINQ_2_SQL__BaseClass", "ConvertToInMemoryRecordsets", Erl, Err.Number, Err.Description
 110       Resume PROC_EXIT
 120       Resume
 End Function
@@ -355,13 +353,13 @@ PROC_EXIT:
 PROC_ERROR:
 230       Select Case Err.Number
           Case 3367 ' Object is already in collection. Cannot append.
-240           LogError "cls_LINQ_Base", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo
+240           LogError "cls_LINQ_2_SQL__BaseClass", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo
 250           Resume Next ' Skip over duplicate columns
 260       Case 3001 ' Arguments are of the wrong type, are out of acceptable range, or are in conflict with one another.
-270           LogError "cls_LINQ_Base", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo
+270           LogError "cls_LINQ_2_SQL__BaseClass", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo
 280           Resume Next ' Skip over columns that are missing names or are somehow not valid
 290       Case Else
-300           LogError "cls_LINQ_Base", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo
+300           LogError "cls_LINQ_2_SQL__BaseClass", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo
 310           Resume PROC_EXIT
 320           Resume
 330       End Select
