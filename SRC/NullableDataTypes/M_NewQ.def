@@ -20,74 +20,75 @@
 '--------------------------------------------------------------------------------------
 
 '--------------------------------------------------------------------------------------
-' ConversionQ v0.2.1
+' NewQ v0.2.1
 ' (c) Tim Getsch
 '
-' ConversionQ is the nullable version of Conversion
+' NewQ makes it easy to create new instances of nullable types based on their
+' non-nullable counterparts.
 '
-' @class ConversionQ
+' @class NewQ
 ' @author timgetsch@commitcs.com
 ' @license MIT (http://www.opensource.org/licenses/mit-license.php)
 '---------------------------------------------------------------------------------------
 Option Compare Database
 Option Explicit
 
-Public Function CBoolQ(Value As Variant) As BooleanQ
+Public Function BooleanQ(Value As Boolean) As BooleanQ
     Dim v As New BooleanQ
     v = Value
-    Set CBoolQ = v
+    Set BooleanQ = v
 End Function
 
-Public Function CByteQ(Value As Variant) As ByteQ
+Public Function ByteQ(Value As Byte) As ByteQ
     Dim v As New ByteQ
     v = Value
-    Set CByteQ = v
+    Set ByteQ = v
 End Function
 
-Public Function CCurQ(Value As Variant) As CurrencyQ
+Public Function CurrencyQ(Value As Currency) As CurrencyQ
     Dim v As New CurrencyQ
     v = Value
-    Set CCurQ = v
+    Set CurrencyQ = v
 End Function
 
-Public Function CDateQ(Value As Variant) As DateQ
+Public Function DateQ(Value As Date) As DateQ
     Dim v As New DateQ
     v = Value
-    Set CDateQ = v
+    Set DateQ = v
 End Function
 
-Public Function CDblQ(Value As Variant) As DoubleQ
+Public Function DoubleQ(Value As Double) As DoubleQ
     Dim v As New DoubleQ
     v = Value
-    Set CDblQ = v
+    Set DoubleQ = v
 End Function
 
-Public Function CIntQ(Value As Variant) As IntegerQ
+Public Function IntegerQ(Value As Integer) As IntegerQ
     Dim v As New IntegerQ
     v = Value
-    Set CIntQ = v
+    Set IntegerQ = v
 End Function
 
-Public Function CLngQ(Value As Variant) As LongQ
+Public Function LongQ(Value As Long) As LongQ
     Dim v As New LongQ
     v = Value
-    Set CLngQ = v
+    Set LongQ = v
 End Function
 
-Public Function CSngQ(Value As Variant) As SingleQ
+Public Function SingleQ(Value As Single) As SingleQ
     Dim v As New SingleQ
     v = Value
-    Set CSngQ = v
+    Set SingleQ = v
 End Function
 
-Public Function CStrQ(Value As Variant) As StringQ
+Public Function StringQ(Value As String) As StringQ
     Dim v As New StringQ
     v = Value
-    Set CStrQ = v
+    Set StringQ = v
 End Function
 
-Public Function CVarQ(Value As Variant) As VariantQ
+Public Function VariantQ(Value As Variant) As VariantQ
     Dim v As New VariantQ
     v = Value
-    Set CVarQ = v
+    Set VariantQ = v
 End Function

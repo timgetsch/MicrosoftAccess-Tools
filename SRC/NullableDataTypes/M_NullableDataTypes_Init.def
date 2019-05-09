@@ -27,14 +27,15 @@ Public Function Init_NullableDataTypes()
 100       AddModuleIfMissing "StringQ"
 110       AddModuleIfMissing "VariantQ"
 120       AddModuleIfMissing "ConversionQ"
+130       AddModuleIfMissing "NewQ"
 
 PROC_EXIT:
-130       Exit Function
+140       Exit Function
 
 PROC_ERROR:
-140       LogError "NullableDataTypes_Init", "Init_LINQ", Erl, Err.Number, Err.Description
-150       Resume PROC_EXIT
-160       Resume
+150       LogError "NullableDataTypes_Init", "Init_LINQ", Erl, Err.Number, Err.Description
+160       Resume PROC_EXIT
+170       Resume
 End Function
 
 Private Sub AddModuleIfMissing(ModuleName As String)

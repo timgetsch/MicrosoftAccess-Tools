@@ -88,7 +88,7 @@
     </Reference>
     <Reference>
       <Name value="VBIDE 5.3"/>
-      <FullPath value="%CommonProgramFiles%\Microsoft Shared\VBA\VBA6\VBE6EXT.OLB"/>
+      <FullPath value="%ProgramFiles%\Microsoft Office\root\vfs\ProgramFilesCommonX86\Microsoft Shared\VBA\VBA6\VBE6EXT.OLB"/>
       <Position value="6"/>
       <GUID value="{0002E157-0000-0000-C000-000000000046}"/>
       <Major value="5"/>
