@@ -512,4 +512,42 @@
       <CurrencyLCID name="CurrencyLCID" type="4" value="0"/>
     </Field_13>
   </FieldDefs>
+  <Indexes>
+    <Index_0 name="CodeClassName">
+      <Name value="CodeClassName"/>
+      <Unique value="true"/>
+      <Clustered value="false"/>
+      <Primary value="false"/>
+      <Foreign value="false"/>
+      <Required value="false"/>
+      <IgnoreNulls value="false"/>
+      <Fields>
+        <FieldNames value="+CodeClassName"/>
+      </Fields>
+    </Index_0>
+    <Index_1 name="Description">
+      <Name value="Description"/>
+      <Unique value="false"/>
+      <Clustered value="false"/>
+      <Primary value="false"/>
+      <Foreign value="false"/>
+      <Required value="false"/>
+      <IgnoreNulls value="false"/>
+      <Fields>
+        <FieldNames value="+Description"/>
+      </Fields>
+    </Index_1>
+    <Index_2 name="PrimaryKey">
+      <Name value="PrimaryKey"/>
+      <Unique value="true"/>
+      <Clustered value="false"/>
+      <Primary value="true"/>
+      <Foreign value="false"/>
+      <Required value="true"/>
+      <IgnoreNulls value="false"/>
+      <Fields>
+        <FieldNames value="+ID"/>
+      </Fields>
+    </Index_2>
+  </Indexes>
 </TableDef>
