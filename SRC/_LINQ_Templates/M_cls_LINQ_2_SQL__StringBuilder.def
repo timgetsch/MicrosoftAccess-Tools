@@ -10,7 +10,7 @@ Attribute VB_Exposed = False
 '     Changes to this file may cause incorrect behavior and will be lost if
 '     the code is regenerated.
 ' </auto-generated>
-'---------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------------
 '          __    _____   ______       ___       _____ ____    __
 '         / /   /  _/ | / / __ \     |__ \     / ___// __ \  / /
 '        / /    / //  |/ / / / /     __/ /     \__ \/ / / / / /
@@ -21,10 +21,10 @@ Attribute VB_Exposed = False
 ' (c) Tim Getsch - <SOURCE_URL>
 ' @author timgetsch@commitcs.com
 ' @license MIT (http://www.opensource.org/licenses/mit-license.php)
-'---------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------------
 
-'---------------------------------------------------------------------------------------
-' cls_LINQ_2_SQL__StringBuilder v0.1.2
+'--------------------------------------------------------------------------------------
+' cls_LINQ_2_SQL__StringBuilder v0.2.1
 ' (c) Tim Getsch
 '
 ' cls_LINQ_2_SQL__StringBuilder makes it easy to efficiently build large strings.
@@ -52,7 +52,7 @@ Attribute VB_Exposed = False
 ' @class cls_LINQ_2_SQL__StringBuilder
 ' @author timgetsch@commitcs.com
 ' @license MIT (http://www.opensource.org/licenses/mit-license.php)
-'---------------------------------------------------------------------------------------
+'--------------------------------------------------------------------------------------
 Option Compare Database
 Option Explicit
 
