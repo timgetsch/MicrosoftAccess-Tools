@@ -364,3 +364,18 @@ PROC_ERROR:
 320           Resume
 330       End Select
 End Function
+
+Public Function GetSQL(ProcedureName As String, Parameters As ADODB.Parameters) As String
+          Static clsSqlGenerator As New cls_LINQ_2_SQL__SqlGenerator
+10        On Error GoTo PROC_ERROR
+
+20        GetSQL = clsSqlGenerator.GetSQL(ProcedureName, Parameters)
+
+PROC_EXIT:
+30        Exit Function
+
+PROC_ERROR:
+40        LogError "cls_LINQ_2_SQL__BaseClass", "GetSQL", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Function

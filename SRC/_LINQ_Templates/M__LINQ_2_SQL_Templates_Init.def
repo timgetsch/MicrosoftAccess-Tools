@@ -13,8 +13,6 @@
 Option Compare Database
 Option Explicit
 
-Public Const cn_TEMPLATE As Integer = -1
-
 Public Function Init_BaseModules(NewClassName As String)
 10        On Error GoTo PROC_ERROR
           

@@ -10,8 +10,8 @@ Begin Form
     Width =11040
     DatasheetFontHeight =11
     ItemSuffix =525
-    Right =14175
-    Bottom =12510
+    Right =-22531
+    Bottom =28785
     DatasheetGridlinesColor =15062992
     Picture ="RS_img_ButtonBarBackground.png"
     RecordSource ="USys_LinqRemoteConnections"
@@ -2340,6 +2340,14 @@ Begin Form
                     ForeColor =4210752
                     Name ="CodeClassName"
                     ControlSource ="CodeClassName"
+                    ConditionalFormat = Begin
+                        0x01000000a6000000010000000100000000000000000000002200000001000000 ,
+                        0x22b14c00ffffff00000000000000000000000000000000000000000000000000 ,
+                        0x0000000000000000000000000000000000000000000000000000000000000000 ,
+                        0x4e006f00740020004d006f00640075006c006500450078006900730074007300 ,
+                        0x28005b0043006f006400650043006c006100730073004e0061006d0065005d00 ,
+                        0x290000000000
+                    End
                     GroupTable =6
 
                     LayoutCachedLeft =7800
@@ -2354,6 +2362,12 @@ Begin Form
                     ForeThemeColorIndex =0
                     ForeTint =75.0
                     ForeShade =100.0
+                    ConditionalFormat14 = Begin
+                        0x01000100000001000000000000000100000022b14c00ffffff00210000004e00 ,
+                        0x6f00740020004d006f00640075006c0065004500780069007300740073002800 ,
+                        0x5b0043006f006400650043006c006100730073004e0061006d0065005d002900 ,
+                        0x000000000000000000000000000000000000000000
+                    End
                     GroupTable =6
                     Begin
                         Begin Label

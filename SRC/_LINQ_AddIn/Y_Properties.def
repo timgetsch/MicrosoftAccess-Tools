@@ -65,15 +65,7 @@
   <References context="6">
     <Reference>
       <Name value="_LINQ_Core 0.0"/>
-      <FullPath value="%Userprofile%\source\repos\MicrosoftAccess-Tools\_LINQ_2_SQL_AddIn\_LINQ\_LINQ_Core.accde"/>
-      <Position value="11"/>
-      <GUID value=""/>
-      <Major value="0"/>
-      <Minor value="0"/>
-    </Reference>
-    <Reference>
-      <Name value="_LINQ_Templates 0.0"/>
-      <FullPath value="%Userprofile%\source\repos\MicrosoftAccess-Tools\_LINQ_2_SQL_AddIn\_LINQ\_LINQ_Templates.accdb"/>
+      <FullPath value="C:\Users\timgetsch\Source\Repos\MicrosoftAccess-Tools\_LINQ_2_SQL_AddIn\_LINQ\_LINQ_Core.accde"/>
       <Position value="9"/>
       <GUID value=""/>
       <Major value="0"/>
@@ -104,14 +96,6 @@
       <Minor value="0"/>
     </Reference>
     <Reference>
-      <Name value="NullableDataTypes 0.0"/>
-      <FullPath value="%Userprofile%\source\repos\MicrosoftAccess-Tools\_LINQ_2_SQL_AddIn\_LINQ\NullableDataTypes.accdb"/>
-      <Position value="10"/>
-      <GUID value=""/>
-      <Major value="0"/>
-      <Minor value="0"/>
-    </Reference>
-    <Reference>
       <Name value="Office 2.5"/>
       <FullPath value="%CommonProgramFiles%\Microsoft Shared\OFFICE14\MSO.DLL"/>
       <Position value="4"/>
@@ -129,7 +113,7 @@
     </Reference>
     <Reference>
       <Name value="VBIDE 5.3"/>
-      <FullPath value="%ProgramFiles%\Microsoft Office\root\VFS\ProgramFilesCommonX86\Microsoft Shared\VBA\VBA6\VBE6EXT.OLB"/>
+      <FullPath value="%ProgramFiles%\Microsoft Office\root\vfs\ProgramFilesCommonX86\Microsoft Shared\VBA\VBA6\VBE6EXT.OLB"/>
       <Position value="6"/>
       <GUID value="{0002E157-0000-0000-C000-000000000046}"/>
       <Major value="5"/>

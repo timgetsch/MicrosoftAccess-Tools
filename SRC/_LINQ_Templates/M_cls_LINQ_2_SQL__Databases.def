@@ -24,3 +24,7 @@ Attribute VB_Exposed = False
 '--------------------------------------------------------------------------------------
 Option Compare Database
 Option Explicit
+
+Public Enum en_LINQ_2_SQL_Connection
+    cn_TEMPLATE
+End Enum
