@@ -1,4 +1,4 @@
-Attribute VB_GlobalNameSpace = False
+﻿Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
@@ -41,6 +41,8 @@ Const LOG_CASE_ELSE_DESC As String = "Unexpected Case Else Hit"
 
 Const ERROR_CONNECTION_WAS_FORCIBLY_CLOSED As Long = -2147467259         ' [Microsoft]TCP Provider: An existing connection was forcibly closed by the remote host.
 Const ERROR_CONTAINS_CONNECTION_WAS_FORCIBLY_CLOSED = "An existing connection was forcibly closed"
+Const ERROR_CONTAINS_CONNECTION_ATTEMPT_FAILED = "A connection attempt failed"
+Const ERROR_CONTAINS_COMMINICATION_LINK_FAILURE = "Communication link failure"
 Const ERROR_OPERATION_REQUIRES_AN_OLE_DB_SESSION As Long = 3709          ' Requested operation requires an OLE DB Session object, which is not supported by the current provider.
 Const ERROR_CONTAINS_OPERATION_REQUIRES_AN_OLE_DB_SESSION = "Requested operation requires an OLE DB Session object"
 ' WARNING -2147217900 is used for many different ODBC errors ' Const ERROR_DEADLOCK_VICTOM_RERUN_THE_TRANSACTION As Long = -2147217900  ' [Microsoft][SQL Server]Transaction (Process ID 173) was deadlocked on lock resources with another process and has been chosen as the deadlock victim. Rerun the transaction.
@@ -261,38 +263,42 @@ Public Function HandleError(ObjectName As String, ProcedureName As String, Error
 90            Case ERROR_CONNECTION_WAS_FORCIBLY_CLOSED
 100               If ErrDescription Like "*" & ERROR_CONTAINS_CONNECTION_WAS_FORCIBLY_CLOSED & "*" Then
 110                   fReconnectAndTryAgain = True
-120               End If
-130           Case Else
+120               ElseIf ErrDescription Like "*" & ERROR_CONTAINS_COMMINICATION_LINK_FAILURE & "*" Then
+130                   fReconnectAndTryAgain = True
+140               ElseIf ErrDescription Like "*" & ERROR_CONTAINS_CONNECTION_ATTEMPT_FAILED & "*" Then
+150                   fReconnectAndTryAgain = True
+160               End If
+170           Case Else
                   ' We will process this later
-140           End Select
-150       End If
+180           End Select
+190       End If
           
-160       If fReconnectAndTryAgain Then
-170           ReConnect 0, ProcedureName
-180           HandleError = True
-190           Exit Function
-200       End If
+200       If fReconnectAndTryAgain Then
+210           ReConnect 0, ProcedureName
+220           HandleError = True
+230           Exit Function
+240       End If
           
-210       Select Case ErrorOption
+250       Select Case ErrorOption
           Case eoLogAndRaiseError, eoLogError
-220           ReConnect 0, ProcedureName
-230           LogError ObjectName, ProcedureName, ErrorLine, ErrNumber, ErrDescription, ExtraInfo, True, ErrorOption = eoLogAndRaiseError
-240       Case eoRaiseError
-250           ReConnect 0, ProcedureName
-260           Err.Raise ErrNumber, , ErrDescription
-270       Case eoIgnoreError
+260           ReConnect 0, ProcedureName
+270           LogError ObjectName, ProcedureName, ErrorLine, ErrNumber, ErrDescription, ExtraInfo, True, ErrorOption = eoLogAndRaiseError
+280       Case eoRaiseError
+290           ReConnect 0, ProcedureName
+300           Err.Raise ErrNumber, , ErrDescription
+310       Case eoIgnoreError
               ' Make sure we create a new connection for timeouts
-280           Select Case ErrNumber
+320           Select Case ErrNumber
               Case ERROR_QUERY_TIMEOUT_EXPIRED
-290               If ErrDescription Like "*" & ERROR_ENDS_WITH_QUERY_TIMEOUT_EXPIRED Then
-300                   ReConnect , ProcedureName
-310               End If
-320           Case Else
+330               If ErrDescription Like "*" & ERROR_ENDS_WITH_QUERY_TIMEOUT_EXPIRED Then
+340                   ReConnect , ProcedureName
+350               End If
+360           Case Else
                   ' Ignore anything else
-330           End Select
-340       Case Else
-350           LogError "cls_LINQ_2_SQL__BaseClass", "HandleError", Erl, LOG_CASE_ELSE, LOG_CASE_ELSE_DESC, ErrorOption, False, True
-360       End Select
+370           End Select
+380       Case Else
+390           LogError "cls_LINQ_2_SQL__BaseClass", "HandleError", Erl, LOG_CASE_ELSE, LOG_CASE_ELSE_DESC, ErrorOption, False, True
+400       End Select
 End Function
 
 Public Function ConvertToInMemoryRecordsets(rsFrom As ADODB.Recordset, strRecordsetName As String) As Collection
@@ -322,47 +328,62 @@ Public Function ConvertToInMemoryRecordset(rsFrom As ADODB.Recordset, strRecords
           
           Dim strDebugInfo As String
           Dim rsTo As New ADODB.Recordset
-          Dim f As ADODB.Field
-20        For Each f In rsFrom.Fields
-30            strDebugInfo = f.Name
-40            rsTo.Fields.Append f.Name, f.Type, f.DefinedSize, f.Attributes
-50        Next
+          Dim fld As ADODB.Field
+20        For Each fld In rsFrom.Fields
+30            strDebugInfo = fld.Name
+              
+              Dim FieldType As ADODB.DataTypeEnum
+40            Select Case fld.Type
+              Case adDBTimeStamp
+50                FieldType = adDate ' Use adDate instead of adDBTimeStamp to preserve the milliseconds
+60            Case Else
+70                FieldType = fld.Type
+80            End Select
+90            rsTo.Fields.Append fld.Name, FieldType, fld.DefinedSize, fld.Attributes
+              
+              Dim fNew As ADODB.Field
+100           Set fNew = rsTo.Fields(fld.Name)
+110           fNew.NumericScale = fld.NumericScale
+120           fNew.Precision = fld.Precision
+130           fNew.Attributes = fld.Attributes
+140           Debug.Assert rsTo.Fields(fld.Name).Attributes = fld.Attributes
+150       Next
           
-60        rsTo.CursorType = adOpenKeyset
-70        rsTo.CursorLocation = adUseClient
-80        rsTo.LockType = adLockPessimistic
-90        rsTo.Open
+160       rsTo.CursorType = adOpenKeyset
+170       rsTo.CursorLocation = adUseClient
+180       rsTo.LockType = adLockPessimistic
+190       rsTo.Open
           
-100       While Not rsFrom.EOF
-110           rsTo.AddNew
-120           For Each f In rsTo.Fields
-130               f.Value = rsFrom.Fields(f.Name)
-140           Next
-150           rsTo.Update
-160           rsFrom.MoveNext
-170       Wend
-180       If rsTo.RecordCount > 0 Then
-190           rsTo.MoveFirst
-200       End If
+200       While Not rsFrom.EOF
+210           rsTo.AddNew
+220           For Each fld In rsTo.Fields
+230               fld.Value = rsFrom.Fields(fld.Name)
+240           Next
+250           rsTo.Update
+260           rsFrom.MoveNext
+270       Wend
+280       If rsTo.RecordCount > 0 Then
+290           rsTo.MoveFirst
+300       End If
           
-210       Set ConvertToInMemoryRecordset = rsTo
+310       Set ConvertToInMemoryRecordset = rsTo
 
 PROC_EXIT:
-220       Exit Function
+320       Exit Function
 
 PROC_ERROR:
-230       Select Case Err.Number
+330       Select Case Err.Number
           Case 3367 ' Object is already in collection. Cannot append.
-240           LogError "cls_LINQ_2_SQL__BaseClass", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo
-250           Resume Next ' Skip over duplicate columns
-260       Case 3001 ' Arguments are of the wrong type, are out of acceptable range, or are in conflict with one another.
-270           LogError "cls_LINQ_2_SQL__BaseClass", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo
-280           Resume Next ' Skip over columns that are missing names or are somehow not valid
-290       Case Else
-300           LogError "cls_LINQ_2_SQL__BaseClass", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo
-310           Resume PROC_EXIT
-320           Resume
-330       End Select
+340           LogError "cls_LINQ_2_SQL__BaseClass", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo
+350           Resume Next ' Skip over duplicate columns
+360       Case 3001 ' Arguments are of the wrong type, are out of acceptable range, or are in conflict with one another.
+370           LogError "cls_LINQ_2_SQL__BaseClass", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo
+380           Resume Next ' Skip over columns that are missing names or are somehow not valid
+390       Case Else
+400           LogError "cls_LINQ_2_SQL__BaseClass", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo
+410           Resume PROC_EXIT
+420           Resume
+430       End Select
 End Function
 
 Public Function GetSQL(ProcedureName As String, Parameters As ADODB.Parameters) As String

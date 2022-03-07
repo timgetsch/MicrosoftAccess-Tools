@@ -1,4 +1,4 @@
-Attribute VB_GlobalNameSpace = False
+﻿Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
@@ -264,26 +264,47 @@ Private Function ConvertDateToSqlString(dt) As String
 20        If IsNull(dt) Then
 30            ConvertDateToSqlString = "NULL"
 40        Else
+              Const SECONDS_PER_MINUTE As Integer = 60
+              Const MINUTES_PER_HOUR As Integer = 60
+              Const HOURS_PER_DAY As Integer = 24
+              Const MINUTES_PER_DAY As Long = HOURS_PER_DAY * MINUTES_PER_HOUR
+              Const SECONDS_PER_DAY As Long = MINUTES_PER_DAY * SECONDS_PER_MINUTE
+              Const DAYS_PER_MINUTE As Double = 1 / MINUTES_PER_DAY
+              
               Dim dtRoundedToMinute As Date
-50            dtRoundedToMinute = CDate(Format$(dt, "mm/dd/yyyy hh:mm AM/PM"))
-              Dim sglSeconds As Single
-              Const SECONDS_PER_DAY As Single = 24# * 60 * 60
-60            sglSeconds = (dt - dtRoundedToMinute) * SECONDS_PER_DAY
-              Dim strFormatSeconds As String
-70            strFormatSeconds = Format$(sglSeconds, "00.000")
-80            If Left$(strFormatSeconds, 1) = "-" Then
-90                sglSeconds = sglSeconds + 60
-100               dt = dt - 60 / SECONDS_PER_DAY
-110               strFormatSeconds = Format$(sglSeconds, "00.000")
-120           End If
-130           ConvertDateToSqlString = "'" & Replace(Format$(dt, "MMM DD YYYY hh:mm:00.000 AM/PM"), "00.000", Format$(sglSeconds, "00.000")) & "'"
-140       End If
+              Dim sglSecondsRoundedToMilliseconds As Single
+              Dim strSeconds As String
+              
+50            dtRoundedToMinute = Int(dt * MINUTES_PER_DAY) * DAYS_PER_MINUTE ' This will truncate the seconds portion
+60            sglSecondsRoundedToMilliseconds = Round((dt - dtRoundedToMinute) * SECONDS_PER_DAY, 3)
+              
+70            Select Case sglSecondsRoundedToMilliseconds
+              Case Is < 0
+80                Err.Raise 2, "modSQLHelper", "Unexpected Seconds: " & sglSecondsRoundedToMilliseconds
+90            Case Is > 60
+100               Err.Raise 1, "modSQLHelper", "Unexpected Seconds: " & sglSecondsRoundedToMilliseconds
+110           Case 0
+                  ' Ignore the seconds
+120           Case SECONDS_PER_MINUTE
+                  ' Add a minute and ignore the seconds
+130               dtRoundedToMinute = dtRoundedToMinute + DAYS_PER_MINUTE
+140           Case Is >= 10
+150               strSeconds = ":" & sglSecondsRoundedToMilliseconds
+160           Case Is < 10
+170               strSeconds = ":0" & sglSecondsRoundedToMilliseconds
+180           Case Else
+190               Err.Raise 2, "modSQLHelper", "Unexpected Seconds: " & sglSecondsRoundedToMilliseconds
+200           End Select
+              
+210           ConvertDateToSqlString = Format$(dtRoundedToMinute, "'YYYY-MM-DD hh:mm") & strSeconds & "'"
+               
+220       End If
 
 PROC_EXIT:
-150       Exit Function
+230       Exit Function
 
 PROC_ERROR:
-160       LogError "cls_LINQ_2_SQL__SqlGenerator", "ConvertDateToSqlString", Erl, Err.Number, Err.Description
-170       Resume PROC_EXIT
-180       Resume
+240       LogError "cls_LINQ_2_SQL__SqlGenerator", "ConvertDateToSqlString", Erl, Err.Number, Err.Description, dt & " " & sglSecondsRoundedToMilliseconds
+250       Resume PROC_EXIT
+260       Resume
 End Function

@@ -1,4 +1,4 @@
-Option Compare Database
+﻿Option Compare Database
 Option Explicit
 
 ' This was created by the _LINQ 2 SQL Add-In, but it is intended for you to customize as you wish.
