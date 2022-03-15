@@ -138,20 +138,22 @@ CONNECT_TO_DATABASE:
 120       m_Conn.Open m_ConnectionString
 
 PROC_EXIT:
-130       rs.Close
-140       Set rs = Nothing
-150       Exit Sub
+130       If Not rs Is Nothing Then
+140           rs.Close
+150           Set rs = Nothing
+160       End If
+170       Exit Sub
 
 PROC_ERROR:
-160       Select Case Err.Number
+180       Select Case Err.Number
           Case ERROR_CONNECTION_WAS_FORCIBLY_CLOSED, ERROR_OPERATION_REQUIRES_AN_OLE_DB_SESSION
-170           CancelableSleep 3, "Waiting for connectivity: " & m_CodeClassName & "." & ProcedureName
-180           Resume CONNECT_TO_DATABASE
-190       Case Else
-200           LogError "cls_LINQ_2_SQL__BaseClass", "Class_Initialize", Erl, Err.Number, Err.Description
-210           Resume PROC_EXIT
-220           Resume
-230       End Select
+190           CancelableSleep 3, "Waiting for connectivity: " & m_CodeClassName & "." & ProcedureName
+200           Resume CONNECT_TO_DATABASE
+210       Case Else
+220           LogError "cls_LINQ_2_SQL__BaseClass", "Initialize", Erl, Err.Number, Err.Description
+230           Resume PROC_EXIT
+240           Resume
+250       End Select
 End Sub
 
 Private Sub Class_Initialize()
