@@ -1,4 +1,4 @@
-﻿Attribute VB_GlobalNameSpace = False
+Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
@@ -250,32 +250,32 @@ End Function
 
 ' Return True if we are supposed to retry
 Public Function HandleError(ObjectName As String, ProcedureName As String, ErrorLine As Long, ErrNumber As Long, ErrDescription As String, ExtraInfo As String, ErrorOption As enErrorOption) As Boolean
-          Dim fReconnectAndTryAgain As Boolean
+          Dim strReconnectReason As String
           
           ' Do not catch errors that happen in here.  We want raise errors to bubble up.
 10        If ErrDescription Like "*" & ERROR_ENDS_WITH_DEADLOCK_VICTOM_RERUN_THE_TRANSACTION Then
-20            LogError ObjectName, ProcedureName, ErrorLine, ErrNumber, "Deadlock Victim", ExtraInfo, True, False
-30            fReconnectAndTryAgain = True
-40        Else
-50            Select Case ErrNumber
+20            strReconnectReason = "Deadlock Victim"
+30        Else
+40            Select Case ErrNumber
               Case ERROR_OPERATION_REQUIRES_AN_OLE_DB_SESSION
-60                If ErrDescription Like "*" & ERROR_CONTAINS_OPERATION_REQUIRES_AN_OLE_DB_SESSION & "*" Then
-70                    fReconnectAndTryAgain = True
-80                End If
-90            Case ERROR_CONNECTION_WAS_FORCIBLY_CLOSED
-100               If ErrDescription Like "*" & ERROR_CONTAINS_CONNECTION_WAS_FORCIBLY_CLOSED & "*" Then
-110                   fReconnectAndTryAgain = True
-120               ElseIf ErrDescription Like "*" & ERROR_CONTAINS_COMMINICATION_LINK_FAILURE & "*" Then
-130                   fReconnectAndTryAgain = True
-140               ElseIf ErrDescription Like "*" & ERROR_CONTAINS_CONNECTION_ATTEMPT_FAILED & "*" Then
-150                   fReconnectAndTryAgain = True
-160               End If
-170           Case Else
+50                If ErrDescription Like "*" & ERROR_CONTAINS_OPERATION_REQUIRES_AN_OLE_DB_SESSION & "*" Then
+60                    strReconnectReason = ERROR_CONTAINS_OPERATION_REQUIRES_AN_OLE_DB_SESSION
+70                End If
+80            Case ERROR_CONNECTION_WAS_FORCIBLY_CLOSED
+90                If ErrDescription Like "*" & ERROR_CONTAINS_CONNECTION_WAS_FORCIBLY_CLOSED & "*" Then
+100                   strReconnectReason = ERROR_CONTAINS_CONNECTION_WAS_FORCIBLY_CLOSED
+110               ElseIf ErrDescription Like "*" & ERROR_CONTAINS_COMMINICATION_LINK_FAILURE & "*" Then
+120                   strReconnectReason = ERROR_CONTAINS_COMMINICATION_LINK_FAILURE
+130               ElseIf ErrDescription Like "*" & ERROR_CONTAINS_CONNECTION_ATTEMPT_FAILED & "*" Then
+140                   strReconnectReason = ERROR_CONTAINS_CONNECTION_ATTEMPT_FAILED
+150               End If
+160           Case Else
                   ' We will process this later
-180           End Select
-190       End If
+170           End Select
+180       End If
           
-200       If fReconnectAndTryAgain Then
+190       If strReconnectReason <> "" Then
+200           LogError ObjectName, ProcedureName, ErrorLine, ErrNumber, strReconnectReason, ExtraInfo, True, False
 210           ReConnect 0, ProcedureName
 220           HandleError = True
 230           Exit Function

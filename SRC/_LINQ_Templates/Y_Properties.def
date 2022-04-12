@@ -64,7 +64,7 @@
   <References context="6">
     <Reference>
       <Name value="ADODB 2.8"/>
-      <FullPath value="%CommonProgramFiles%\system\ado\msado28.tlb"/>
+      <FullPath value="%CommonProgramFiles%\System\ado\msado28.tlb"/>
       <Position value="5"/>
       <GUID value="{2A75196C-D9EB-4129-B803-931327F72D5C}"/>
       <Major value="2"/>
