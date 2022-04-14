@@ -92,26 +92,28 @@ Public Function GetSQLConnectString(Driver As String, Server As String, Database
 20        If Server = "" And Database = "" Then
 30            GetSQLConnectString = ";DATABASE=" & CurrentDb.Name
 40        Else
-50            GetSQLConnectString = "ODBC" & _
-                          IIf(Description <> "", ";Description=" & Description, "") & _
-                          ";DRIVER=" & Driver & _
-                          ";SERVER=" & Server & _
-                          ";DATABASE=" & Database & _
-                          IIf(TrustedConnection, ";Trusted_Connection=Yes", "") & _
-                          IIf(Not TrustedConnection, ";Uid=" & UserID, "") & _
-                          IIf(Not TrustedConnection, ";Pwd=" & Password, "") & _
-                          IIf(Encrypt <> "", ";Encrypt=" & Encrypt, "") & _
-                          IIf(ConnectRetryCount <> DefaultConnectRetryCount, ";ConnectRetryCount=" & ConnectRetryCount, "") & _
-                          IIf(App <> "", ";APP=" & App, "")
-60        End If
+              Dim sb As New cls_LINQ_2_SQL__StringBuilder
+50            sb.Append "ODBC"
+60            If Description <> "" Then sb.Append(";Description=").Append Description
+70            sb.Append(";DRIVER=").Append Driver
+80            sb.Append(";SERVER=").Append Server
+90            sb.Append(";DATABASE=").Append Database
+100           If TrustedConnection Then sb.Append "Trusted_Connection=Yes"
+110           If Not TrustedConnection Then sb.Append(";Uid=").Append UserID
+120           If Not TrustedConnection Then sb.Append(";Pwd=").Append Password
+130           If Encrypt <> "" Then sb.Append(";Encrypt=").Append Encrypt
+140           If ConnectRetryCount <> DefaultConnectRetryCount Then sb.Append(";ConnectRetryCount=").Append CStr(ConnectRetryCount)
+150           If App <> "" Then sb.Append(";APP=").Append App
+160           GetSQLConnectString = sb.Text
+170       End If
           
 PROC_EXIT:
-70        Exit Function
+180       Exit Function
           
 PROC_ERROR:
-80        LogError "mod_LINQ_2_SQL_Shared", "GetSQLConnectString", Erl, Err.Number, Err.Description
-90        Resume PROC_EXIT
-100       Resume
+190       LogError "mod_LINQ_2_SQL_Shared", "GetSQLConnectString", Erl, Err.Number, Err.Description
+200       Resume PROC_EXIT
+210       Resume
 End Function
 
 Public Function GetConnectionSettings(ConnectionID As en_LINQ_2_SQL_Connection) As ADODB.Recordset

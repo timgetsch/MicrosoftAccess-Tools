@@ -24,7 +24,7 @@ Attribute VB_Exposed = False
 '--------------------------------------------------------------------------------------
 
 '--------------------------------------------------------------------------------------
-' cls_LINQ_2_SQL__StringBuilder v0.2.1
+' cls_LINQ_2_SQL__StringBuilder v0.2.2
 ' (c) Tim Getsch
 '
 ' cls_LINQ_2_SQL__StringBuilder makes it easy to efficiently build large strings.
@@ -74,41 +74,42 @@ PROC_ERROR:
 60        Resume
 End Sub
 
-Public Sub Append(Text As String)
-
+Public Function Append(Text As String) As cls_LINQ_2_SQL__StringBuilder
 10        On Error GoTo PROC_ERROR
 
           Dim lIncLen As Long
 20        lIncLen = Len(Text)
-30        If lIncLen = 0 Then Exit Sub
-
-40        m_strText = ""
-50        m_colText.Add Text
+30        If lIncLen > 0 Then
+40            m_strText = "" ' Reset so that we rebuild
+50            m_colText.Add Text
+              
+60            m_lLength = m_lLength + lIncLen
+70        End If
           
-60        m_lLength = m_lLength + lIncLen
+80        Set Append = Me
           
 PROC_EXIT:
-70        Exit Sub
+90        Exit Function
 
 PROC_ERROR:
-80        LogError "cls_LINQ_2_SQL__StringBuilder", "Append", Erl, Err.Number, Err.Description, Text, True, True
-90        Resume PROC_EXIT
-100       Resume
-End Sub
+100       LogError "cls_LINQ_2_SQL__StringBuilder", "Append", Erl, Err.Number, Err.Description, Text, True, True
+110       Resume PROC_EXIT
+120       Resume
+End Function
 
-Public Sub AppendLine(Text As String)
+Public Function AppendLine(Text As String) As cls_LINQ_2_SQL__StringBuilder
 10        On Error GoTo PROC_ERROR
 
-20        Append Text & vbCrLf
+20        Set AppendLine = Append(Text).Append(vbCrLf)
 
 PROC_EXIT:
-30        Exit Sub
+30        Exit Function
 
 PROC_ERROR:
 40        LogError "cls_LINQ_2_SQL__StringBuilder", "AppendLine", Erl, Err.Number, Err.Description, Text, True, True
 50        Resume PROC_EXIT
 60        Resume
-End Sub
+End Function
 
 Public Property Get Length() As Integer
 10        On Error GoTo PROC_ERROR
