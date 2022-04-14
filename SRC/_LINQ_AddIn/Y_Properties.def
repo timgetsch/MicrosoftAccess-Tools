@@ -58,10 +58,6 @@
   <UserDefined context="3">
     <NWVersion name="NWVersion" type="10" value="11.0" sort="4"/>
   </UserDefined>
-  <ActiveVBProject context="4">
-    <Description name="Description" type="10" value="_LINQ_2_SQL Add-In" sort="5"/>
-    <Name name="Name" type="10" value="_LINQ_ADDIN" sort="5"/>
-  </ActiveVBProject>
   <References context="6">
     <Reference>
       <Name value="_LINQ_Core 0.0"/>
@@ -73,7 +69,7 @@
     </Reference>
     <Reference>
       <Name value="ADODB 2.8"/>
-      <FullPath value="%CommonProgramFiles%\system\ado\msado28.tlb"/>
+      <FullPath value="%CommonProgramFiles%\System\ado\msado28.tlb"/>
       <Position value="5"/>
       <GUID value="{2A75196C-D9EB-4129-B803-931327F72D5C}"/>
       <Major value="2"/>

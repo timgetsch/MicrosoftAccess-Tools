@@ -15,7 +15,9 @@
 [CodeClassName] TEXT (255) NOT NULL,
 [EnumName] TEXT (255),
 [SqlServerDriver] TEXT (255) NOT NULL Default '"SQL Server Native Client 11.0"',
-[Schema] TEXT (255) NOT NULL Default '"dbo"');</SQL>
+[Schema] TEXT (255) NOT NULL Default '"dbo"',
+[Encrypt] TEXT (255),
+[ConnectRetryCount] BYTE);</SQL>
   <Attributes value="0">
     <dbHiddenObject value="False"/>
     <dbAttachExclusive value="False"/>
@@ -511,43 +513,84 @@
       <ResultType name="ResultType" type="2" value="0"/>
       <CurrencyLCID name="CurrencyLCID" type="4" value="0"/>
     </Field_13>
+    <Field_14 name="Encrypt">
+      <Value name="Value" type="10"/>
+      <Attributes name="Attributes" type="4" value="2"/>
+      <CollatingOrder name="CollatingOrder" type="3" value="1033"/>
+      <Type name="Type" type="3" value="10"/>
+      <Name name="Name" type="12" value="Encrypt"/>
+      <OrdinalPosition name="OrdinalPosition" type="3" value="14"/>
+      <Size name="Size" type="4" value="255"/>
+      <SourceField name="SourceField" type="12" value="Encrypt"/>
+      <SourceTable name="SourceTable" type="12" value="USys_LinqRemoteConnections"/>
+      <ValidateOnSet name="ValidateOnSet" type="1"/>
+      <DataUpdatable name="DataUpdatable" type="1" value="False"/>
+      <ForeignName name="ForeignName" type="12"/>
+      <DefaultValue name="DefaultValue" type="12" value=""/>
+      <ValidationRule name="ValidationRule" type="12" value=""/>
+      <ValidationText name="ValidationText" type="12" value=""/>
+      <Required name="Required" type="1" value="False"/>
+      <AllowZeroLength name="AllowZeroLength" type="1" value="True"/>
+      <AppendOnly name="AppendOnly" type="1" value="False"/>
+      <Expression name="Expression" type="12" value=""/>
+      <FieldSize name="FieldSize" type="4"/>
+      <OriginalValue name="OriginalValue" type="10"/>
+      <VisibleValue name="VisibleValue" type="10"/>
+      <ColumnWidth name="ColumnWidth" type="3" value="-1"/>
+      <ColumnOrder name="ColumnOrder" type="3" value="0"/>
+      <ColumnHidden name="ColumnHidden" type="1" value="False"/>
+      <DisplayControl name="DisplayControl" type="3" value="111"/>
+      <RowSourceType name="RowSourceType" type="10" value="Value List"/>
+      <RowSource name="RowSource" type="12" value="&quot;Yes&quot;;&quot;No&quot;;&quot;Strict&quot;"/>
+      <BoundColumn name="BoundColumn" type="3" value="1"/>
+      <ColumnCount name="ColumnCount" type="3" value="1"/>
+      <ColumnHeads name="ColumnHeads" type="1" value="False"/>
+      <ListRows name="ListRows" type="3" value="16"/>
+      <ListWidth name="ListWidth" type="10" value="0twip"/>
+      <LimitToList name="LimitToList" type="1" value="False"/>
+      <IMEMode name="IMEMode" type="2" value="0"/>
+      <IMESentenceMode name="IMESentenceMode" type="2" value="3"/>
+      <UnicodeCompression name="UnicodeCompression" type="1" value="True"/>
+      <AllowMultipleValues name="AllowMultipleValues" type="1" value="False"/>
+      <TextAlign name="TextAlign" type="2" value="0"/>
+      <AllowValueListEdits name="AllowValueListEdits" type="1" value="False"/>
+      <AggregateType name="AggregateType" type="4" value="-1"/>
+      <ShowOnlyRowSourceValues name="ShowOnlyRowSourceValues" type="1" value="False"/>
+      <ResultType name="ResultType" type="2" value="0"/>
+      <CurrencyLCID name="CurrencyLCID" type="4" value="0"/>
+    </Field_14>
+    <Field_15 name="ConnectRetryCount">
+      <Value name="Value" type="2"/>
+      <Attributes name="Attributes" type="4" value="1"/>
+      <CollatingOrder name="CollatingOrder" type="3" value="1033"/>
+      <Type name="Type" type="3" value="2"/>
+      <Name name="Name" type="12" value="ConnectRetryCount"/>
+      <OrdinalPosition name="OrdinalPosition" type="3" value="15"/>
+      <Size name="Size" type="4" value="1"/>
+      <SourceField name="SourceField" type="12" value="ConnectRetryCount"/>
+      <SourceTable name="SourceTable" type="12" value="USys_LinqRemoteConnections"/>
+      <ValidateOnSet name="ValidateOnSet" type="1"/>
+      <DataUpdatable name="DataUpdatable" type="1" value="False"/>
+      <ForeignName name="ForeignName" type="12"/>
+      <DefaultValue name="DefaultValue" type="12" value=""/>
+      <ValidationRule name="ValidationRule" type="12" value=""/>
+      <ValidationText name="ValidationText" type="12" value=""/>
+      <Required name="Required" type="1" value="False"/>
+      <AllowZeroLength name="AllowZeroLength" type="1" value="False"/>
+      <AppendOnly name="AppendOnly" type="1" value="False"/>
+      <Expression name="Expression" type="12" value=""/>
+      <FieldSize name="FieldSize" type="4"/>
+      <OriginalValue name="OriginalValue" type="2"/>
+      <VisibleValue name="VisibleValue" type="2"/>
+      <ColumnWidth name="ColumnWidth" type="3" value="-1"/>
+      <ColumnOrder name="ColumnOrder" type="3" value="0"/>
+      <ColumnHidden name="ColumnHidden" type="1" value="False"/>
+      <DecimalPlaces name="DecimalPlaces" type="2" value="255"/>
+      <DisplayControl name="DisplayControl" type="3" value="109"/>
+      <TextAlign name="TextAlign" type="2" value="0"/>
+      <AggregateType name="AggregateType" type="4" value="-1"/>
+      <ResultType name="ResultType" type="2" value="0"/>
+      <CurrencyLCID name="CurrencyLCID" type="4" value="0"/>
+    </Field_15>
   </FieldDefs>
-  <Indexes>
-    <Index_0 name="CodeClassName">
-      <Name value="CodeClassName"/>
-      <Unique value="true"/>
-      <Clustered value="false"/>
-      <Primary value="false"/>
-      <Foreign value="false"/>
-      <Required value="false"/>
-      <IgnoreNulls value="false"/>
-      <Fields>
-        <FieldNames value="+CodeClassName"/>
-      </Fields>
-    </Index_0>
-    <Index_1 name="Description">
-      <Name value="Description"/>
-      <Unique value="false"/>
-      <Clustered value="false"/>
-      <Primary value="false"/>
-      <Foreign value="false"/>
-      <Required value="false"/>
-      <IgnoreNulls value="false"/>
-      <Fields>
-        <FieldNames value="+Description"/>
-      </Fields>
-    </Index_1>
-    <Index_2 name="PrimaryKey">
-      <Name value="PrimaryKey"/>
-      <Unique value="true"/>
-      <Clustered value="false"/>
-      <Primary value="true"/>
-      <Foreign value="false"/>
-      <Required value="true"/>
-      <IgnoreNulls value="false"/>
-      <Fields>
-        <FieldNames value="+ID"/>
-      </Fields>
-    </Index_2>
-  </Indexes>
 </TableDef>
