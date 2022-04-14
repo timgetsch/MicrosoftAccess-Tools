@@ -38,7 +38,7 @@ Private m_Base As cls_LINQ_2_SQL__BaseClass
 '--------------------------------------------------------------------------------------
 Private Sub Class_Initialize()
     Set m_Base = New cls_LINQ_2_SQL__BaseClass
-    m_Base.Initialize en_LINQ_2_SQL_Connection.cn_TEMPLATE
+    m_Base.Initialize en_LINQ_2_SQL_Connection.cn_TEMPLATE, "Class_Initialize"
 End Sub
 
 '--------------------------------------------------------------------------------------

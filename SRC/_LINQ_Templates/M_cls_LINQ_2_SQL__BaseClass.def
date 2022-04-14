@@ -51,57 +51,9 @@ Const ERROR_QUERY_TIMEOUT_EXPIRED As Long = -2147217871                  ' [Micr
 Const ERROR_ENDS_WITH_QUERY_TIMEOUT_EXPIRED As String = "Query timeout expired"
 
 Private m_Conn As ADODB.Connection
-Private m_ConnectionID As Integer
+Private m_ConnectionID As en_LINQ_2_SQL_Connection
 Private m_ConnectionString As String
 Private m_CodeClassName As String
-
-Private Const LINQ_REMOTE_CONNECTIONS As String = "USys_LinqRemoteConnections"
-
-Private Function GetSQLConnectString(strSqlServerDriver As String, strServer As String, strDatabase As String, fTrustedConnection As Boolean, strDescription As String, UserID, Password) As String
-10        On Error GoTo PROC_ERROR
-          
-20        If strServer = "" And strDatabase = "" Then
-30            GetSQLConnectString = ";DATABASE=" & CurrentDb.Name
-40        Else
-50            GetSQLConnectString = "ODBC" & _
-                          IIf(strDescription <> "", ";Description=" & strDescription, "") & _
-                          ";DRIVER=" & strSqlServerDriver & _
-                          ";SERVER=" & strServer & _
-                          ";DATABASE=" & strDatabase & _
-                          IIf(fTrustedConnection, ";Trusted_Connection=Yes", "") & _
-                          IIf(Not fTrustedConnection, ";Uid=" & UserID, "") & _
-                          IIf(Not fTrustedConnection, ";Pwd=" & Password, "") & _
-                          ";APP=" & Left$(GetAppTitle(), 25)
-60        End If
-          
-PROC_EXIT:
-70        Exit Function
-          
-PROC_ERROR:
-80        LogError "cls_LINQ_2_SQL__BaseClass", "GetSQLConnectString", Erl, Err.Number, Err.Description
-90        Resume PROC_EXIT
-100       Resume
-End Function
-
-Private Function GetAppTitle() As String
-10        On Error GoTo PROC_ERROR
-
-20        On Error Resume Next
-          Dim strAppTitle As String
-30        strAppTitle = CurrentDb.Properties("AppTitle")
-40        If Err.Number <> 0 Then
-50            strAppTitle = CurrentProject.Name
-60        End If
-70        GetAppTitle = strAppTitle
-
-PROC_EXIT:
-80        Exit Function
-
-PROC_ERROR:
-90        LogError "cls_LINQ_2_SQL__BaseClass", "GetAppTitle", Erl, Err.Number, Err.Description
-100       Resume PROC_EXIT
-110       Resume
-End Function
 
 Public Property Get Connection() As ADODB.Connection
 10        On Error GoTo PROC_ERROR
@@ -117,43 +69,36 @@ PROC_ERROR:
 60        Resume
 End Property
 
-Public Sub Initialize(ConnectionID As Integer, Optional ProcedureName As String)
+Public Sub Initialize(ConnectionID As en_LINQ_2_SQL_Connection, ProcedureName As String)
 10        On Error GoTo PROC_ERROR
           
 20        m_ConnectionID = ConnectionID
-
-          Dim db As DAO.Database
-          Dim rs As DAO.Recordset
-30        Set db = CurrentDb()
-40        Set rs = db.OpenRecordset("SELECT * FROM [" & LINQ_REMOTE_CONNECTIONS & "] WHERE ID=" & m_ConnectionID)
-50        If rs.RecordCount = 1 Then
-60            m_ConnectionString = GetSQLConnectString(rs!SqlServerDriver, rs!Server, rs!Database, rs!Trusted, rs!Description, Nz(rs!UserName), Nz(rs!Password))
-70            m_CodeClassName = Nz(rs!CodeClassName)
-80        ElseIf ConnectionID <> 0 Then
-90            Err.Raise 1, , "UNKNOWN DatabaseConnection"
-100       End If
+          Dim rs As ADODB.Recordset
+30        Set rs = mod_LINQ_2_SQL_Shared.GetConnectionSettings(ConnectionID)
+40        m_ConnectionString = mod_LINQ_2_SQL_Shared.GetSQLConnectString(rs!SqlServerDriver, rs!Server, rs!Database, rs!Trusted, rs!Description, Nz(rs!UserName), Nz(rs!Password), Nz(rs!Encrypt), Nz(rs!ConnectRetryCount, mod_LINQ_2_SQL_Shared.DefaultConnectRetryCount), mod_LINQ_2_SQL_Shared.App)
+50        m_CodeClassName = Nz(rs!CodeClassName)
           
 CONNECT_TO_DATABASE:
-110       Set m_Conn = New ADODB.Connection
-120       m_Conn.Open m_ConnectionString
+60        Set m_Conn = New ADODB.Connection
+70        m_Conn.Open m_ConnectionString
 
 PROC_EXIT:
-130       If Not rs Is Nothing Then
-140           rs.Close
-150           Set rs = Nothing
-160       End If
-170       Exit Sub
+80        If Not rs Is Nothing Then
+90            rs.Close
+100           Set rs = Nothing
+110       End If
+120       Exit Sub
 
 PROC_ERROR:
-180       Select Case Err.Number
+130       Select Case Err.Number
           Case ERROR_CONNECTION_WAS_FORCIBLY_CLOSED, ERROR_OPERATION_REQUIRES_AN_OLE_DB_SESSION
-190           CancelableSleep 3, "Waiting for connectivity: " & m_CodeClassName & "." & ProcedureName
-200           Resume CONNECT_TO_DATABASE
-210       Case Else
-220           LogError "cls_LINQ_2_SQL__BaseClass", "Initialize", Erl, Err.Number, Err.Description
-230           Resume PROC_EXIT
-240           Resume
-250       End Select
+140           CancelableSleep 3, "Waiting for connectivity: " & m_CodeClassName & "." & ProcedureName
+150           Resume CONNECT_TO_DATABASE
+160       Case Else
+170           LogError "cls_LINQ_2_SQL__BaseClass", "Initialize", Erl, Err.Number, Err.Description
+180           Resume PROC_EXIT
+190           Resume
+200       End Select
 End Sub
 
 Private Sub Class_Initialize()
@@ -301,104 +246,4 @@ Public Function HandleError(ObjectName As String, ProcedureName As String, Error
 380       Case Else
 390           LogError "cls_LINQ_2_SQL__BaseClass", "HandleError", Erl, LOG_CASE_ELSE, LOG_CASE_ELSE_DESC, ErrorOption, False, True
 400       End Select
-End Function
-
-Public Function ConvertToInMemoryRecordsets(rsFrom As ADODB.Recordset, strRecordsetName As String) As Collection
-          Dim col As New Collection
-10        On Error GoTo PROC_ERROR
-
-20        col.Add ConvertToInMemoryRecordset(rsFrom, strRecordsetName)
-          Dim rsNext As ADODB.Recordset
-30        Set rsNext = rsFrom.NextRecordset
-40        While rsNext.Fields.Count > 0
-50            col.Add ConvertToInMemoryRecordset(rsNext, strRecordsetName)
-60            Set rsNext = rsNext.NextRecordset
-70        Wend
-80        Set ConvertToInMemoryRecordsets = col
-
-PROC_EXIT:
-90        Exit Function
-
-PROC_ERROR:
-100       LogError "cls_LINQ_2_SQL__BaseClass", "ConvertToInMemoryRecordsets", Erl, Err.Number, Err.Description
-110       Resume PROC_EXIT
-120       Resume
-End Function
-
-Public Function ConvertToInMemoryRecordset(rsFrom As ADODB.Recordset, strRecordsetName As String) As ADODB.Recordset
-10        On Error GoTo PROC_ERROR
-          
-          Dim strDebugInfo As String
-          Dim rsTo As New ADODB.Recordset
-          Dim fld As ADODB.Field
-20        For Each fld In rsFrom.Fields
-30            strDebugInfo = fld.Name
-              
-              Dim FieldType As ADODB.DataTypeEnum
-40            Select Case fld.Type
-              Case adDBTimeStamp
-50                FieldType = adDate ' Use adDate instead of adDBTimeStamp to preserve the milliseconds
-60            Case Else
-70                FieldType = fld.Type
-80            End Select
-90            rsTo.Fields.Append fld.Name, FieldType, fld.DefinedSize, fld.Attributes
-              
-              Dim fNew As ADODB.Field
-100           Set fNew = rsTo.Fields(fld.Name)
-110           fNew.NumericScale = fld.NumericScale
-120           fNew.Precision = fld.Precision
-130           fNew.Attributes = fld.Attributes
-140           Debug.Assert rsTo.Fields(fld.Name).Attributes = fld.Attributes
-150       Next
-          
-160       rsTo.CursorType = adOpenKeyset
-170       rsTo.CursorLocation = adUseClient
-180       rsTo.LockType = adLockPessimistic
-190       rsTo.Open
-          
-200       While Not rsFrom.EOF
-210           rsTo.AddNew
-220           For Each fld In rsTo.Fields
-230               fld.Value = rsFrom.Fields(fld.Name)
-240           Next
-250           rsTo.Update
-260           rsFrom.MoveNext
-270       Wend
-280       If rsTo.RecordCount > 0 Then
-290           rsTo.MoveFirst
-300       End If
-          
-310       Set ConvertToInMemoryRecordset = rsTo
-
-PROC_EXIT:
-320       Exit Function
-
-PROC_ERROR:
-330       Select Case Err.Number
-          Case 3367 ' Object is already in collection. Cannot append.
-340           LogError "cls_LINQ_2_SQL__BaseClass", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo
-350           Resume Next ' Skip over duplicate columns
-360       Case 3001 ' Arguments are of the wrong type, are out of acceptable range, or are in conflict with one another.
-370           LogError "cls_LINQ_2_SQL__BaseClass", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo
-380           Resume Next ' Skip over columns that are missing names or are somehow not valid
-390       Case Else
-400           LogError "cls_LINQ_2_SQL__BaseClass", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo
-410           Resume PROC_EXIT
-420           Resume
-430       End Select
-End Function
-
-Public Function GetSQL(ProcedureName As String, Parameters As ADODB.Parameters) As String
-          Static clsSqlGenerator As New cls_LINQ_2_SQL__SqlGenerator
-10        On Error GoTo PROC_ERROR
-
-20        GetSQL = clsSqlGenerator.GetSQL(ProcedureName, Parameters)
-
-PROC_EXIT:
-30        Exit Function
-
-PROC_ERROR:
-40        LogError "cls_LINQ_2_SQL__BaseClass", "GetSQL", Erl, Err.Number, Err.Description
-50        Resume PROC_EXIT
-60        Resume
 End Function

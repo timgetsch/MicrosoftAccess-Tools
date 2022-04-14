@@ -23,14 +23,15 @@ Public Function Init_BaseModules(NewClassName As String)
 60        AddModuleIfMissing "cls_LINQ_2_SQL__BaseClass"
 70        AddModuleIfMissing "cls_LINQ_2_SQL__Databases"
 80        AddModuleIfMissing "cls_LINQ_2_SQL_TEMPLATE", NewClassName
+90        AddModuleIfMissing "mod_LINQ_2_SQL_Shared"
 
 PROC_EXIT:
-90        Exit Function
+100       Exit Function
 
 PROC_ERROR:
-100       LogError "_LINQ_2_SQL_Templates_Init", "Init_LINQ", Erl, Err.Number, Err.Description
-110       Resume PROC_EXIT
-120       Resume
+110       LogError "_LINQ_2_SQL_Templates_Init", "Init_LINQ", Erl, Err.Number, Err.Description
+120       Resume PROC_EXIT
+130       Resume
 End Function
 
 Private Sub AddModuleIfMissing(ModuleName As String, Optional NewName As String = "")
@@ -60,27 +61,24 @@ Public Function IsObjectInCol(col As Object, ByVal Index) As Boolean
 End Function
 
 Private Sub AddReferenceIfNecessary(Guid As String, Major As Long, Minor As Long)
-          Dim vbpCurrent As VBProject
 10        On Error GoTo PROC_ERROR
 
-20        Set vbpCurrent = CurrentVBProject()
-          
           Dim r As VBIDE.Reference
-30        For Each r In vbpCurrent.References
-40            If r.Guid = Guid Then
-50                Exit Sub
-60            End If
-70        Next
+20        For Each r In CurrentVBProject.References
+30            If r.Guid = Guid Then
+40                Exit Sub
+50            End If
+60        Next
           
-80        vbpCurrent.References.AddFromGuid Guid, Major, Minor
+70        CurrentVBProject.References.AddFromGuid Guid, Major, Minor
 
 PROC_EXIT:
-90        Exit Sub
+80        Exit Sub
 
 PROC_ERROR:
-100       LogError "_LINQ_2_SQL_Templates_Init", "AddReferenceIfNecessary", Erl, Err.Number, Err.Description
-110       Resume PROC_EXIT
-120       Resume
+90        LogError "_LINQ_2_SQL_Templates_Init", "AddReferenceIfNecessary", Erl, Err.Number, Err.Description
+100       Resume PROC_EXIT
+110       Resume
 End Sub
 
 Private Function AddReferenceADODB()
@@ -95,24 +93,4 @@ PROC_ERROR:
 40        LogError "_LINQ_2_SQL_Templates_Init", "AddReferenceADODB", Erl, Err.Number, Err.Description
 50        Resume PROC_EXIT
 60        Resume
-End Function
-
-Private Function CurrentVBProject() As VBProject
-          Dim p As VBProject
-10        On Error GoTo PROC_ERROR
-
-20        For Each p In Application.VBE.VBProjects
-30            If p.FileName = CurrentDb.Name Then
-40                Set CurrentVBProject = p
-50                Exit Function
-60            End If
-70        Next
-
-PROC_EXIT:
-80        Exit Function
-
-PROC_ERROR:
-90        LogError "_LINQ_2_SQL_Templates_Init", "CurrentVBProject", Erl, Err.Number, Err.Description
-100       Resume PROC_EXIT
-110       Resume
 End Function
