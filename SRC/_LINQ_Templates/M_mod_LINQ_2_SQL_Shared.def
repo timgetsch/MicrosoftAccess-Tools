@@ -226,10 +226,9 @@ PROC_ERROR:
 End Function
 
 Public Function GetSQL(ProcedureName As String, Parameters As ADODB.Parameters) As String
-          Static clsSqlGenerator As New cls_LINQ_2_SQL__SqlGenerator
 10        On Error GoTo PROC_ERROR
 
-20        GetSQL = clsSqlGenerator.GetSQL(ProcedureName, Parameters)
+20        GetSQL = mod_LINQ_2_SQL_Generator.GetSQL(ProcedureName, Parameters)
 
 PROC_EXIT:
 30        Exit Function
