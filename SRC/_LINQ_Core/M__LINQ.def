@@ -1,0 +1,1007 @@
+'---------------------------------------------------------------------------------------
+'          __    _____   ______       ___       _____ ____    __
+'         / /   /  _/ | / / __ \     |__ \     / ___// __ \  / /
+'        / /    / //  |/ / / / /     __/ /     \__ \/ / / / / /
+'       / /____/ // /|  / /_/ /     / __/     ___/ / /_/ / / /___
+' _____/_____/___/_/ |_/\___\_\____/____/____/____/\___\_\/_____/
+'/_____/                     /_____/   /_____/
+'
+' (c) Tim Getsch
+' @author timgetsch@commitcs.com
+' @license MIT (http://www.opensource.org/licenses/mit-license.php)
+'---------------------------------------------------------------------------------------
+Option Compare Database
+Option Explicit
+
+Public Const TOOL_VERSION As String = "0.4.0"
+
+Public Const DBC_CLASS_NAME As String = "cls_LINQ_2_SQL__Databases"
+Public Const LINQ_SOURCE_URL As String = "https://github.com/timgetsch/MicrosoftAccess-Tools/tree/master/_LINQ_2_SQL_AddIn"
+Public Const LINQ_REMOTE_CONNECTIONS As String = "USys_LinqRemoteConnections"
+Private Const LINQ_TEMPLATES_LIBRARY As String = "_LINQ_Templates"
+Private Const LINQ_NULLABLE_DATA_TYPES_LIBRARY As String = "NullableDataTypes"
+Private Const LINQ_TEMPLATE_LIBRARIES_TABLE As String = "TemplateLibraries"
+Private Const LINQ_ENUM_TEMPLATE As String = "cn_TEMPLATE"
+Private Const LINQ_SHARED_MODULE As String = "mod_LINQ_2_SQL_Shared"
+Private Const LINQ_SQL_GENERATOR As String = "mod_LINQ_2_SQL_Generator"
+
+Public Function ImportTemlateLibrarySourceFiles() As Boolean
+10        On Error GoTo PROC_ERROR
+          
+          Dim rsTemplateLibraries As DAO.Recordset2
+20        Set rsTemplateLibraries = CurrentDb.OpenRecordset(LINQ_TEMPLATE_LIBRARIES_TABLE)
+          
+30        While Not rsTemplateLibraries.EOF
+              Dim strSourceLibraryDatabase As String
+40            strSourceLibraryDatabase = gFSO.BuildPath(CurrentProject.Path, rsTemplateLibraries!LibraryName & ".accdb")
+              
+              Dim acc As New Access.Application
+50            acc.OpenCurrentDatabase strSourceLibraryDatabase
+              
+              Dim rsModules As DAO.Recordset2
+60            Set rsModules = rsTemplateLibraries.Fields("Modules").Value
+              
+70            rsTemplateLibraries.Edit
+              
+80            While Not rsModules.EOF
+90                rsModules.Edit
+                  
+100               If Left(rsModules!FileName, 2) = "M_" Then
+110                   rsModules!FileName = Mid(rsModules!FileName, 3)
+120               End If
+                  
+                  Dim strModule As String
+130               strModule = rsModules!FileName
+                  
+                  Dim strTempFile As String
+140               strTempFile = gFSO.BuildPath(gFSO.GetSpecialFolder(TemporaryFolder), strModule)
+                  
+150               If gFSO.FileExists(strTempFile) Then gFSO.DeleteFile strTempFile
+                  
+160               acc.SaveAsText acModule, gFSO.GetBaseName(strModule), strTempFile
+                              
+                  Dim fldFileData As DAO.Field2
+170               Set fldFileData = rsModules.Fields("FileData")
+180               fldFileData.LoadFromFile strTempFile
+                  
+190               gFSO.DeleteFile strTempFile
+                  
+200               rsModules.Update
+210               rsModules.MoveNext
+220           Wend
+              
+230           acc.CloseCurrentDatabase
+              
+240           rsTemplateLibraries.Update
+250           rsTemplateLibraries.MoveNext
+260       Wend
+          
+270       If Not acc Is Nothing Then acc.Quit
+          
+280       ImportTemlateLibrarySourceFiles = True
+          
+PROC_EXIT:
+290       Exit Function
+
+PROC_ERROR:
+300       LogError "_LINQ", "ImportTemlateLibrarySourceFiles", Erl, Err.Number, Err.Description
+310       Resume PROC_EXIT
+320       Resume
+End Function
+
+Public Function GetCodeClassPropertyName(CodeClassName As String) As String
+10        On Error GoTo PROC_ERROR
+          
+20        GetCodeClassPropertyName = GetCodeName(CodeClassName) & "DB"
+
+PROC_EXIT:
+30        Exit Function
+
+PROC_ERROR:
+40        LogError "_LINQ", "GetCodeClassPropertyName", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Function
+
+Public Function GetCodeClassEnum(CodeClassName As String) As String
+10        On Error GoTo PROC_ERROR
+          
+20        GetCodeClassEnum = "lc_" & GetCodeName(CodeClassName)
+
+PROC_EXIT:
+30        Exit Function
+
+PROC_ERROR:
+40        LogError "_LINQ", "GetCodeClassEnum", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Function
+
+Public Function GetCodeName(CodeClassName As String) As String
+10        On Error GoTo PROC_ERROR
+
+          Dim strCodeName As String
+20        strCodeName = CodeClassName
+30        If strCodeName Like "dbc*" Then strCodeName = Mid(strCodeName, 4)
+40        If strCodeName Like "cls*" Then strCodeName = Mid(strCodeName, 4)
+50        If strCodeName Like "_LINQ_*" Then strCodeName = Mid(strCodeName, 7)
+60        If strCodeName Like "2_SQL_*" Then strCodeName = Mid(strCodeName, 7)
+70        GetCodeName = strCodeName
+
+PROC_EXIT:
+80        Exit Function
+
+PROC_ERROR:
+90        LogError "_LINQ", "GetCodeName", Erl, Err.Number, Err.Description
+100       Resume PROC_EXIT
+110       Resume
+End Function
+
+Public Function AutoUpdateSupportingClasses() As Boolean
+          Dim fFailed As Boolean
+          
+10        On Error GoTo PROC_ERROR
+
+20        If Not AutoUpdateClassIfNecessary(LINQ_SHARED_MODULE, LINQ_TEMPLATES_LIBRARY) Then fFailed = True
+30        If Not AutoUpdateClassIfNecessary(LINQ_SQL_GENERATOR, LINQ_TEMPLATES_LIBRARY) Then fFailed = True
+40        If Not AutoUpdateClassIfNecessary("cls_LINQ_2_SQL__StringBuilder", LINQ_TEMPLATES_LIBRARY) Then fFailed = True
+50        If Not AutoUpdateClassIfNecessary("cls_LINQ_2_SQL__TableValuedParameter", LINQ_TEMPLATES_LIBRARY) Then fFailed = True
+60        If Not AutoUpdateClassIfNecessary("cls_LINQ_2_SQL__BaseClass", LINQ_TEMPLATES_LIBRARY) Then fFailed = True
+          
+70        If Not AutoUpdateClassIfNecessary("BooleanQ", LINQ_NULLABLE_DATA_TYPES_LIBRARY) Then fFailed = True
+80        If Not AutoUpdateClassIfNecessary("ByteQ", LINQ_NULLABLE_DATA_TYPES_LIBRARY) Then fFailed = True
+90        If Not AutoUpdateClassIfNecessary("CurrencyQ", LINQ_NULLABLE_DATA_TYPES_LIBRARY) Then fFailed = True
+100       If Not AutoUpdateClassIfNecessary("DateQ", LINQ_NULLABLE_DATA_TYPES_LIBRARY) Then fFailed = True
+110       If Not AutoUpdateClassIfNecessary("DoubleQ", LINQ_NULLABLE_DATA_TYPES_LIBRARY) Then fFailed = True
+120       If Not AutoUpdateClassIfNecessary("IntegerQ", LINQ_NULLABLE_DATA_TYPES_LIBRARY) Then fFailed = True
+130       If Not AutoUpdateClassIfNecessary("LongQ", LINQ_NULLABLE_DATA_TYPES_LIBRARY) Then fFailed = True
+140       If Not AutoUpdateClassIfNecessary("SingleQ", LINQ_NULLABLE_DATA_TYPES_LIBRARY) Then fFailed = True
+150       If Not AutoUpdateClassIfNecessary("StringQ", LINQ_NULLABLE_DATA_TYPES_LIBRARY) Then fFailed = True
+160       If Not AutoUpdateClassIfNecessary("VariantQ", LINQ_NULLABLE_DATA_TYPES_LIBRARY) Then fFailed = True
+170       If Not AutoUpdateClassIfNecessary("ConversionQ", LINQ_NULLABLE_DATA_TYPES_LIBRARY) Then fFailed = True
+180       If Not AutoUpdateClassIfNecessary("NewQ", LINQ_NULLABLE_DATA_TYPES_LIBRARY) Then fFailed = True
+
+190       AutoUpdateSupportingClasses = Not fFailed
+
+PROC_EXIT:
+200       Exit Function
+
+PROC_ERROR:
+210       LogError "_LINQ", "AutoUpdateSupportingClasses", Erl, Err.Number, Err.Description
+220       Resume PROC_EXIT
+230       Resume
+End Function
+
+Private Function AutoUpdateClassIfNecessary(ClassName As String, FromLibrary As String) As Boolean
+10        On Error GoTo PROC_ERROR
+
+20        AutoUpdateClassIfNecessary = SaveTemplateCode(ClassName, GetTemplateCode(ClassName, FromLibrary), True, vbext_ct_ClassModule)
+
+PROC_EXIT:
+30        Exit Function
+
+PROC_ERROR:
+40        LogError "_LINQ", "AutoUpdateClassIfNecessary", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Function
+
+Public Function AutoGenerateDBC() As Boolean
+10        On Error GoTo PROC_ERROR
+          
+          Dim strTemplateSource As String
+20        strTemplateSource = GetTemplateCode(DBC_CLASS_NAME, LINQ_TEMPLATES_LIBRARY)
+          
+          Dim stb As New StringBuilder
+
+          Dim db As DAO.Database
+          Dim rs As DAO.Recordset
+30        Set db = CurrentDb()
+40        Set rs = db.OpenRecordset(LINQ_REMOTE_CONNECTIONS)
+          
+50        While Not rs.EOF
+60            If stb.Length <> 0 Then
+70                stb.AppendLine ""
+80                stb.Append "    "
+90            End If
+100           stb.Append GetCodeClassEnum(rs!CodeClassName) & " = " & rs!ID
+110           rs.MoveNext
+120       Wend
+          
+130       ReplaceIfNecessary strTemplateSource, LINQ_ENUM_TEMPLATE, stb.Text
+140       stb.Clear
+150       stb.AppendLine strTemplateSource
+160       stb.AppendLine ""
+          
+170       rs.MoveFirst
+180       While Not rs.EOF
+190           If IsObjectInCol(CurrentProject.AllModules, rs!CodeClassName) Then
+200               stb.AppendLine "Public " & GetCodeClassPropertyName(rs!CodeClassName) & " As New " & rs!CodeClassName
+210           End If
+220           rs.MoveNext
+230       Wend
+
+240       AutoGenerateDBC = SaveTemplateCode(DBC_CLASS_NAME, stb.Text, True, vbext_ct_ClassModule)
+
+PROC_EXIT:
+250       Exit Function
+
+PROC_ERROR:
+260       LogError "_LINQ", "AutoGenerateDBC", Erl, Err.Number, Err.Description
+270       Resume PROC_EXIT
+280       Resume
+
+End Function
+
+Public Function AutoGenerateDatabaseClass(Optional ConnectionID As Integer = 1, Optional CloseCodeWindow As Boolean) As Boolean
+10        On Error GoTo PROC_ERROR
+
+20        If Not AutoUpdateSupportingClasses() Then Exit Function
+
+          Dim dbConnection As clsDatabaseConnection
+30        Set dbConnection = GetDatabaseConnection(ConnectionID)
+          Dim strBaseCode As String
+40        strBaseCode = GetTemplateCode("cls_LINQ_2_SQL_TEMPLATE", LINQ_TEMPLATES_LIBRARY)
+50        With dbConnection
+60            ReplaceIfNecessary strBaseCode, "cls_LINQ_2_SQL_TEMPLATE", .CodeClassName
+70            ReplaceIfNecessary strBaseCode, "<Server>", .Server
+80            ReplaceIfNecessary strBaseCode, "<Database>", .Database
+90            ReplaceIfNecessary strBaseCode, "<Schema>", .Schema
+100           ReplaceIfNecessary strBaseCode, LINQ_ENUM_TEMPLATE, GetCodeClassEnum(.CodeClassName)
+110       End With
+          
+          Dim stb As New StringBuilder
+120       stb.AppendLine strBaseCode
+          Dim conn As ADODB.Connection
+          Dim rs As ADODB.Recordset
+          Dim colProcedures As New Collection
+          Dim colFunctions As New Collection
+130       Set conn = New ADODB.Connection
+140       conn.Open dbConnection.ConnectionString
+150       Set rs = conn.OpenSchema(adSchemaProcedures, Array(dbConnection.Database, dbConnection.Schema, Empty))
+160       While Not rs.EOF
+170           Select Case Left(rs!PROCEDURE_NAME, 3)
+              Case "fn_", "dt_", "sp_"
+                  ' Ignore
+180           Case Else
+190               Select Case Right(rs!PROCEDURE_NAME, 2)
+                  Case ";1"
+                      ' Trim the trialing ;1
+200                   colProcedures.Add Replace(rs!PROCEDURE_NAME, ";1", "")
+210               Case ";0"
+                      ' Trim the trialing ;0
+220                   colFunctions.Add Replace(rs!PROCEDURE_NAME, ";0", "")
+230               Case Else
+240                   LogError "_LINQ", "AutoGenerateDatabaseClass", Erl, LOG_CASE_ELSE, LOG_CASE_ELSE_DESC, rs!PROCEDURE_NAME
+250               End Select
+260           End Select
+270           rs.MoveNext
+280       Wend
+          
+290       sb.InitializeStatusMeter "Building " & dbConnection.CodeClassName, colProcedures.Count + colFunctions.Count
+          Dim strProcedureName
+300       For Each strProcedureName In colProcedures
+310           sb.IncrementStatusMeter
+320           stb.AppendLine GetSProcText(ConnectionID, CStr(strProcedureName), dbConnection.CodeClassName, False, True, "")
+330           stb.AppendLine GetSProcText(ConnectionID, CStr(strProcedureName), dbConnection.CodeClassName, False, True, "Q")
+340       Next
+350       For Each strProcedureName In colFunctions
+360           sb.IncrementStatusMeter
+370           stb.AppendLine GetSProcText(ConnectionID, CStr(strProcedureName), dbConnection.CodeClassName, True, True, "")
+380           stb.AppendLine GetSProcText(ConnectionID, CStr(strProcedureName), dbConnection.CodeClassName, True, True, "Q")
+390       Next
+400       sb.ClearStatusMeter
+410       conn.Close
+420       Set conn = Nothing
+          
+430       AutoGenerateDatabaseClass = SaveTemplateCode(dbConnection.CodeClassName, stb.Text, CloseCodeWindow)
+          
+PROC_EXIT:
+440       Exit Function
+
+PROC_ERROR:
+450       LogError "_LINQ", "AutoGenerateClass", Erl, Err.Number, Err.Description
+460       Resume PROC_EXIT
+470       Resume
+
+End Function
+
+Private Function CurrentVBProject() As VBProject
+          Dim p As VBProject
+10        On Error GoTo PROC_ERROR
+
+20        For Each p In Application.VBE.VBProjects
+30            If p.FileName = CurrentDb.Name Then
+40                Set CurrentVBProject = p
+50                Exit Function
+60            End If
+70        Next
+
+PROC_EXIT:
+80        Exit Function
+
+PROC_ERROR:
+90        LogError "_LINQ", "CurrentVBProject", Erl, Err.Number, Err.Description
+100       Resume PROC_EXIT
+110       Resume
+End Function
+
+Public Function GetTemplateCode(ModuleName As String, LibraryName As String) As String
+10        On Error GoTo PROC_ERROR
+
+      '    Dim strBaseCode As String
+      '    With Application.VBE.VBProjects(FromLibrary).VBComponents(ClassName).CodeModule
+      '        strBaseCode = .Lines(1, .CountOfLines)
+      '    End With
+          
+          Dim rs As DAO.Recordset2
+20        Set rs = CodeDb.OpenRecordset("SELECT Modules.FileData As FileData FROM " & LINQ_TEMPLATE_LIBRARIES_TABLE & " WHERE LibraryName='" & LibraryName & "' AND Modules.FileName='" & ModuleName & ".def'")
+          
+          Dim strTempFile As String
+30        strTempFile = GetTempFile(ModuleName, "txt")
+          
+          Dim fldFileData As DAO.Field2
+40        Set fldFileData = rs!FileData
+50        fldFileData.SaveToFile strTempFile
+          
+          Dim strBaseCode As String
+60        strBaseCode = ReadTextFile(strTempFile)
+70        gFSO.DeleteFile strTempFile
+          
+80        ReplaceIfNecessary strBaseCode, "<TOOL_VERSION>", TOOL_VERSION
+90        ReplaceIfNecessary strBaseCode, "<NOW>", Format(Now, "yyyy-mm-dd h:mm AM/PM")
+100       ReplaceIfNecessary strBaseCode, "<SOURCE_URL>", LINQ_SOURCE_URL
+
+110       GetTemplateCode = strBaseCode
+
+PROC_EXIT:
+120       Exit Function
+
+PROC_ERROR:
+130       LogError "_LINQ", "GetTemplateCode", Erl, Err.Number, Err.Description
+140       Resume PROC_EXIT
+150       Resume
+End Function
+
+Private Function SaveTemplateCode(ModuleName As String, Text As String, Optional CloseCodeWindow As Boolean = False, Optional ComponentType As VBIDE.vbext_ComponentType = vbext_ct_ClassModule) As Boolean
+10        On Error GoTo PROC_ERROR
+              
+20        If Not IsObjectInCol(CurrentProject.AllModules, ModuleName) Then
+30            LoadModuleText ModuleName, Text
+40        End If
+
+          Dim strCurrentSource As String
+50        strCurrentSource = GetModuleText(ModuleName)
+          
+60        If strCurrentSource = Text Then
+              ' Ignore because it is identical
+70        ElseIf strCurrentSource = Text & vbCrLf Then  ' Sometimes templates differ by just a newline
+              ' Ignore because it is identical
+80            Debug.Print "Ignoring " & ModuleName & " because it is identical 1"
+90        ElseIf strCurrentSource = Text & vbCrLf & vbCrLf Then  ' Sometimes templates differ by just a newline
+              ' Ignore because it is identical
+100           Debug.Print "Ignoring " & ModuleName & " because it is identical 2"
+110       ElseIf strCurrentSource = Text & vbCrLf & vbCrLf & vbCrLf Then  ' Sometimes templates differ by just a newline
+              ' Ignore because it is identical
+120           Debug.Print "Ignoring " & ModuleName & " because it is identical 3"
+130       Else
+140           If Not strCurrentSource Like "*<auto-generated>*" Then
+150               CurrentVBProject().VBComponents(ModuleName).Activate
+160               DoCmd.RunCommand acCmdVisualBasicEditor
+170               If vbOK <> MsgBox("Are you sure you want to blast over " & ModuleName & "?", vbOKCancel + vbDefaultButton2) Then
+180                   Exit Function
+190               End If
+200           End If
+                  
+210           LoadModuleText ModuleName, Text
+220           If Not CloseCodeWindow Then CurrentVBProject().VBComponents(ModuleName).Activate
+230       End If
+          
+240       SaveTemplateCode = True
+          
+PROC_EXIT:
+250       Exit Function
+
+PROC_ERROR:
+260       LogError "_LINQ", "SaveTemplateCode", Erl, Err.Number, Err.Description
+270       Resume PROC_EXIT
+280       Resume
+End Function
+
+'Private Function SaveTemplateCode(CodeClassName As String, Text As String, Optional CloseCodeWindow As Boolean = False, Optional ComponentType As VBIDE.vbext_ComponentType = vbext_ct_ClassModule) As Boolean
+'          Dim vbpCurrent As VBProject
+'10        On Error GoTo PROC_ERROR
+'
+'20        Set vbpCurrent = CurrentVBProject()
+'          Dim fJustCreated As Boolean
+'          Dim vbcCode As VBComponent
+'30        If Not IsObjectInCol(vbpCurrent.VBComponents, CodeClassName) Then
+'40            Set vbcCode = vbpCurrent.VBComponents.Add(ComponentType)
+'50            vbcCode.Name = CodeClassName
+'60            fJustCreated = True
+'70        Else
+'80            Set vbcCode = vbpCurrent.VBComponents(CodeClassName)
+'90        End If
+'
+'          Dim strCurrentSource As String
+'100       strCurrentSource = vbcCode.CodeModule.Lines(1, vbcCode.CodeModule.CountOfLines)
+'
+'110       If strCurrentSource = Text Then
+'              ' Ignore because it is identical
+'120           Debug.Print "Ignoring " & CodeClassName & " because it is identical 1"
+'130       ElseIf strCurrentSource = Text & vbCrLf Then  ' Sometimes templates differ by just a newline
+'              ' Ignore because it is identical
+'140           Debug.Print "Ignoring " & CodeClassName & " because it is identical 2"
+'150       ElseIf strCurrentSource = Text & vbCrLf & vbCrLf Then  ' Sometimes templates differ by just a newline
+'              ' Ignore because it is identical
+'160           Debug.Print "Ignoring " & CodeClassName & " because it is identical 3"
+'170       ElseIf strCurrentSource = Text & vbCrLf & vbCrLf & vbCrLf Then  ' Sometimes templates differ by just a newline
+'              ' Ignore because it is identical
+'180           Debug.Print "Ignoring " & CodeClassName & " because it is identical 4"
+'190       Else
+'200           vbcCode.Activate
+'210           With vbcCode.CodeModule
+'220               If Not fJustCreated Then
+'230                   If Not Text Like .Lines(1, 2) & "*" Then
+'240                       If vbOK <> MsgBox("Are you sure you want to blast over " & CodeClassName & "?", vbOKCancel + vbDefaultButton2) Then
+'250                           Exit Function
+'260                       End If
+'270                   End If
+'280               End If
+'
+'290               .DeleteLines 1, .CountOfLines
+'300               .AddFromString Text
+'
+'310               DoCmd.Save acModule, CodeClassName
+'320               If CloseCodeWindow Then DoCmd.Close acModule, CodeClassName, acSaveYes
+'330           End With
+'340       End If
+'
+'350       SaveTemplateCode = True
+'
+'PROC_EXIT:
+'360       Exit Function
+'
+'PROC_ERROR:
+'370       LogError "_LINQ", "SaveTemplateCode", Erl, Err.Number, Err.Description
+'380       Resume PROC_EXIT
+'390       Resume
+'End Function
+
+Public Function SpReturnsRecords(ConnectionID As Integer, Schema As String, ProcedureName As String) As Boolean
+    Dim conn As New ADODB.Connection
+    On Error GoTo PROC_ERROR
+
+    conn.Open GetDatabaseConnection(ConnectionID).ConnectionString
+    SpReturnsRecords = SProcReturnsRecords(conn, Schema, ProcedureName)
+
+PROC_EXIT:
+    Exit Function
+
+PROC_ERROR:
+    LogError "_LINQ", "SpReturnsRecords", Erl, Err.Number, Err.Description
+    Resume PROC_EXIT
+    Resume
+End Function
+
+Public Function SProcReturnsRecords(conn As ADODB.Connection, Schema As String, ProcedureName As String) As Boolean
+10        On Error GoTo PROC_ERROR
+
+20        On Error GoTo PROC_ERROR
+
+          Dim rsColumns As ADODB.Recordset
+          Dim cmdGetColumns As ADODB.Command
+30        Set cmdGetColumns = New ADODB.Command
+40        With cmdGetColumns
+50            .CommandText = "sys.sp_describe_first_result_set"
+60            .CommandType = adCmdStoredProc
+70            .Parameters.Append .CreateParameter("@tsql", adLongVarWChar, adParamInput, 255, Schema & "." & ProcedureName)
+80            .ActiveConnection = conn
+90            Set rsColumns = .Execute
+100       End With
+110       SProcReturnsRecords = Not rsColumns.EOF
+
+PROC_EXIT:
+120       Exit Function
+
+PROC_ERROR:
+
+130       Select Case Err.Number
+              Case -2147217900 ' [Microsoft][SQL Server]The metadata could not be determined because there are no code paths that reach the end of the batch.
+140               SProcReturnsRecords = False
+150               Resume PROC_EXIT
+
+160           Case Else
+170               LogError "_LINQ", "SProcReturnsRecords", Erl, Err.Number, Err.Description, ProcedureName
+180               Resume PROC_EXIT
+190               Resume
+200       End Select
+
+End Function
+
+Public Function GetSProcText(ConnectionID As Integer, ProcedureName As String, ClassName As String, IsFunction As Boolean, _
+                            Optional IncludeLineNumbers As Boolean = True, _
+                            Optional DataTypeSuffix As String = "") As String
+10        On Error GoTo PROC_ERROR
+
+          Dim conn As ADODB.Connection
+          Dim rsParameters As ADODB.Recordset
+          Dim strVBParam As String
+          Dim strSQLParam As String
+          Dim dbConnection As clsDatabaseConnection
+20        Set dbConnection = GetDatabaseConnection(ConnectionID)
+30        Set conn = New ADODB.Connection
+40        conn.Open dbConnection.ConnectionString
+50        Set rsParameters = conn.OpenSchema(adSchemaProcedureParameters, Array(dbConnection.Database, dbConnection.Schema, ProcedureName))
+          Dim fReturnsRecords As Boolean
+60        fReturnsRecords = SProcReturnsRecords(conn, dbConnection.Schema, ProcedureName)
+          
+          Dim PrevLine As Integer
+70        If Not IncludeLineNumbers Then PrevLine = -1
+          Dim sb As New StringBuilder
+80        sb.AppendLine "'-----------------------------------------------------------"
+90        sb.AppendLine "' DO NOT MODIFY - This was auto-generated by _LINQ_2_SQL"
+          'sb.AppendLine "' ?[_LINQ].AutoGenerateDatabaseClass(" & dbConnection.EnumName & ")"
+          'sb.AppendLine "' ?[_LINQ].GetSProcText(" & dbConnection.EnumName & ", """ & ProcedureName & """, """ & ClassName & """, " & IsFunction & ", " & IncludeLineNumbers & ",""" & DataTypeSuffix & """)"
+          'sb.AppendLine "' DO NOT MODIFY - This was auto-generated by _LINQ"
+100       sb.AppendLine "'-----------------------------------------------------------"
+110       sb.Append "Public Function " & ProcedureName & DataTypeSuffix & "("
+120       If rsParameters.RecordCount <> 0 Then rsParameters.MoveFirst
+          Dim strParamIndent As String
+130       strParamIndent = Space(10)
+          Dim strReturnDataType As String
+          Dim iParameter As Integer
+140       While Not rsParameters.EOF
+150           Select Case rsParameters!PARAMETER_TYPE
+              Case adParamInput
+160               iParameter = iParameter + 1
+170               If iParameter Mod 5 = 0 Then
+180                   sb.AppendLine " _"
+190                   sb.Append strParamIndent
+200               Else
+210                   sb.Append " "
+220               End If
+230               sb.Append GetVBParameterName(rsParameters!PARAMETER_NAME) & " AS " & GetVBDataType(rsParameters!TYPE_NAME, DataTypeSuffix) & ","
+240           Case adParamOutput, adParamInputOutput
+250               iParameter = iParameter + 1
+260               If iParameter Mod 5 = 0 Then
+270                   sb.AppendLine " _"
+280                   sb.Append strParamIndent
+290               Else
+300                   sb.Append " "
+310               End If
+320               sb.Append "ByRef " & GetVBParameterName(rsParameters!PARAMETER_NAME) & " AS " & GetVBDataType(rsParameters!TYPE_NAME, DataTypeSuffix) & ","
+330           Case adParamReturnValue
+340               Debug.Assert rsParameters!PARAMETER_NAME = "@RETURN_VALUE"
+350               If IsFunction And fReturnsRecords Then
+360                   strReturnDataType = "ADODB.Recordset"
+370               Else
+380                   strReturnDataType = GetVBDataType(rsParameters!TYPE_NAME, DataTypeSuffix)
+390               End If
+400           Case Else
+410               Debug.Assert False
+420           End Select
+430           rsParameters.MoveNext
+440       Wend
+450       sb.AppendLine " _"
+460       sb.Append strParamIndent
+470       If Not IsFunction Then
+480           If fReturnsRecords Then
+490               sb.Append "ByRef ReturnRS as ADODB.Recordset, "
+500               sb.Append "Optional ByRef ReturnRecordsets as Collection, "
+510           End If
+520           sb.Append "Optional ByRef ReturnValue as " & strReturnDataType & ", "
+530           sb.Append "Optional ByRef RecordsAffected As Long, "
+540       End If
+550       sb.Append "Optional ErrorOption As enErrorOption = eoLogAndRaiseError, "
+560       sb.Append "Optional CommandTimeout As Integer = 30 _"
+570       sb.AppendLine ""
+580       sb.Append strParamIndent & ") As "
+590       If IsFunction Then
+600           If strReturnDataType = "" Then
+610               fReturnsRecords = True
+620               strReturnDataType = "ADODB.Recordset"
+630           End If
+640           sb.AppendLine strReturnDataType
+650       Else
+660           sb.AppendLine "Boolean"
+670       End If
+680       AppendCodeLine sb, PrevLine, "On Error GoTo PROC_ERROR"
+690       sb.AppendLine ""
+700       AppendCodeLine sb, PrevLine, "Dim strExtraInfo As String"
+710       AppendCodeLine sb, PrevLine, "Dim cmd As New ADODB.Command"
+720       AppendCodeLine sb, PrevLine, "cmd.CommandTimeout = CommandTimeout"
+730       If IsFunction And fReturnsRecords Then
+740           AppendCodeLine sb, PrevLine, "cmd.CommandType = adCmdTable"
+750           If rsParameters.RecordCount <> 0 Then rsParameters.MoveFirst
+              Dim colFunctionParameters As Collection
+              'Set colFunctionParameters = RsToCol(rsParameters, "PARAMETER_NAME", "PARAMETER_NAME")
+760           Set colFunctionParameters = New Collection
+770           While Not rsParameters.EOF
+780               colFunctionParameters.Add "?"
+790               rsParameters.MoveNext
+800           Wend
+              Dim strFunctionCall As String
+810           strFunctionCall = dbConnection.Schema & "." & ProcedureName & "(" & JoinCollection(colFunctionParameters, ", ") & ")"
+820           AppendCodeLine sb, PrevLine, "cmd.CommandText = """ & strFunctionCall & """"
+830       Else
+840           AppendCodeLine sb, PrevLine, "cmd.CommandType = adCmdStoredProc"
+850           AppendCodeLine sb, PrevLine, "cmd.CommandText = """ & dbConnection.Schema & "." & ProcedureName & """"
+860       End If
+870       If rsParameters.RecordCount <> 0 Then rsParameters.MoveFirst
+880       While Not rsParameters.EOF
+890           strVBParam = GetVBParameterName(rsParameters!PARAMETER_NAME)
+900           strSQLParam = GetSQLParameterName(rsParameters!PARAMETER_NAME)
+              Dim strSize As String
+              Const MAX_LENGTH As Long = 10000000
+910           strSize = Nz(rsParameters!CHARACTER_MAXIMUM_LENGTH, "0")
+920           If strSize = "0" And NeedsSize(rsParameters!TYPE_NAME) Then strSize = CStr(MAX_LENGTH)
+              Dim lSize As Long
+930           lSize = Nz(rsParameters!CHARACTER_MAXIMUM_LENGTH, 0)
+940           If lSize = 0 And NeedsSize(rsParameters!TYPE_NAME) Then lSize = MAX_LENGTH
+950           Select Case rsParameters!PARAMETER_TYPE
+              Case adParamInput
+960               Select Case rsParameters!TYPE_NAME
+                  Case "decimal"
+970                   AppendCodeLine sb, PrevLine, "Dim prm" & strSQLParam & " As ADODB.Parameter"
+980                   AppendCodeLine sb, PrevLine, "Set prm" & strSQLParam & " = cmd.CreateParameter(""" & strSQLParam & """, " & GetadDataType(rsParameters!TYPE_NAME, lSize) & ", adParamInput, " & strSize & ", " & strVBParam & ")"
+990                   AppendCodeLine sb, PrevLine, "cmd.Parameters.Append prm" & strSQLParam
+1000              Case Else
+1010                  AppendCodeLine sb, PrevLine, "cmd.Parameters.Append cmd.CreateParameter(""" & strSQLParam & """, " & GetadDataType(rsParameters!TYPE_NAME, lSize) & ", adParamInput, " & strSize & ", " & strVBParam & ")"
+1020              End Select
+1030          Case adParamOutput, adParamInputOutput
+1040              AppendCodeLine sb, PrevLine, "Dim prm" & strSQLParam & " As ADODB.Parameter"
+1050              AppendCodeLine sb, PrevLine, "Set prm" & strSQLParam & " = cmd.CreateParameter(""" & strSQLParam & """, " & GetadDataType(rsParameters!TYPE_NAME, lSize) & ", adParamInputOutput, " & strSize & ", " & strVBParam & ")"
+1060              AppendCodeLine sb, PrevLine, "cmd.Parameters.Append prm" & strSQLParam
+1070          Case adParamReturnValue
+1080              AppendCodeLine sb, PrevLine, "Dim prm" & strSQLParam & " As ADODB.Parameter"
+1090              AppendCodeLine sb, PrevLine, "Set prm" & strSQLParam & " = cmd.CreateParameter(""" & strSQLParam & """, " & GetadDataType(rsParameters!TYPE_NAME, lSize) & ", adParamReturnValue" & IIf(strSize = "", "", ", " & strSize) & ")"
+1100              AppendCodeLine sb, PrevLine, "cmd.Parameters.Append prm" & strSQLParam
+1110          Case Else
+1120              Debug.Assert False
+1130          End Select
+1140          Select Case rsParameters!TYPE_NAME
+              Case "decimal"
+1150              AppendCodeLine sb, PrevLine, "prm" & strSQLParam & ".Precision = " & rsParameters!NUMERIC_PRECISION
+1160              AppendCodeLine sb, PrevLine, "prm" & strSQLParam & ".NumericScale = " & rsParameters!NUMERIC_SCALE
+1170          Case Else
+                  ' Ignore
+1180          End Select
+1190          rsParameters.MoveNext
+1200      Wend
+1210      AppendCodeLine sb, PrevLine, "strExtraInfo = strExtraInfo & " & LINQ_SQL_GENERATOR & ".GetSQL(""" & dbConnection.Schema & "." & ProcedureName & """, cmd.Parameters)"
+1220      AppendCodeLine sb, PrevLine, "SET cmd.ActiveConnection = m_Base.Connection"
+1230      If IsFunction Then
+1240          AppendCodeLine sb, PrevLine, "Dim ReturnRS as New ADODB.Recordset"
+1250          AppendCodeLine sb, PrevLine, "ReturnRS.CursorLocation = adUseClient"
+1260          AppendCodeLine sb, PrevLine, "ReturnRS.LockType = adLockOptimistic"
+1270          AppendCodeLine sb, PrevLine, "ReturnRS.CursorType = adOpenStatic"
+1280          AppendCodeLine sb, PrevLine, "ReturnRS.Open cmd"
+1290      ElseIf fReturnsRecords Then
+1300          AppendCodeLine sb, PrevLine, "Dim rs as ADODB.Recordset"
+1310          AppendCodeLine sb, PrevLine, "Set rs = cmd.Execute(RecordsAffected)"
+1320          AppendCodeLine sb, PrevLine, "Set ReturnRecordsets = " & LINQ_SHARED_MODULE & ".ConvertToInMemoryRecordsets(rs, """ & ProcedureName & """)"
+1330          AppendCodeLine sb, PrevLine, "Set ReturnRS = ReturnRecordsets(1)"
+1340      Else
+1350          AppendCodeLine sb, PrevLine, "cmd.Execute RecordsAffected, , adExecuteNoRecords"
+1360      End If
+1370      If rsParameters.RecordCount <> 0 Then rsParameters.MoveFirst
+1380      While Not rsParameters.EOF
+1390          strVBParam = GetVBParameterName(rsParameters!PARAMETER_NAME)
+1400          strSQLParam = GetSQLParameterName(rsParameters!PARAMETER_NAME)
+1410          Select Case rsParameters!PARAMETER_TYPE
+              Case adParamInput
+                  ' Ignore
+1420          Case adParamOutput, adParamInputOutput
+1430              AppendCodeLine sb, PrevLine, strVBParam & " = prm" & strVBParam & ".Value"
+1440          Case adParamReturnValue
+1450              Debug.Assert rsParameters!PARAMETER_NAME = "@RETURN_VALUE"
+1460              If IsFunction Then
+1470                  If DataTypeSuffix = "" Then
+1480                      AppendCodeLine sb, PrevLine, ProcedureName & " = prm" & strVBParam & ".Value"
+1490                  Else
+1500                      AppendCodeLine sb, PrevLine, "Set " & ProcedureName & DataTypeSuffix & " = " & GetVBNullableConversion(strReturnDataType) & "(prm" & strVBParam & ".Value)"
+1510                  End If
+1520              Else
+1530                  If DataTypeSuffix = "" Then
+1540                      AppendCodeLine sb, PrevLine, "ReturnValue = prm" & strVBParam & ".Value"
+1550                  Else
+1560                      AppendCodeLine sb, PrevLine, "If Not ReturnValue Is Nothing Then ReturnValue = prm" & strVBParam & ".Value"
+1570                  End If
+1580              End If
+1590          Case Else
+1600              Debug.Assert False
+1610          End Select
+1620          rsParameters.MoveNext
+1630      Wend
+1640      If Not IsFunction Then
+1650          sb.AppendLine ""
+1660          AppendCodeLine sb, PrevLine, ProcedureName & DataTypeSuffix & " = True"
+1670      ElseIf fReturnsRecords Then
+1680          sb.AppendLine ""
+1690          AppendCodeLine sb, PrevLine, "Set " & ProcedureName & DataTypeSuffix & " = " & LINQ_SHARED_MODULE & ".ConvertToInMemoryRecordset(ReturnRS, """ & ProcedureName & """)"
+1700      End If
+1710      sb.AppendLine ""
+1720      sb.AppendLine "PROC_EXIT:"
+1730      AppendCodeLine sb, PrevLine, "Exit Function"
+1740      sb.AppendLine ""
+1750      sb.AppendLine "PROC_ERROR:"
+1760      AppendCodeLine sb, PrevLine, "If m_Base.HandleError(""" & dbConnection.CodeClassName & """, """ & ProcedureName & DataTypeSuffix & """, Erl, Err.Number, Err.Description, strExtraInfo, ErrorOption) Then"
+1770      AppendCodeLine sb, PrevLine, "    cmd.ActiveConnection = m_Base.Connection"
+1780      AppendCodeLine sb, PrevLine, "    Resume"
+1790      AppendCodeLine sb, PrevLine, "End If"
+1800      AppendCodeLine sb, PrevLine, "Resume PROC_EXIT"
+1810      AppendCodeLine sb, PrevLine, "Resume"
+1820      sb.AppendLine "End Function"
+1830      GetSProcText = sb.Text
+
+PROC_EXIT:
+1840      On Error Resume Next
+1850      If Not conn Is Nothing Then
+1860          conn.Close
+1870          Set conn = Nothing
+1880      End If
+1890      Exit Function
+
+PROC_ERROR:
+1900      LogError "_LINQ", "GetSProcText", Erl, Err.Number, Err.Description, ProcedureName
+1910      Resume PROC_EXIT
+1920      Resume
+
+End Function
+
+Private Sub AppendCodeLine(sb As StringBuilder, ByRef PreviousLineNumber As Integer, CodeLine As String, Optional SkipLineNumber As Boolean = False)
+10        On Error GoTo PROC_ERROR
+          
+20        If PreviousLineNumber < 0 Then
+30            sb.Append Space(4)
+40        ElseIf SkipLineNumber Then
+50            sb.Append Space(10)
+60        Else
+70            PreviousLineNumber = PreviousLineNumber + 10
+              Dim strLineNumber As String
+80            strLineNumber = CStr(PreviousLineNumber)
+90            sb.Append strLineNumber
+100           sb.Append Space(10 - Len(strLineNumber))
+110       End If
+120       sb.AppendLine CodeLine
+
+PROC_EXIT:
+130       Exit Sub
+
+PROC_ERROR:
+140       LogError "_LINQ", "AppendCodeLine", Erl, Err.Number, Err.Description
+150       Resume PROC_EXIT
+160       Resume
+
+End Sub
+
+Public Function GetVBParameterName(SQLParameterName As String) As String
+10        On Error GoTo PROC_ERROR
+
+          Dim strName As String
+20        strName = Mid(SQLParameterName, 2) ' Chop off the @
+30        ReplaceIfNecessary strName, "#", "_" ' Handle #'s in parameter names
+40        Select Case LCase(strName)
+          Case "date", "string", "integer", "long"
+50            GetVBParameterName = strName & "Param"
+60        Case Else
+70            GetVBParameterName = strName
+80        End Select
+
+PROC_EXIT:
+90        Exit Function
+
+PROC_ERROR:
+100       LogError "_LINQ", "GetVBParameterName", Erl, Err.Number, Err.Description
+110       Resume PROC_EXIT
+120       Resume
+
+End Function
+
+Public Function GetSQLParameterName(SQLParameterName As String) As String
+10        On Error GoTo PROC_ERROR
+
+          Dim strName As String
+20        strName = Mid(SQLParameterName, 2)
+30        GetSQLParameterName = strName
+          
+PROC_EXIT:
+40        Exit Function
+
+PROC_ERROR:
+50        LogError "_LINQ", "GetSQLParameterName", Erl, Err.Number, Err.Description
+60        Resume PROC_EXIT
+70        Resume
+
+End Function
+
+Private Function GetVBDataType(SQLDataType As String, DataTypeSuffix As String) As String
+          Dim strDataType As String
+10        On Error GoTo PROC_ERROR
+
+20        Select Case SQLDataType
+          Case "bit"
+30            strDataType = "Boolean" & DataTypeSuffix
+40        Case "tinyint"
+50            strDataType = "Byte" & DataTypeSuffix
+60        Case "smallint"
+70            strDataType = "Integer" & DataTypeSuffix
+80        Case "int"
+90            strDataType = "Long" & DataTypeSuffix
+100       Case "bigint"
+110           strDataType = "Variant" & DataTypeSuffix
+120       Case "smallmoney"
+130           strDataType = "Currency" & DataTypeSuffix
+140       Case "money"
+150           strDataType = "Currency" & DataTypeSuffix
+160       Case "decimal"
+170           strDataType = "Variant" & DataTypeSuffix
+180       Case "uniqueidentifier"
+190           strDataType = "String" & DataTypeSuffix
+200       Case "date", "datetime", "datetime2", "time"
+210           strDataType = "Date" & DataTypeSuffix
+220       Case "real"
+230           strDataType = "Single" & DataTypeSuffix
+240       Case "float"
+250           strDataType = "Double" & DataTypeSuffix
+260       Case "char"
+270           strDataType = "String" & DataTypeSuffix
+280       Case "nchar"
+290           strDataType = "String" & DataTypeSuffix
+300       Case "varchar"
+310           strDataType = "String" & DataTypeSuffix
+320       Case "nvarchar", "sysname"
+330           strDataType = "String" & DataTypeSuffix
+340       Case "text"
+350           strDataType = "String" & DataTypeSuffix
+360       Case "ntext"
+370           strDataType = "String" & DataTypeSuffix
+380       Case Else
+              'Debug.Print SQLDataType
+390           strDataType = "UNKNOWN_TYPE"
+400       End Select
+410       GetVBDataType = strDataType
+
+PROC_EXIT:
+420       Exit Function
+
+PROC_ERROR:
+430       LogError "_LINQ", "GetVBDataType", Erl, Err.Number, Err.Description, SQLDataType
+440       Resume PROC_EXIT
+450       Resume
+
+End Function
+
+Private Function GetVBNullableConversion(VBDataType As String) As String
+          Dim strConversionFunction As String
+10        On Error GoTo PROC_ERROR
+
+20        Select Case VBDataType
+          Case "BooleanQ"
+30            strConversionFunction = "CBoolQ"
+40        Case "ByteQ"
+50            strConversionFunction = "CByteQ"
+60        Case "IntegerQ"
+70            strConversionFunction = "CIntQ"
+80        Case "LongQ"
+90            strConversionFunction = "CLngQ"
+100       Case "CurrencyQ"
+110           strConversionFunction = "CCurQ"
+120       Case "StringQ"
+130           strConversionFunction = "CStrQ"
+140       Case "DateQ"
+150           strConversionFunction = "CDateQ"
+160       Case "DoubleQ"
+170           strConversionFunction = "CDblQ"
+180       Case "SingleQ"
+190           strConversionFunction = "CSngQ"
+200       Case "VariantQ"
+210           strConversionFunction = "CVarQ"
+220       Case Else
+230           strConversionFunction = "UNKNOWN_TYPE"
+240       End Select
+250       GetVBNullableConversion = strConversionFunction
+
+PROC_EXIT:
+260       Exit Function
+
+PROC_ERROR:
+270       LogError "_LINQ", "GetVBNullableConversion", Erl, Err.Number, Err.Description, VBDataType
+280       Resume PROC_EXIT
+290       Resume
+
+End Function
+
+Private Function NeedsSize(SQLDataType As String) As Boolean
+10        On Error GoTo PROC_ERROR
+
+20        Select Case SQLDataType
+          Case "varchar", "nvarchar", "varbinary"
+30            NeedsSize = True
+40        End Select
+
+PROC_EXIT:
+50        Exit Function
+
+PROC_ERROR:
+60        LogError "_LINQ", "NeedsSize", Erl, Err.Number, Err.Description
+70        Resume PROC_EXIT
+80        Resume
+
+End Function
+
+'http://www.w3schools.com/asp/ado_datatypes.asp
+Private Function GetadDataType(SQLDataType As String, Optional Size As Long) As String
+          Dim strDataType As String
+10        On Error GoTo PROC_ERROR
+
+20        Select Case SQLDataType
+          Case "bit"
+30            strDataType = "adBoolean"
+40        Case "tinyint"
+50            strDataType = "adUnsignedTinyInt"
+60        Case "smallint"
+70            strDataType = "adSmallInt"
+80        Case "int"
+90            strDataType = "adInteger"
+100       Case "bigint"
+110           strDataType = "adBigInt"
+120       Case "smallmoney"
+130           strDataType = "adCurrency"
+140       Case "money"
+150           strDataType = "adCurrency"
+160       Case "decimal"
+170           strDataType = "adDecimal"
+180       Case "uniqueidentifier"
+190           strDataType = "adGUID"
+200       Case "datetime", "datetime2"
+210           strDataType = "adDBTimeStamp"
+220       Case "date"
+230           strDataType = "adDBDate"
+240       Case "time"
+250           strDataType = "adDBTime"
+260       Case "real"
+270           strDataType = "adSingle"
+280       Case "float"
+290           strDataType = "adDouble"
+300       Case "char"
+310           strDataType = "adChar"
+320       Case "nchar"
+330           strDataType = "adWChar"
+340       Case "varchar"
+350           If Size > 4000 Or Size < 0 Then
+360               strDataType = "adLongVarChar"
+370           Else
+380               strDataType = "adVarChar"
+390           End If
+400       Case "nvarchar"
+410           If Size > 4000 Or Size < 0 Then
+420               strDataType = "adLongVarWChar"
+430           Else
+440               strDataType = "adVarWChar"
+450           End If
+460       Case "sysname"
+470           strDataType = "adVarWChar"
+480       Case "text"
+490           strDataType = "adLongVarChar"
+500       Case "ntext"
+510           strDataType = "adLongVarWChar"
+520       Case "binary"
+530           strDataType = "adBinary"
+540       Case "varbinary"
+550           strDataType = "adVarBinary"
+560       Case Else
+570           strDataType = "adEmpty"
+580       End Select
+590       GetadDataType = strDataType
+
+PROC_EXIT:
+600       Exit Function
+
+PROC_ERROR:
+610       LogError "_LINQ", "GetadDataType", Erl, Err.Number, Err.Description
+620       Resume PROC_EXIT
+630       Resume
+
+End Function

@@ -1,0 +1,233 @@
+'---------------------------------------------------------------------------------------
+'          __    _____   ______       ___       _____ ____    __
+'         / /   /  _/ | / / __ \     |__ \     / ___// __ \  / /
+'        / /    / //  |/ / / / /     __/ /     \__ \/ / / / / /
+'       / /____/ // /|  / /_/ /     / __/     ___/ / /_/ / / /___
+' _____/_____/___/_/ |_/\___\_\____/____/____/____/\___\_\/_____/
+'/_____/                     /_____/   /_____/
+'
+' (c) Tim Getsch
+' @author timgetsch@commitcs.com
+' @license MIT (http://www.opensource.org/licenses/mit-license.php)
+'---------------------------------------------------------------------------------------
+Option Compare Database
+Option Explicit
+
+Public Const LOG_CASE_ELSE As Integer = -5
+Public Const LOG_CASE_ELSE_DESC As String = "Unexpected Case Else Hit"
+
+Public Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
+
+Public Sub DebugAssert(Condition As Boolean, AssertTag As String)
+10        On Error GoTo PROC_ERROR
+          
+20        If Not Condition Then
+30            If IsRuntime Then
+                  ' Log this as an error if we are in runtime mode
+40                LogError "modSQM", "DebugAssert", 0, 1, "Assert Failed", AssertTag
+50            End If
+60            Debug.Print AssertTag
+70            Debug.Assert False
+80            MsgBox AssertTag & " Assert Failed", vbCritical, "Assert Failed, v" & GetVersion() & " " & Now & " " & GetMachineName()
+90            Stop
+100       End If
+
+PROC_EXIT:
+110       Exit Sub
+
+PROC_ERROR:
+120       MsgBox "Error in modSQM.DebugAssert line" & Erl & vbCrLf & Err.Number & "-" & Err.Description, vbCritical
+130       Resume PROC_EXIT
+140       Resume
+End Sub
+
+Public Function GetMachineName() As String
+          'TVCodeTools ErrorEnablerStart
+10        On Error GoTo PROC_ERROR
+          'TVCodeTools ErrorEnablerEnd
+          Static Value As String
+20        If Len(Value) = 0 Then
+30            Value = Environ("COMPUTERNAME")
+40        End If
+50        GetMachineName = Value
+          'TVCodeTools ErrorHandlerStart
+PROC_EXIT:
+60        Exit Function
+          
+PROC_ERROR:
+70        LogError "modMisc", "GetMachineName", Erl, Err.Number, Err.Description
+80        Resume PROC_EXIT
+90        Resume
+          'TVCodeTools ErrorHandlerEnd
+End Function
+
+Public Function GetAppTitle() As String
+    GetAppTitle = "Northwind"
+End Function
+
+Public Function GetVersion() As Integer
+    GetVersion = 2003
+End Function
+
+Public Function Ne(Value As Variant, Optional ValueIfEmptyString As Variant = Null)
+10        On Error GoTo PROC_ERROR
+
+20        If Value = "" Then
+30            Ne = ValueIfEmptyString
+40        Else
+50            Ne = Value
+60        End If
+
+PROC_EXIT:
+70        Exit Function
+
+PROC_ERROR:
+80        LogError "modMisc", "Ne", Erl, Err.Number, Err.Description
+90        Resume PROC_EXIT
+100       Resume
+End Function
+
+Public Function QuoteString(Text As String, Optional SwapBlankWithNULL As Boolean = True) As String
+10        On Error GoTo PROC_ERROR
+
+20        If Text = "" And SwapBlankWithNULL Then
+30            QuoteString = "NULL"
+40        Else
+50            QuoteString = "'" & Replace(Text, "'", "''") & "'"
+60        End If
+
+PROC_EXIT:
+70        Exit Function
+
+PROC_ERROR:
+80        LogError "modMisc", "QuoteString", Erl, Err.Number, Err.Description
+90        Resume PROC_EXIT
+100       Resume
+End Function
+
+Public Function IsRuntime() As Boolean
+10       On Error GoTo PROC_ERROR
+
+20        IsRuntime = SysCmd(acSysCmdRuntime)
+
+PROC_EXIT:
+30       Exit Function
+
+PROC_ERROR:
+40        LogError "modMisc", "IsRuntime", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+
+End Function
+
+Public Function ReplaceIfNecessary(ByRef Text As String, ByRef Find As String, ByRef Replacement As String) As Boolean
+          'TVCodeTools ErrorEnablerStart
+10        On Error GoTo PROC_ERROR
+          'TVCodeTools ErrorEnablerEnd
+20        If InStr(Text, Find) > 0 Then
+30            Text = Replace(Text, Find, Replacement)
+40            ReplaceIfNecessary = True
+50        End If
+          'TVCodeTools ErrorHandlerStart
+PROC_EXIT:
+60        Exit Function
+          
+PROC_ERROR:
+70        LogError "modMisc", "ReplaceIfNecessary", Erl, Err.Number, Err.Description
+80        Resume PROC_EXIT
+90        Resume
+          'TVCodeTools ErrorHandlerEnd
+End Function
+
+Public Function JoinCollection(col As Collection, Delimiter As String) As String
+          'TVCodeTools ErrorEnablerStart
+10        On Error GoTo PROC_ERROR
+          'TVCodeTools ErrorEnablerEnd
+20        If col.Count = 0 Then
+30            Exit Function
+40        End If
+          Dim arr() As String
+50        ReDim arr(1 To col.Count)
+          Dim i As Long
+60        For i = 1 To col.Count
+70            arr(i) = col(i)
+80        Next
+90        JoinCollection = Join(arr, Delimiter)
+          'TVCodeTools ErrorHandlerStart
+PROC_EXIT:
+100       Exit Function
+          
+PROC_ERROR:
+110       LogError "modMisc", "JoinCollection", Erl, Err.Number, Err.Description
+120       Resume PROC_EXIT
+130       Resume
+          'TVCodeTools ErrorHandlerEnd
+End Function
+
+Public Function IsObjectInCol(col As Object, ByVal Index) As Boolean
+10        On Error Resume Next
+          Dim val As Object
+20        Set val = col.Item(Index)
+30        IsObjectInCol = Err.Number = 0
+40        Err.Clear
+End Function
+
+Public Function ConvertDateToSqlString(dt) As String
+10        On Error GoTo PROC_ERROR
+
+20        If IsNull(dt) Then
+30            ConvertDateToSqlString = "NULL"
+40        Else
+              Dim dtRoundedToMinute As Date
+50            dtRoundedToMinute = CDate(Format$(dt, "mm/dd/yyyy hh:mm AM/PM"))
+              Dim sglSeconds As Single
+              Const SECONDS_PER_DAY As Single = 24# * 60 * 60
+60            sglSeconds = (dt - dtRoundedToMinute) * SECONDS_PER_DAY
+              Dim strFormatSeconds As String
+70            strFormatSeconds = Format$(sglSeconds, "00.000")
+80            If Left$(strFormatSeconds, 1) = "-" Then
+90                sglSeconds = sglSeconds + 60
+100               dt = dt - 60 / SECONDS_PER_DAY
+110               strFormatSeconds = Format$(sglSeconds, "00.000")
+120           End If
+130           ConvertDateToSqlString = "'" & Replace(Format$(dt, "MMM DD YYYY hh:mm:00.000 AM/PM"), "00.000", Format$(sglSeconds, "00.000")) & "'"
+140       End If
+
+PROC_EXIT:
+150       Exit Function
+
+PROC_ERROR:
+160       LogError "modMisc", "ConvertDateToSqlString", Erl, Err.Number, Err.Description
+170       Resume PROC_EXIT
+180       Resume
+
+End Function
+
+Public Function BinaryToHex(arrBytes) As String
+          Dim arrHex() As String
+10        On Error GoTo PROC_ERROR
+
+20        ReDim arrHex(UBound(arrBytes))
+          Dim l As Long
+30        For l = LBound(arrBytes) To UBound(arrBytes)
+40            arrHex(l) = Hex$(arrBytes(l))
+50            Select Case Len(arrHex(l))
+                  Case 2
+                      ' Good
+60                Case 1
+70                    arrHex(l) = "0" & arrHex(l)
+80                Case Else
+90                    DebugAssert False, "BinaryToHex Failed"
+100           End Select
+110       Next
+120       BinaryToHex = "0x" & Join(arrHex, "")
+
+PROC_EXIT:
+130       Exit Function
+
+PROC_ERROR:
+140       LogError "modMisc", "BinaryToHex", Erl, Err.Number, Err.Description
+150       Resume PROC_EXIT
+160       Resume
+
+End Function

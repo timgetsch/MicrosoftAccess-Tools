@@ -1,0 +1,229 @@
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = False
+'---------------------------------------------------------------------------------------
+'          __    _____   ______       ___       _____ ____    __
+'         / /   /  _/ | / / __ \     |__ \     / ___// __ \  / /
+'        / /    / //  |/ / / / /     __/ /     \__ \/ / / / / /
+'       / /____/ // /|  / /_/ /     / __/     ___/ / /_/ / / /___
+' _____/_____/___/_/ |_/\___\_\____/____/____/____/\___\_\/_____/
+'/_____/                     /_____/   /_____/
+'
+' (c) Tim Getsch
+' @author timgetsch@commitcs.com
+' @license MIT (http://www.opensource.org/licenses/mit-license.php)
+'---------------------------------------------------------------------------------------
+Option Compare Database
+Option Explicit
+
+Private m_ID As Integer
+Private m_Description As String
+Private m_SqlServerDriver As String
+Private m_Server As String
+Private m_Database As String
+Private m_Trusted As Boolean
+Private m_UserName As String
+Private m_Password As String
+Private m_LinkedTablePrefix As String
+Private m_CodeClassName As String
+Private m_EnumName As String
+Private m_Schema As String
+
+Public Sub Initialize(ConnectionID As Integer)
+10        On Error GoTo PROC_ERROR
+          
+          Dim db As DAO.Database
+          Dim rs As DAO.Recordset
+20        Set db = CurrentDb()
+30        Set rs = db.OpenRecordset("SELECT * FROM [" & LINQ_REMOTE_CONNECTIONS & "] WHERE ID=" & ConnectionID)
+40        If rs.RecordCount = 1 Then
+50            m_ID = rs!ID
+60            m_Description = rs!Description
+70            m_Database = rs!Database
+80            m_Server = rs!Server
+90            m_Trusted = rs!Trusted
+100           m_UserName = Nz(rs!UserName)
+110           m_Password = Nz(rs!Password)
+120           m_LinkedTablePrefix = Nz(rs!LinkedTablePrefix)
+130           m_CodeClassName = Nz(rs!CodeClassName)
+140           m_EnumName = Nz(rs!EnumName)
+150           m_SqlServerDriver = rs!SqlServerDriver
+160           m_Schema = rs!Schema
+170       ElseIf ConnectionID <> 0 Then
+180           DebugAssert False, "UNKNOWN DatabaseConnection"
+190       End If
+
+PROC_EXIT:
+200       rs.Close
+210       Set rs = Nothing
+220       Set db = Nothing
+230       Exit Sub
+
+PROC_ERROR:
+240       LogError "clsDatabaseConnection", "Initialize", Erl, Err.Number, Err.Description
+250       Resume PROC_EXIT
+260       Resume
+
+End Sub
+
+Public Property Get ConnectionString() As String
+10        On Error GoTo PROC_ERROR
+
+          Static Value As String
+20        If Value = "" Then Value = GetSQLConnectString(m_SqlServerDriver, m_Server, m_Database, m_Trusted, m_Description, m_UserName, m_Password)
+30        ConnectionString = Value
+
+PROC_EXIT:
+40        Exit Property
+
+PROC_ERROR:
+50        LogError "clsDatabaseConnection", "ConnectionString", Erl, Err.Number, Err.Description
+60        Resume PROC_EXIT
+70        Resume
+End Property
+
+Public Property Get ConnectionStringADO() As String
+10        On Error GoTo PROC_ERROR
+
+          Static Value As String
+20        If Value = "" Then Value = GetSQLConnectStringADO(m_Server, m_Database, m_Trusted, m_UserName, m_Password)
+30        ConnectionStringADO = Value
+
+PROC_EXIT:
+40        Exit Property
+
+PROC_ERROR:
+50        LogError "clsDatabaseConnection", "ConnectionStringADO", Erl, Err.Number, Err.Description
+60        Resume PROC_EXIT
+70        Resume
+End Property
+
+Public Property Get ConnectionStringOLEDB() As String
+10        On Error GoTo PROC_ERROR
+
+          Static Value As String
+20        If Value = "" Then Value = GetSQLConnectStringOLEDB(m_Server, m_Database, m_Trusted, m_UserName, m_Password)
+30        ConnectionStringOLEDB = Value
+
+PROC_EXIT:
+40        Exit Property
+
+PROC_ERROR:
+50        LogError "clsDatabaseConnection", "ConnectionStringOLEDB", Erl, Err.Number, Err.Description
+60        Resume PROC_EXIT
+70        Resume
+End Property
+
+
+Public Property Get ID() As Integer
+10        On Error GoTo PROC_ERROR
+
+20        ID = m_ID
+
+PROC_EXIT:
+30        Exit Property
+
+PROC_ERROR:
+40        LogError "clsDatabaseConnection", "ID", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Property
+
+Public Property Get Database() As String
+10        On Error GoTo PROC_ERROR
+
+20        Database = m_Database
+
+PROC_EXIT:
+30        Exit Property
+
+PROC_ERROR:
+40        LogError "clsDatabaseConnection", "Database", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Property
+
+Public Property Get Server() As String
+10        On Error GoTo PROC_ERROR
+
+20        Server = m_Server
+
+PROC_EXIT:
+30        Exit Property
+
+PROC_ERROR:
+40        LogError "clsDatabaseConnection", "Server", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Property
+
+Public Property Get Schema() As String
+10        On Error GoTo PROC_ERROR
+
+20        Schema = m_Schema
+
+PROC_EXIT:
+30        Exit Property
+
+PROC_ERROR:
+40        LogError "clsDatabaseConnection", "Schema", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Property
+
+Public Property Get LinkedTablePrefix() As String
+10        On Error GoTo PROC_ERROR
+
+20        LinkedTablePrefix = m_LinkedTablePrefix
+
+PROC_EXIT:
+30        Exit Property
+
+PROC_ERROR:
+40        LogError "clsDatabaseConnection", "LinkedTablePrefix", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Property
+
+Public Property Get CodeClassName() As String
+10        On Error GoTo PROC_ERROR
+
+20        CodeClassName = m_CodeClassName
+
+PROC_EXIT:
+30        Exit Property
+
+PROC_ERROR:
+40        LogError "clsDatabaseConnection", "CodeClassName", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Property
+
+Public Property Get Description() As String
+10        On Error GoTo PROC_ERROR
+
+20        Description = m_Description
+
+PROC_EXIT:
+30        Exit Property
+
+PROC_ERROR:
+40        LogError "clsDatabaseConnection", "Description", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Property
+
+Public Property Get EnumName() As String
+10        On Error GoTo PROC_ERROR
+
+20        EnumName = m_EnumName
+
+PROC_EXIT:
+30        Exit Property
+
+PROC_ERROR:
+40        LogError "clsDatabaseConnection", "EnumName", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Property

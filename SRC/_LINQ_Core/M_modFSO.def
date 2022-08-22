@@ -1,0 +1,104 @@
+'---------------------------------------------------------------------------------------
+'          __    _____   ______       ___       _____ ____    __
+'         / /   /  _/ | / / __ \     |__ \     / ___// __ \  / /
+'        / /    / //  |/ / / / /     __/ /     \__ \/ / / / / /
+'       / /____/ // /|  / /_/ /     / __/     ___/ / /_/ / / /___
+' _____/_____/___/_/ |_/\___\_\____/____/____/____/\___\_\/_____/
+'/_____/                     /_____/   /_____/
+'
+' (c) Tim Getsch
+' @author timgetsch@commitcs.com
+' @license MIT (http://www.opensource.org/licenses/mit-license.php)
+'---------------------------------------------------------------------------------------
+Option Compare Database
+Option Explicit
+
+' Requires: Windows Script Host Object Model (Reference)
+Public gFSO As New IWshRuntimeLibrary.FileSystemObject
+
+Public Sub WriteTextFile(FileName As String, Text As String)
+10        On Error GoTo PROC_ERROR
+
+          Dim stream As TextStream
+20        Set stream = gFSO.CreateTextFile(FileName, True)
+30        stream.Write Text
+40        stream.Close
+
+PROC_EXIT:
+50        Exit Sub
+
+PROC_ERROR:
+60        LogError "modFSO", "WriteTextFile", Erl, Err.Number, Err.Description
+70        Resume PROC_EXIT
+80        Resume
+End Sub
+
+Public Function ReadTextFile(FileName As String) As String
+10        On Error GoTo PROC_ERROR
+
+          Dim stream As TextStream
+20        Set stream = gFSO.OpenTextFile(FileName)
+30        ReadTextFile = stream.ReadAll
+40        stream.Close
+
+PROC_EXIT:
+50        Exit Function
+
+PROC_ERROR:
+60        LogError "modFSO", "ReadTextFile", Erl, Err.Number, Err.Description
+70        Resume PROC_EXIT
+80        Resume
+End Function
+
+Public Function GetTempFile(BaseName As String, Extension As String) As String
+10        On Error GoTo PROC_ERROR
+
+          Dim strTempFileName As String
+20        strTempFileName = gFSO.BuildPath(gFSO.GetSpecialFolder(TemporaryFolder), BaseName & gFSO.GetTempName & "." & Extension)
+30        If gFSO.FileExists(strTempFileName) Then gFSO.DeleteFile strTempFileName
+40        GetTempFile = strTempFileName
+
+PROC_EXIT:
+50        Exit Function
+
+PROC_ERROR:
+60        LogError "modFSO", "GetTempFile", Erl, Err.Number, Err.Description
+70        Resume PROC_EXIT
+80        Resume
+End Function
+
+Public Function GetModuleText(ModuleName As String) As String
+10        On Error GoTo PROC_ERROR
+
+          Dim strTempFile As String
+20        strTempFile = GetTempFile(ModuleName, "txt")
+30        SaveAsText acModule, ModuleName, strTempFile
+40        GetModuleText = ReadTextFile(strTempFile)
+50        gFSO.DeleteFile strTempFile
+
+PROC_EXIT:
+60        Exit Function
+
+PROC_ERROR:
+70        LogError "modFSO", "GetModuleText", Erl, Err.Number, Err.Description
+80        Resume PROC_EXIT
+90        Resume
+End Function
+
+Public Sub LoadModuleText(ModuleName As String, Text As String)
+10        On Error GoTo PROC_ERROR
+
+          Dim strTempFile As String
+20        strTempFile = GetTempFile(ModuleName, "txt")
+30        WriteTextFile strTempFile, Text
+40        LoadFromText acModule, ModuleName, strTempFile
+50        gFSO.DeleteFile strTempFile
+
+PROC_EXIT:
+60        Exit Sub
+
+PROC_ERROR:
+70        LogError "modFSO", "LoadModuleText", Erl, Err.Number, Err.Description
+80        Resume PROC_EXIT
+90        Resume
+End Sub

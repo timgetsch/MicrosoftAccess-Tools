@@ -1,0 +1,169 @@
+'---------------------------------------------------------------------------------------
+'          __    _____   ______       ___       _____ ____    __
+'         / /   /  _/ | / / __ \     |__ \     / ___// __ \  / /
+'        / /    / //  |/ / / / /     __/ /     \__ \/ / / / / /
+'       / /____/ // /|  / /_/ /     / __/     ___/ / /_/ / / /___
+' _____/_____/___/_/ |_/\___\_\____/____/____/____/\___\_\/_____/
+'/_____/                     /_____/   /_____/
+'
+' (c) Tim Getsch
+' @author timgetsch@commitcs.com
+' @license MIT (http://www.opensource.org/licenses/mit-license.php)
+'---------------------------------------------------------------------------------------
+Option Compare Database
+Option Explicit
+
+Public Const cn_TEMPLATE As Integer = -1
+
+'Private Const SQL_SERVER_DRIVER As String = "SQL Server Native Client 10.0"
+'Private Const SQL_SERVER_DRIVER As String = "SQL Server Native Client 11.0"
+'Private Const SQL_SERVER_DRIVER As String = "ODBC Driver 13 for SQL Server"
+
+Public Function GetConnectionStringProperty(PropertyName As String, FromConnnectString As String) As String
+10        On Error GoTo PROC_ERROR
+          Dim arrProps As Variant
+          Dim prop As Variant
+          Dim PropParts As Variant
+20        arrProps = Split(FromConnnectString, ";")
+30        For Each prop In arrProps
+40            PropParts = Split(prop, "=")
+50            If UBound(PropParts) = 1 Then
+60                If PropParts(0) = PropertyName Then
+70                    GetConnectionStringProperty = PropParts(1)
+80                    Exit Function
+90                End If
+100           End If
+110       Next
+PROC_EXIT:
+120       Exit Function
+          
+PROC_ERROR:
+130       LogError "modDatabaseConnections", "GetConnectionStringProperty", Erl, Err.Number, Err.Description
+140       Resume PROC_EXIT
+150       Resume
+End Function
+
+Public Function GetSQLConnectString(strSqlServerDriver As String, strServer As String, strDatabase As String, fTrustedConnection As Boolean, strDescription As String, UserID, Password) As String
+10        On Error GoTo PROC_ERROR
+          
+20        If strServer = "" And strDatabase = "" Then
+30            GetSQLConnectString = ";DATABASE=" & CurrentDb.Name
+40        Else
+50            GetSQLConnectString = "ODBC" & _
+                          IIf(strDescription <> "", ";Description=" & strDescription, "") & _
+                          ";DRIVER=" & strSqlServerDriver & _
+                          ";SERVER=" & strServer & _
+                          ";DATABASE=" & strDatabase & _
+                          IIf(fTrustedConnection, ";Trusted_Connection=Yes", "") & _
+                          IIf(Not fTrustedConnection, ";Uid=" & UserID, "") & _
+                          IIf(Not fTrustedConnection, ";Pwd=" & Password, "") & _
+                          ";APP=" & Left$(GetAppTitle(), 25)
+60        End If
+          
+PROC_EXIT:
+70        Exit Function
+          
+PROC_ERROR:
+80        LogError "modDatabaseConnections", "GetSQLConnectString", Erl, Err.Number, Err.Description
+90        Resume PROC_EXIT
+100       Resume
+End Function
+
+Public Function GetSQLConnectStringOLEDB(strServer As String, strDatabase As String, fTrustedConnection As Boolean, UserID, Password) As String
+10        On Error GoTo PROC_ERROR
+          'Provider=sqloledb;Data Source=myServerAddress;Initial Catalog=myDataBase;Integrated Security=SSPI;
+          'Provider=sqloledb;Data Source=myServerAddress;Initial Catalog=myDataBase;User Id=myUsername;Password=myPassword;
+20        GetSQLConnectStringOLEDB = "Provider=sqloledb" & _
+                      ";Data Source=" & strServer & _
+                      ";Initial Catalog=" & strDatabase & _
+                      IIf(fTrustedConnection, ";Integrated Security=SSPI", "") & _
+                      IIf(Not fTrustedConnection, ";User ID=" & UserID, "") & _
+                      IIf(Not fTrustedConnection, ";Password=" & Password, "")
+          
+PROC_EXIT:
+30        Exit Function
+          
+PROC_ERROR:
+40        LogError "modDatabaseConnections", "GetSQLConnectStringOLEDB", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Function
+
+Public Function GetSQLConnectStringADO(strServer As String, strDatabase As String, fTrustedConnection As Boolean, UserID, Password) As String
+10        On Error GoTo PROC_ERROR
+          
+20        GetSQLConnectStringADO = "Provider=SQLNCLI11.1;Persist Security Info=False" & _
+                      ";Server=" & strServer & _
+                      ";Database=" & strDatabase & _
+                      IIf(fTrustedConnection, ";Integrated Security=SSPI", "") & _
+                      IIf(Not fTrustedConnection, ";User ID=" & UserID, "") & _
+                      IIf(Not fTrustedConnection, ";Password=" & Password, "")
+          
+PROC_EXIT:
+30        Exit Function
+          
+PROC_ERROR:
+40        LogError "modDatabaseConnections", "GetSQLConnectStringADO", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Function
+
+Public Function GetDatabaseConnectionEnum(DatabaseDescription As String) As Integer
+10        On Error GoTo PROC_ERROR
+          
+20        GetDatabaseConnectionEnum = GetConnectionRSByDescription(DatabaseDescription)!ID
+          
+PROC_EXIT:
+30        Exit Function
+          
+PROC_ERROR:
+40        LogError "modDatabaseConnections", "GetDatabaseConnectionEnum", Erl, Err.Number, Err.Description, DatabaseDescription
+50        Resume PROC_EXIT
+60        Resume
+End Function
+
+Private Function GetConnectionRSByDescription(Description As String) As DAO.Recordset
+          Static rs As DAO.Recordset
+10        On Error GoTo PROC_ERROR
+
+20        If rs Is Nothing Then
+30            Set rs = CurrentDb.OpenRecordset(LINQ_REMOTE_CONNECTIONS, dbOpenSnapshot)
+40        End If
+50        If rs!Description = Description Then
+60            Set GetConnectionRSByDescription = rs
+70        Else
+80            rs.FindFirst "Description=" & QuoteString(Description)
+90            If rs.NoMatch Then
+100               DebugAssert False, "GetConnectionRSByDescription NoMatch"
+110               Stop
+120           Else
+130               Set GetConnectionRSByDescription = rs
+140           End If
+150       End If
+
+PROC_EXIT:
+160       Exit Function
+
+PROC_ERROR:
+170       LogError "modDatabaseConnections", "GetConnectionRSByDescription", Erl, Err.Number, Err.Description
+180       Resume PROC_EXIT
+190       Resume
+
+End Function
+
+Public Function GetDatabaseConnection(ConnectionID As Integer) As clsDatabaseConnection
+10        On Error GoTo PROC_ERROR
+
+          Dim dcNew As clsDatabaseConnection
+20        Set dcNew = New clsDatabaseConnection
+30        dcNew.Initialize ConnectionID
+40        Set GetDatabaseConnection = dcNew
+
+PROC_EXIT:
+50        Exit Function
+
+PROC_ERROR:
+60        LogError "modDatabaseConnections", "GetDatabaseConnection", Erl, Err.Number, Err.Description
+70        Resume PROC_EXIT
+80        Resume
+End Function

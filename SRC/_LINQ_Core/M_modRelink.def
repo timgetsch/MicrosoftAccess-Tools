@@ -1,0 +1,202 @@
+'---------------------------------------------------------------------------------------
+'          __    _____   ______       ___       _____ ____    __
+'         / /   /  _/ | / / __ \     |__ \     / ___// __ \  / /
+'        / /    / //  |/ / / / /     __/ /     \__ \/ / / / / /
+'       / /____/ // /|  / /_/ /     / __/     ___/ / /_/ / / /___
+' _____/_____/___/_/ |_/\___\_\____/____/____/____/\___\_\/_____/
+'/_____/                     /_____/   /_____/
+'
+' (c) Tim Getsch
+' @author timgetsch@commitcs.com
+' @license MIT (http://www.opensource.org/licenses/mit-license.php)
+'---------------------------------------------------------------------------------------
+Option Compare Database
+Option Explicit
+
+Public Property Get NetworkPath() As String
+    NetworkPath = "\\Server\Share\"
+End Property
+
+Public Function ct(TableName As String, Optional ConnectionID As Integer = 1, Optional RemoteTableName As String) As String
+10        On Error GoTo PROC_ERROR
+20        ct = CreateLinkedTable(ConnectionID, TableName, RemoteTableName)
+PROC_EXIT:
+30        Exit Function
+          
+PROC_ERROR:
+40        LogError "modRelink", "ct", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Function
+
+Public Function CreateLinkedTable(ConnectionID As Integer, TableName As String, Optional ByVal RemoteTableName As String) As String
+10        On Error GoTo PROC_ERROR
+          
+          Dim db As DAO.Database
+20        Set db = CurrentDb
+          Dim td As DAO.TableDef
+30        With GetDatabaseConnection(ConnectionID)
+40            If RemoteTableName = "" Then
+50                RemoteTableName = .Schema & "." & TableName
+60            End If
+70            Set td = db.CreateTableDef(.LinkedTablePrefix & TableName, dbAttachSavePWD, RemoteTableName, .ConnectionString)
+80        End With
+90        db.TableDefs.Append td
+          
+100       CreateLinkedTable = td.Name
+
+PROC_EXIT:
+110       Set db = Nothing
+120       Exit Function
+          
+PROC_ERROR:
+130       LogError "modRelink", "CreateLinkedTable", Erl, Err.Number, Err.Description
+140       Resume PROC_EXIT
+150       Resume
+End Function
+
+Public Function CreateUniqueIndex(TableName As String, PrimaryKey As String)
+    Dim strSQL As String
+    strSQL = "CREATE UNIQUE INDEX [PK_" & TableName & "] ON [" & TableName & "] (" & PrimaryKey & ")"
+    CurrentDb.Execute strSQL
+End Function
+
+
+' UNDONE: Need to preserve indexes
+Public Function rt(TableName As String) As Boolean
+10        On Error GoTo PROC_ERROR
+20        rt = RelinkTable(TableName, True)
+PROC_EXIT:
+30        Exit Function
+          
+PROC_ERROR:
+40        LogError "modRelink", "rt", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Function
+
+Public Function RelinkTable(TableName As String, Optional fForceRelink As Boolean) As Boolean
+10        With CurrentDb
+20            On Error Resume Next
+30            RelinkObject .TableDefs(TableName), 0, fForceRelink
+40            If Err.Number > 0 Then
+50                RelinkTable = False
+60            Else
+70                RelinkTable = True
+80            End If
+90        End With
+End Function
+
+Public Sub RelinkAccessTable(td As DAO.TableDef, strSubLocation As String)
+10        On Error GoTo PROC_ERROR
+
+20        RelinkFileTable td, ";DATABASE=", strSubLocation
+
+PROC_EXIT:
+30        Exit Sub
+          
+PROC_ERROR:
+40        LogError "modRelink", "RelinkAccessTable", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Sub
+
+Public Sub RelinkFileTable(td As DAO.TableDef, strPrefix As String, strSubLocation As String)
+10        On Error GoTo PROC_ERROR
+
+20        RelinkObjectDef td, strPrefix & gFSO.BuildPath(NetworkPath, strSubLocation), False
+
+PROC_EXIT:
+30        Exit Sub
+          
+PROC_ERROR:
+40        LogError "modRelink", "RelinkFileTable", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Sub
+
+Public Function RelinkObjectDef(Obj As Object, strConnect As String, fForceRelink As Boolean) As Boolean
+10        On Error GoTo PROC_ERROR
+
+20        If strConnect = "" Then
+30            Exit Function
+40        End If
+          
+50        If Obj.Connect <> strConnect Or fForceRelink Then
+60            Obj.Connect = strConnect
+70            If TypeName(Obj) = "TableDef" Then
+80                If Not Obj.Name Like "~tmp*" Then
+                      Dim Start As Single
+90                    Start = Timer
+100                   Debug.Print "Relinking " & Obj.Name
+110                   On Error Resume Next
+120                   Obj.RefreshLink
+130                   If Timer - Start > 1 Then
+140                       Debug.Print "Relinking took " & Timer - Start & " seconds"
+150                   End If
+160                   On Error GoTo PROC_ERROR
+170               End If
+180           End If
+190       End If
+200       RelinkObjectDef = True
+
+PROC_EXIT:
+210       Exit Function
+
+PROC_ERROR:
+220       LogError "modRelink", "RelinkObjectDef", Erl, Err.Number, Err.Description
+230       Resume PROC_EXIT
+240       Resume
+
+End Function
+
+
+Public Function RelinkObject(Obj As Object, DatabaseFilter As Integer, Optional fForceRelink As Boolean) As Boolean
+10        On Error GoTo PROC_ERROR
+          Dim fApplyFilter As Boolean
+20        fApplyFilter = DatabaseFilter <> 0
+30        If Obj.Connect = "" Then
+40            Exit Function ' Local Object
+50        End If
+          
+60        If Obj.Connect Like "WSS;*" Then
+70            If fApplyFilter And DatabaseFilter <> 0 Then
+80                Exit Function
+90            End If
+100           RelinkObjectDef Obj, Obj.Connect, True
+110           Exit Function
+120       End If
+          
+          Dim strDatabase As String
+130       strDatabase = GetConnectionStringProperty("Database", Obj.Connect)
+140       Select Case gFSO.GetExtensionName(strDatabase)
+              Case "accdb"
+150               If fApplyFilter And DatabaseFilter <> 0 Then
+160                   Exit Function
+170               End If
+180               RelinkAccessTable Obj, gFSO.GetFileName(strDatabase)
+190           Case "xls", "xlsx"
+                  ' Do Nothing, These are always kept in sync
+200           Case Else
+                  Dim ConnectionID As Integer
+210               ConnectionID = GetDatabaseConnectionEnum(GetConnectionStringProperty("Description", Obj.Connect))
+220               If ConnectionID = 0 Then
+230                   Debug.Print Obj.Name & " = " & Obj.Connect
+240                   DebugAssert False, "RelinkObject Unknown Connection" ' Unexpected object
+250               Else
+260                   If fApplyFilter And DatabaseFilter <> ConnectionID Then
+270                       Exit Function
+280                   End If
+290                   RelinkObjectDef Obj, GetDatabaseConnection(ConnectionID).ConnectionString, fForceRelink
+300               End If
+310       End Select
+          
+320       RelinkObject = True
+PROC_EXIT:
+330       Exit Function
+          
+PROC_ERROR:
+340       LogError "modRelink", "RelinkObject", Erl, Err.Number, Err.Description
+350       Resume PROC_EXIT
+360       Resume
+End Function

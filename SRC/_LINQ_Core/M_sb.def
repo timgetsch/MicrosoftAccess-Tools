@@ -1,0 +1,402 @@
+'---------------------------------------------------------------------------------------
+'          __    _____   ______       ___       _____ ____    __
+'         / /   /  _/ | / / __ \     |__ \     / ___// __ \  / /
+'        / /    / //  |/ / / / /     __/ /     \__ \/ / / / / /
+'       / /____/ // /|  / /_/ /     / __/     ___/ / /_/ / / /___
+' _____/_____/___/_/ |_/\___\_\____/____/____/____/\___\_\/_____/
+'/_____/                     /_____/   /_____/
+'
+' (c) Tim Getsch
+' @author timgetsch@commitcs.com
+' @license MIT (http://www.opensource.org/licenses/mit-license.php)
+'---------------------------------------------------------------------------------------
+Option Compare Database
+Option Explicit
+
+Private lOffset As Long
+Private lMax As Long
+Private lValue As Long
+Private strText As String
+Private dtStart As Date
+Private fStatusMeterVisible As Boolean
+Private colStatusMeters As New Collection
+
+'----------------------------------------------------------------------
+' ClearStatusBar
+'
+'   Clears the status bar and status meter.
+'----------------------------------------------------------------------
+Public Sub ClearStatusBar()
+10        On Error GoTo PROC_ERROR
+          
+20        If fStatusMeterVisible Then
+30            Exit Sub
+40        End If
+          
+50        SysCmd acSysCmdClearStatus
+60        fStatusMeterVisible = False
+70        PopOldStatusMeterFromStack
+          
+PROC_EXIT:
+80        Exit Sub
+          
+PROC_ERROR:
+90        LogError "sb", "ClearStatusBar", Erl, Err.Number, Err.Description
+100       Resume PROC_EXIT
+110       Resume
+End Sub
+
+Public Sub ClearStatusMeter()
+10        On Error GoTo PROC_ERROR
+          
+20        DebugAssert fStatusMeterVisible, "Status Meter Not Visible"
+          
+30        SysCmd acSysCmdClearStatus
+40        fStatusMeterVisible = False
+50        PopOldStatusMeterFromStack
+          
+PROC_EXIT:
+60        Exit Sub
+          
+PROC_ERROR:
+70        LogError "sb", "ClearStatusMeter", Erl, Err.Number, Err.Description
+80        Resume PROC_EXIT
+90        Resume
+End Sub
+
+'----------------------------------------------------------------------
+' GetStatusMeterValue
+'
+'   Returns the status meter's value.
+'----------------------------------------------------------------------
+Public Function GetStatusMeterValue() As Long
+10        On Error GoTo PROC_ERROR
+          
+20        GetStatusMeterValue = lValue
+          
+PROC_EXIT:
+30        Exit Function
+          
+PROC_ERROR:
+40        LogError "sb", "GetStatusMeterValue", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Function
+
+'----------------------------------------------------------------------
+' IncrementStatusMeter
+'
+'   Increments the status meter by the specified amount.
+'----------------------------------------------------------------------
+Public Sub IncrementStatusMeter(Optional Amount As Long = 1)
+10        On Error GoTo PROC_ERROR
+          
+20        lValue = lValue + Amount
+30        UpdateMeterValue
+          
+PROC_EXIT:
+40        Exit Sub
+          
+PROC_ERROR:
+50        LogError "sb", "IncrementStatusMeter", Erl, Err.Number, Err.Description, lValue, True, True
+60        Resume PROC_EXIT
+70        Resume
+End Sub
+
+'----------------------------------------------------------------------
+' InitializeStatusMeter
+'
+'   Initalizes the status meter.
+'----------------------------------------------------------------------
+Public Sub InitializeStatusMeter(ByVal Text As String, Max As Long, Optional Min As Long = 0, Optional fKeepStartDate As Boolean)
+10        On Error GoTo PROC_ERROR
+          
+20        PushOldStatusMeterOnStack
+30        lMax = Max
+40        lOffset = -1 * Min
+50        lValue = Min
+60        If Text = "" Then
+70            Text = " "
+80        End If
+90        strText = Text
+100       SysCmd acSysCmdInitMeter, Text, lMax + lOffset
+110       fStatusMeterVisible = True
+120       If Not fKeepStartDate Then
+130           dtStart = Now
+140       End If
+          
+PROC_EXIT:
+150       Exit Sub
+          
+PROC_ERROR:
+160       LogError "sb", "InitializeStatusMeter", Erl, Err.Number, Err.Description
+170       Resume PROC_EXIT
+180       Resume
+End Sub
+
+Private Sub PushOldStatusMeterOnStack()
+10        On Error GoTo PROC_ERROR
+          
+20        If Not fStatusMeterVisible Then
+30            Exit Sub
+40        End If
+          
+50        colStatusMeters.Add Join(Array(strText, lMax, lOffset, lValue, dtStart), vbTab)
+          
+PROC_EXIT:
+60        Exit Sub
+          
+PROC_ERROR:
+70        LogError "sb", "PushOldStatusMeterOnStack", Erl, Err.Number, Err.Description
+80        Resume PROC_EXIT
+90        Resume
+End Sub
+
+Private Sub PopOldStatusMeterFromStack()
+10        On Error GoTo PROC_ERROR
+          
+20        If colStatusMeters.Count = 0 Then
+              ' Do Nothing
+30        Else
+              
+              Dim strStatusBar As String
+40            strStatusBar = colStatusMeters(colStatusMeters.Count)
+50            colStatusMeters.Remove colStatusMeters.Count
+              Dim arrParts() As String
+60            arrParts = Split(strStatusBar, vbTab)
+              
+70            strText = arrParts(0)
+80            lMax = arrParts(1)
+90            lOffset = arrParts(2)
+100           lValue = arrParts(3)
+110           dtStart = arrParts(4)
+120           SysCmd acSysCmdInitMeter, strText, lMax + lOffset
+130           fStatusMeterVisible = True
+140           UpdateMeterValue
+              
+150       End If
+          
+PROC_EXIT:
+160       Exit Sub
+          
+PROC_ERROR:
+170       LogError "sb", "PopOldStatusMeterFromStack", Erl, Err.Number, Err.Description
+180       Resume PROC_EXIT
+190       Resume
+End Sub
+
+'----------------------------------------------------------------------
+' SetStatusBarText
+'
+'   Sets the status bar text.
+'   This will also clear the status meter.
+'----------------------------------------------------------------------
+Public Sub SetStatusBarText(Text As String)
+10        On Error GoTo PROC_ERROR
+          
+20        PushOldStatusMeterOnStack
+          
+30        If Text = "" Then
+40            ClearStatusBar
+50        Else
+60            SysCmd acSysCmdSetStatus, Text
+70            fStatusMeterVisible = False
+80        End If
+          
+PROC_EXIT:
+90        Exit Sub
+          
+PROC_ERROR:
+100       LogError "sb", "SetStatusBarText", Erl, Err.Number, Err.Description
+110       Resume PROC_EXIT
+120       Resume
+End Sub
+
+'----------------------------------------------------------------------
+' SetStatusMeterValue
+'
+'   Sets the status meter's value.
+'----------------------------------------------------------------------
+Public Sub SetStatusMeterValue(Value As Long)
+10        On Error GoTo PROC_ERROR
+          
+20        lValue = Value
+30        UpdateMeterValue
+          
+PROC_EXIT:
+40        Exit Sub
+          
+PROC_ERROR:
+50        LogError "sb", "SetStatusMeterValue", Erl, Err.Number, Err.Description
+60        Resume PROC_EXIT
+70        Resume
+End Sub
+
+'----------------------------------------------------------------------
+' UpdateStatusMeter
+'
+'   Updates the status meter.
+'----------------------------------------------------------------------
+Public Sub UpdateStatusMeter(Optional Text, Optional Value)
+10        On Error GoTo PROC_ERROR
+          
+          Dim lOldValue As Long
+20        If IsMissing(Value) Then
+30            lOldValue = lValue
+40        Else
+50            lOldValue = Value
+60        End If
+70        If IsMissing(Text) Then
+80            Text = strText
+90        End If
+100       InitializeStatusMeter Text, lMax, -1 * lOffset, True
+110       lValue = lOldValue
+120       UpdateMeterValue
+          
+PROC_EXIT:
+130       Exit Sub
+          
+PROC_ERROR:
+140       LogError "sb", "UpdateStatusMeter", Erl, Err.Number, Err.Description
+150       Resume PROC_EXIT
+160       Resume
+End Sub
+
+'----------------------------------------------------------------------
+' UpdateMeterValue
+'
+'   Synchronized the Access status meter with the current values.
+'----------------------------------------------------------------------
+Private Sub UpdateMeterValue()
+10        On Error GoTo PROC_ERROR
+          
+20        SysCmd acSysCmdUpdateMeter, lValue + lOffset
+          
+PROC_EXIT:
+30        Exit Sub
+          
+PROC_ERROR:
+40        LogError "sb", "UpdateMeterValue", Erl, Err.Number, Err.Description, lValue + lOffset, True, True
+50        Resume PROC_EXIT
+60        Resume
+End Sub
+
+Public Function GetPercentComplete() As Double
+10        On Error GoTo PROC_ERROR
+          
+20        If lMax + lOffset <> 0 Then
+30            GetPercentComplete = CDbl((lValue + lOffset)) / (lMax + lOffset)
+40        End If
+          
+PROC_EXIT:
+50        Exit Function
+          
+PROC_ERROR:
+60        LogError "sb", "GetPercentComplete", Erl, Err.Number, Err.Description
+70        Resume PROC_EXIT
+80        Resume
+End Function
+
+Public Function GetTimeSpent() As Double
+10        On Error GoTo PROC_ERROR
+          
+20        GetTimeSpent = Now - dtStart
+          
+PROC_EXIT:
+30        Exit Function
+          
+PROC_ERROR:
+40        LogError "sb", "GetTimeSpent", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Function
+
+Public Function GetCompletionRate() As Double ' Days / Unit
+10        On Error GoTo PROC_ERROR
+          
+20        If lValue + lOffset <> 0 Then
+30            GetCompletionRate = GetTimeSpent() / (lValue + lOffset)
+40        End If
+          
+PROC_EXIT:
+50        Exit Function
+          
+PROC_ERROR:
+60        LogError "sb", "GetCompletionRate", Erl, Err.Number, Err.Description
+70        Resume PROC_EXIT
+80        Resume
+End Function
+
+Public Function GetEstimatedTimeRemaining() As Double
+10        On Error GoTo PROC_ERROR
+          
+20        GetEstimatedTimeRemaining = (lMax - lValue) * GetCompletionRate()
+          
+PROC_EXIT:
+30        Exit Function
+          
+PROC_ERROR:
+40        LogError "sb", "GetEstimatedTimeRemaining", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Function
+
+Public Function GetEstimatedCompletionDate() As String
+10        On Error GoTo PROC_ERROR
+          
+20        GetEstimatedCompletionDate = FormatTimeRemaining(GetEstimatedTimeRemaining())
+          
+PROC_EXIT:
+30        Exit Function
+          
+PROC_ERROR:
+40        LogError "sb", "GetEstimatedCompletionDate", Erl, Err.Number, Err.Description
+50        Resume PROC_EXIT
+60        Resume
+End Function
+
+Public Function FormatTimeRemaining(dblTimeRemaining As Double) As String
+          Const cMinute As Double = 1# / 24# / 60#
+10        On Error GoTo PROC_ERROR
+
+20        If dblTimeRemaining >= 10 * cMinute Then
+30            FormatTimeRemaining = "Should be done " & Format$(Now + dblTimeRemaining, "ddd mmm d"" @ ""h:nn AM/PM")
+40        Else
+50            FormatTimeRemaining = "Time remaining: " & Format$(dblTimeRemaining, "Hh:Nn:ss")
+60        End If
+
+PROC_EXIT:
+70        Exit Function
+
+PROC_ERROR:
+80        LogError "sb", "FormatTimeRemaining", Erl, Err.Number, Err.Description
+90        Resume PROC_EXIT
+100       Resume
+
+End Function
+
+Public Function GetEstimatedCompletionDateText(StartDate As Date, CurrentIteration As Long, MaxIterations As Long) As String
+10        On Error GoTo PROC_ERROR
+20        If MaxIterations = 0 Then
+30            GetEstimatedCompletionDateText = ""
+40        ElseIf CurrentIteration = 0 Then
+50            GetEstimatedCompletionDateText = "Starting..."
+60        Else
+              Dim dblTimeSpent As Double
+              Dim dblCurrentPace As Double
+              Dim dblTimeRemaining As Double
+70            dblTimeSpent = Now() - StartDate
+80            dblCurrentPace = dblTimeSpent / CurrentIteration
+90            dblTimeRemaining = dblCurrentPace * (MaxIterations - CurrentIteration)
+100           GetEstimatedCompletionDateText = FormatTimeRemaining(dblTimeRemaining)
+110       End If
+
+PROC_EXIT:
+120       Exit Function
+
+PROC_ERROR:
+130       LogError "sb", "GetEstimatedCompletionDateText", Erl, Err.Number, Err.Description
+140       Resume PROC_EXIT
+150       Resume
+
+End Function
