@@ -1,0 +1,193 @@
+Option Compare Database
+Option Explicit
+
+
+Public Function GetVBDataType(SQLDataType As String, DataTypeSuffix As String) As String
+          Dim strDataType As String
+10        On Error GoTo PROC_ERROR
+
+20        Select Case SQLDataType
+          Case "bit"
+30            strDataType = "Boolean" & DataTypeSuffix
+40        Case "tinyint"
+50            strDataType = "Byte" & DataTypeSuffix
+60        Case "smallint"
+70            strDataType = "Integer" & DataTypeSuffix
+80        Case "int"
+90            strDataType = "Long" & DataTypeSuffix
+100       Case "bigint"
+110           strDataType = "Variant" & DataTypeSuffix
+120       Case "smallmoney"
+130           strDataType = "Currency" & DataTypeSuffix
+140       Case "money"
+150           strDataType = "Currency" & DataTypeSuffix
+160       Case "decimal"
+170           strDataType = "Variant" & DataTypeSuffix
+180       Case "uniqueidentifier"
+190           strDataType = "String" & DataTypeSuffix
+200       Case "date", "datetime", "datetime2", "time"
+210           strDataType = "Date" & DataTypeSuffix
+220       Case "real"
+230           strDataType = "Single" & DataTypeSuffix
+240       Case "float"
+250           strDataType = "Double" & DataTypeSuffix
+260       Case "char"
+270           strDataType = "String" & DataTypeSuffix
+280       Case "nchar"
+290           strDataType = "String" & DataTypeSuffix
+300       Case "varchar"
+310           strDataType = "String" & DataTypeSuffix
+320       Case "nvarchar", "sysname"
+330           strDataType = "String" & DataTypeSuffix
+340       Case "text"
+350           strDataType = "String" & DataTypeSuffix
+360       Case "ntext"
+370           strDataType = "String" & DataTypeSuffix
+380       Case Else
+              'Debug.Print SQLDataType
+390           strDataType = "UNKNOWN_TYPE"
+400       End Select
+410       GetVBDataType = strDataType
+
+PROC_EXIT:
+420       Exit Function
+
+PROC_ERROR:
+430       LogError "modTypeMapping", "GetVBDataType", Erl, Err.Number, Err.Description, SQLDataType
+440       Resume PROC_EXIT
+450       Resume
+
+End Function
+
+Public Function GetVBNullableConversion(VBDataType As String) As String
+          Dim strConversionFunction As String
+10        On Error GoTo PROC_ERROR
+
+20        Select Case VBDataType
+          Case "BooleanQ"
+30            strConversionFunction = "CBoolQ"
+40        Case "ByteQ"
+50            strConversionFunction = "CByteQ"
+60        Case "IntegerQ"
+70            strConversionFunction = "CIntQ"
+80        Case "LongQ"
+90            strConversionFunction = "CLngQ"
+100       Case "CurrencyQ"
+110           strConversionFunction = "CCurQ"
+120       Case "StringQ"
+130           strConversionFunction = "CStrQ"
+140       Case "DateQ"
+150           strConversionFunction = "CDateQ"
+160       Case "DoubleQ"
+170           strConversionFunction = "CDblQ"
+180       Case "SingleQ"
+190           strConversionFunction = "CSngQ"
+200       Case "VariantQ"
+210           strConversionFunction = "CVarQ"
+220       Case Else
+230           strConversionFunction = "UNKNOWN_TYPE"
+240       End Select
+250       GetVBNullableConversion = strConversionFunction
+
+PROC_EXIT:
+260       Exit Function
+
+PROC_ERROR:
+270       LogError "modTypeMapping", "GetVBNullableConversion", Erl, Err.Number, Err.Description, VBDataType
+280       Resume PROC_EXIT
+290       Resume
+
+End Function
+
+Public Function NeedsSize(SQLDataType As String) As Boolean
+10        On Error GoTo PROC_ERROR
+
+20        Select Case SQLDataType
+          Case "varchar", "nvarchar", "varbinary"
+30            NeedsSize = True
+40        End Select
+
+PROC_EXIT:
+50        Exit Function
+
+PROC_ERROR:
+60        LogError "modTypeMapping", "NeedsSize", Erl, Err.Number, Err.Description
+70        Resume PROC_EXIT
+80        Resume
+
+End Function
+
+'http://www.w3schools.com/asp/ado_datatypes.asp
+Public Function GetadDataType(SQLDataType As String, Optional Size As Long) As String
+          Dim strDataType As String
+10        On Error GoTo PROC_ERROR
+
+20        Select Case SQLDataType
+          Case "bit"
+30            strDataType = "adBoolean"
+40        Case "tinyint"
+50            strDataType = "adUnsignedTinyInt"
+60        Case "smallint"
+70            strDataType = "adSmallInt"
+80        Case "int"
+90            strDataType = "adInteger"
+100       Case "bigint"
+110           strDataType = "adBigInt"
+120       Case "smallmoney"
+130           strDataType = "adCurrency"
+140       Case "money"
+150           strDataType = "adCurrency"
+160       Case "decimal"
+170           strDataType = "adDecimal"
+180       Case "uniqueidentifier"
+190           strDataType = "adGUID"
+200       Case "datetime", "datetime2"
+210           strDataType = "adDBTimeStamp"
+220       Case "date"
+230           strDataType = "adDBDate"
+240       Case "time"
+250           strDataType = "adDBTime"
+260       Case "real"
+270           strDataType = "adSingle"
+280       Case "float"
+290           strDataType = "adDouble"
+300       Case "char"
+310           strDataType = "adChar"
+320       Case "nchar"
+330           strDataType = "adWChar"
+340       Case "varchar"
+350           If Size > 4000 Or Size < 0 Then
+360               strDataType = "adLongVarChar"
+370           Else
+380               strDataType = "adVarChar"
+390           End If
+400       Case "nvarchar"
+410           If Size > 4000 Or Size < 0 Then
+420               strDataType = "adLongVarWChar"
+430           Else
+440               strDataType = "adVarWChar"
+450           End If
+460       Case "sysname"
+470           strDataType = "adVarWChar"
+480       Case "text"
+490           strDataType = "adLongVarChar"
+500       Case "ntext"
+510           strDataType = "adLongVarWChar"
+520       Case "binary"
+530           strDataType = "adBinary"
+540       Case "varbinary"
+550           strDataType = "adVarBinary"
+560       Case Else
+570           strDataType = "adEmpty"
+580       End Select
+590       GetadDataType = strDataType
+
+PROC_EXIT:
+600       Exit Function
+
+PROC_ERROR:
+610       LogError "modTypeMapping", "GetadDataType", Erl, Err.Number, Err.Description
+620       Resume PROC_EXIT
+630       Resume
+
+End Function
