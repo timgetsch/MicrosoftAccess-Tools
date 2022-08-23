@@ -408,80 +408,20 @@ PROC_ERROR:
 280       Resume
 End Function
 
-'Private Function SaveTemplateCode(CodeClassName As String, Text As String, Optional CloseCodeWindow As Boolean = False, Optional ComponentType As VBIDE.vbext_ComponentType = vbext_ct_ClassModule) As Boolean
-'          Dim vbpCurrent As VBProject
-'10        On Error GoTo PROC_ERROR
-'
-'20        Set vbpCurrent = CurrentVBProject()
-'          Dim fJustCreated As Boolean
-'          Dim vbcCode As VBComponent
-'30        If Not IsObjectInCol(vbpCurrent.VBComponents, CodeClassName) Then
-'40            Set vbcCode = vbpCurrent.VBComponents.Add(ComponentType)
-'50            vbcCode.Name = CodeClassName
-'60            fJustCreated = True
-'70        Else
-'80            Set vbcCode = vbpCurrent.VBComponents(CodeClassName)
-'90        End If
-'
-'          Dim strCurrentSource As String
-'100       strCurrentSource = vbcCode.CodeModule.Lines(1, vbcCode.CodeModule.CountOfLines)
-'
-'110       If strCurrentSource = Text Then
-'              ' Ignore because it is identical
-'120           Debug.Print "Ignoring " & CodeClassName & " because it is identical 1"
-'130       ElseIf strCurrentSource = Text & vbCrLf Then  ' Sometimes templates differ by just a newline
-'              ' Ignore because it is identical
-'140           Debug.Print "Ignoring " & CodeClassName & " because it is identical 2"
-'150       ElseIf strCurrentSource = Text & vbCrLf & vbCrLf Then  ' Sometimes templates differ by just a newline
-'              ' Ignore because it is identical
-'160           Debug.Print "Ignoring " & CodeClassName & " because it is identical 3"
-'170       ElseIf strCurrentSource = Text & vbCrLf & vbCrLf & vbCrLf Then  ' Sometimes templates differ by just a newline
-'              ' Ignore because it is identical
-'180           Debug.Print "Ignoring " & CodeClassName & " because it is identical 4"
-'190       Else
-'200           vbcCode.Activate
-'210           With vbcCode.CodeModule
-'220               If Not fJustCreated Then
-'230                   If Not Text Like .Lines(1, 2) & "*" Then
-'240                       If vbOK <> MsgBox("Are you sure you want to blast over " & CodeClassName & "?", vbOKCancel + vbDefaultButton2) Then
-'250                           Exit Function
-'260                       End If
-'270                   End If
-'280               End If
-'
-'290               .DeleteLines 1, .CountOfLines
-'300               .AddFromString Text
-'
-'310               DoCmd.Save acModule, CodeClassName
-'320               If CloseCodeWindow Then DoCmd.Close acModule, CodeClassName, acSaveYes
-'330           End With
-'340       End If
-'
-'350       SaveTemplateCode = True
-'
-'PROC_EXIT:
-'360       Exit Function
-'
-'PROC_ERROR:
-'370       LogError "_LINQ", "SaveTemplateCode", Erl, Err.Number, Err.Description
-'380       Resume PROC_EXIT
-'390       Resume
-'End Function
-
 Public Function SpReturnsRecords(ConnectionID As Integer, Schema As String, ProcedureName As String) As Boolean
-    Dim conn As New ADODB.Connection
-    On Error GoTo PROC_ERROR
+          Dim conn As New ADODB.Connection
+10        On Error GoTo PROC_ERROR
 
-    conn.Open GetDatabaseConnection(ConnectionID).ConnectionString
-    SpReturnsRecords = SProcReturnsRecords(conn, Schema, ProcedureName)
+20        conn.Open GetDatabaseConnection(ConnectionID).ConnectionString
+30        SpReturnsRecords = SProcReturnsRecords(conn, Schema, ProcedureName)
 
 PROC_EXIT:
-    Exit Function
+40        Exit Function
 
 PROC_ERROR:
-    LogError "_LINQ", "SpReturnsRecords", Erl, Err.Number, Err.Description
-    Resume PROC_EXIT
-    Resume
+50        LogError "_LINQ", "SpReturnsRecords", Erl, Err.Number, Err.Description
+60        Resume PROC_EXIT
+70        Resume
 End Function
 
 Public Function SProcReturnsRecords(conn As ADODB.Connection, Schema As String, ProcedureName As String) As Boolean
