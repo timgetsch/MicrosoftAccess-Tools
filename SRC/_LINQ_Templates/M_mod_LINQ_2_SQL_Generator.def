@@ -39,7 +39,7 @@ PROC_ERROR:
 90        Resume
 End Function
 
-Public Function GetSQL(ProcedureName As String, Parameters As Collection) As String
+Public Function GetSQL(ProcedureName As String, Parameters As Object, Optional IsFunction As Boolean, Optional ReturnsRecords As Boolean) As String
 10        On Error GoTo PROC_ERROR
           
           Dim sb As New cls_LINQ_2_SQL__StringBuilder
@@ -68,50 +68,71 @@ Public Function GetSQL(ProcedureName As String, Parameters As Collection) As Str
 200       Next p
 210       sb.AppendLine ""
 220       sb.AppendLine "SET NOCOUNT OFF;"
-230       sb.AppendLine "EXEC @RETURN_VALUE = " & ProcedureName
+230       If IsFunction And ReturnsRecords Then
+240           sb.AppendLine "SELECT *"
+250           sb.Append "FROM " & ProcedureName & "("
+              
+              Dim fNotFirst As Boolean
+260           For Each p In Parameters
+270               If fNotFirst Then
+280                   sb.Append ", "
+290               Else
+300                   fNotFirst = True
+310               End If
+320               sb.Append "@" & p.Name
+330           Next p
+              
+340           sb.AppendLine ");"
+350       Else
+360           sb.AppendLine "EXEC @RETURN_VALUE = " & ProcedureName
+370       End If
           Dim strIndent As String
-240       strIndent = Space$(8)
+380       strIndent = Space$(8)
           Dim fLooped As Boolean
-250       For Each p In Parameters
-260           Select Case p.Direction
+390       For Each p In Parameters
+400           Select Case p.Direction
               Case adParamInput
-270               sb.Append strIndent & IIf(fLooped, ", ", "  ")
-280               sb.AppendLine "@" & p.Name & " = @" & p.Name
-290               fLooped = True
-300           Case adParamInputOutput, adParamOutput
-310               sb.Append strIndent & IIf(fLooped, ", ", "  ")
-320               sb.AppendLine "@" & p.Name & " = @" & p.Name & " OUT"
-330               fLooped = True
-340           Case adParamReturnValue
+410               sb.Append strIndent & IIf(fLooped, ", ", "  ")
+420               sb.AppendLine "@" & p.Name & " = @" & p.Name
+430               fLooped = True
+440           Case adParamInputOutput, adParamOutput
+450               sb.Append strIndent & IIf(fLooped, ", ", "  ")
+460               sb.AppendLine "@" & p.Name & " = @" & p.Name & " OUT"
+470               fLooped = True
+480           Case adParamReturnValue
                   ' Ignore
-350           Case Else
-360               Err.Raise 1, , "Unexpected Parameters(""" & p.Name & """).Direction: " & p.Direction
-370           End Select
-380       Next p
-390       sb.AppendLine ""
-400       sb.AppendLine "SELECT @RETURN_VALUE AS RETURN_VALUE"
-410       For Each p In Parameters
-420           Select Case p.Direction
-              Case adParamInput
-                  ' Ignore
-430           Case adParamInputOutput, adParamOutput
-440               sb.Append strIndent & ", "
-450               sb.AppendLine "@" & p.Name & " AS " & p.Name
-460           Case adParamReturnValue
-                  ' Ignore
-470           Case Else
-480               Err.Raise 1, , "Unexpected Parameters(""" & p.Name & """).Direction: " & p.Direction
-490           End Select
-500       Next p
-510       GetSQL = sb.Text
+490           Case Else
+500               Err.Raise 1, , "Unexpected Parameters(""" & p.Name & """).Direction: " & p.Direction
+510           End Select
+520       Next p
+530       sb.AppendLine
+          
+540       If Not IsFunction Or Not ReturnsRecords Then
+550           sb.AppendLine "SELECT @RETURN_VALUE AS RETURN_VALUE"
+560           For Each p In Parameters
+570               Select Case p.Direction
+                  Case adParamInput
+                      ' Ignore
+580               Case adParamInputOutput, adParamOutput
+590                   sb.Append strIndent & ", "
+600                   sb.AppendLine "@" & p.Name & " AS " & p.Name
+610               Case adParamReturnValue
+                      ' Ignore
+620               Case Else
+630                   Err.Raise 1, , "Unexpected Parameters(""" & p.Name & """).Direction: " & p.Direction
+640               End Select
+650           Next p
+660       End If
+          
+670       GetSQL = sb.Text
 
 PROC_EXIT:
-520       Exit Function
+680       Exit Function
 
 PROC_ERROR:
-530       LogError "mod_LINQ_2_SQL_Generator", "GetSQL", Erl, Err.Number, Err.Description
-540       Resume PROC_EXIT
-550       Resume
+690       LogError "mod_LINQ_2_SQL_Generator", "GetSQL", Erl, Err.Number, Err.Description
+700       Resume PROC_EXIT
+710       Resume
 End Function
 
 Private Sub AppendInsertRecordsetSQL(sb As cls_LINQ_2_SQL__StringBuilder, TableName As String, rs As ADODB.Recordset)

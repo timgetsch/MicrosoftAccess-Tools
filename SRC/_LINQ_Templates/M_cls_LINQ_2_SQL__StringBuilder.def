@@ -97,7 +97,7 @@ PROC_ERROR:
 120       Resume
 End Function
 
-Public Function AppendLine(Text As String) As cls_LINQ_2_SQL__StringBuilder
+Public Function AppendLine(Optional Text As String) As cls_LINQ_2_SQL__StringBuilder
 10        On Error GoTo PROC_ERROR
 
 20        Set AppendLine = Append(Text).Append(vbCrLf)
