@@ -1,8 +1,9 @@
 Option Compare Database
 Option Explicit
 
+Public Const UnknownType As String = "UNKNOWN_TYPE"
 
-Public Function GetVBDataType(SQLDataType As String, DataTypeSuffix As String) As String
+Public Function GetVbDataType(SQLDataType As String, DataTypeSuffix As String, Optional VbDataTypeIfUnknown As String = UnknownType) As String
           Dim strDataType As String
 10        On Error GoTo PROC_ERROR
 
@@ -45,9 +46,9 @@ Public Function GetVBDataType(SQLDataType As String, DataTypeSuffix As String) A
 370           strDataType = "String" & DataTypeSuffix
 380       Case Else
               'Debug.Print SQLDataType
-390           strDataType = "UNKNOWN_TYPE"
+390           strDataType = VbDataTypeIfUnknown
 400       End Select
-410       GetVBDataType = strDataType
+410       GetVbDataType = strDataType
 
 PROC_EXIT:
 420       Exit Function
@@ -85,7 +86,7 @@ Public Function GetVBNullableConversion(VBDataType As String) As String
 200       Case "VariantQ"
 210           strConversionFunction = "CVarQ"
 220       Case Else
-230           strConversionFunction = "UNKNOWN_TYPE"
+230           strConversionFunction = UnknownType
 240       End Select
 250       GetVBNullableConversion = strConversionFunction
 

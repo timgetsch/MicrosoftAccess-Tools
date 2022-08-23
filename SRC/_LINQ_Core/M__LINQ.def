@@ -13,7 +13,7 @@
 Option Compare Database
 Option Explicit
 
-Public Const TOOL_VERSION As String = "0.4.0"
+Public Const TOOL_VERSION As String = "0.4.2"
 
 Public Const DBC_CLASS_NAME As String = "cls_LINQ_2_SQL__Databases"
 Public Const LINQ_SOURCE_URL As String = "https://github.com/timgetsch/MicrosoftAccess-Tools/tree/master/_LINQ_2_SQL_AddIn"
@@ -458,7 +458,6 @@ PROC_ERROR:
 200       End Select
 
 End Function
-
 
 Public Function GetVBParameterName(SQLParameterName As String) As String
 10        On Error GoTo PROC_ERROR

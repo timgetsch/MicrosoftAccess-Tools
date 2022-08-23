@@ -42,7 +42,7 @@
     <StartUpShowStatusBar name="StartUpShowStatusBar" type="1" value="True" sort="1"/>
     <ThemeResourceName name="Theme Resource Name" type="10" value="Office Theme" sort="1"/>
     <ThemedFormControls name="Themed Form Controls" type="4" value="1" sort="1"/>
-    <TrackNameAutoCorrectInfo name="Track Name AutoCorrect Info" type="4" value="1" sort="1"/>
+    <TrackNameAutoCorrectInfo name="Track Name AutoCorrect Info" type="4" value="0" sort="1"/>
     <UseDefaultConnectionFile name="Use Default Connection File" type="4" value="0" sort="1"/>
     <UseDefaultPageFolder name="Use Default Page Folder" type="4" value="0" sort="1"/>
     <UseHijriCalendar name="Use Hijri Calendar" type="4" value="0" sort="1"/>
