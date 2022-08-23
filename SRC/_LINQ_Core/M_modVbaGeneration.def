@@ -125,192 +125,199 @@ Public Function GetSProcText(ConnectionID As Integer, ProcedureName As String, C
               
 930           Select Case rsParameters!PARAMETER_TYPE
               Case adParamInput
-940               Select Case rsParameters!TYPE_NAME
-                  Case "decimal"
-950                   AppendCodeLine sb, PrevLine, "Dim prm" & strSQLParam & " As ADODB.Parameter"
-960                   AppendCodeLine sb, PrevLine, "Set prm" & strSQLParam & " = cmd.CreateParameter(""" & strSQLParam & """, " & GetadDataType(rsParameters!TYPE_NAME, lSize) & ", adParamInput, " & strSize & ", " & strVBParam & ")"
-970                   AppendCodeLine sb, PrevLine, strAddToCollectionCommand & " prm" & strSQLParam
-980               Case Else
-990                   AppendCodeLine sb, PrevLine, strAddToCollectionCommand & " cmd.CreateParameter(""" & strSQLParam & """, " & GetadDataType(rsParameters!TYPE_NAME, lSize) & ", adParamInput, " & strSize & ", " & strVBParam & ")"
-1000              End Select
-1010          Case adParamOutput, adParamInputOutput
-1020              AppendCodeLine sb, PrevLine, "Dim prm" & strSQLParam & " As ADODB.Parameter"
-1030              AppendCodeLine sb, PrevLine, "Set prm" & strSQLParam & " = cmd.CreateParameter(""" & strSQLParam & """, " & GetadDataType(rsParameters!TYPE_NAME, lSize) & ", adParamInputOutput, " & strSize & ", " & strVBParam & ")"
-1040              AppendCodeLine sb, PrevLine, strAddToCollectionCommand & " prm" & strSQLParam
-1050          Case adParamReturnValue
-1060              AppendCodeLine sb, PrevLine, "Dim prm" & strSQLParam & " As ADODB.Parameter"
-1070              AppendCodeLine sb, PrevLine, "Set prm" & strSQLParam & " = cmd.CreateParameter(""" & strSQLParam & """, " & GetadDataType(rsParameters!TYPE_NAME, lSize) & ", adParamReturnValue" & IIf(strSize = "", "", ", " & strSize) & ")"
-1080              AppendCodeLine sb, PrevLine, strAddToCollectionCommand & " prm" & strSQLParam
-1090          Case Else
-1100              Debug.Assert False
-1110          End Select
+                  Dim strAdDataType As String
+940               strAdDataType = GetadDataType(rsParameters!TYPE_NAME, lSize)
+950               Select Case strAdDataType
+                  Case "adDecimal"
+960                   AppendCodeLine sb, PrevLine, "Dim prm" & strSQLParam & " As ADODB.Parameter"
+970                   AppendCodeLine sb, PrevLine, "Set prm" & strSQLParam & " = cmd.CreateParameter(""" & strSQLParam & """, " & GetadDataType(rsParameters!TYPE_NAME, lSize) & ", adParamInput, " & strSize & ", " & strVBParam & ")"
+980                   AppendCodeLine sb, PrevLine, strAddToCollectionCommand & " prm" & strSQLParam
+990               Case "adEmpty" ' User-Defined
+1000                  AppendCodeLine sb, PrevLine, strAddToCollectionCommand & " CreateTableValuedParameter(""" & strSQLParam & """, """ & rsParameters!TYPE_NAME & """, " & strVBParam & ")"
+1010              Case Else
+1020                  AppendCodeLine sb, PrevLine, strAddToCollectionCommand & " cmd.CreateParameter(""" & strSQLParam & """, " & GetadDataType(rsParameters!TYPE_NAME, lSize) & ", adParamInput, " & strSize & ", " & strVBParam & ")"
+1030              End Select
+1040          Case adParamOutput, adParamInputOutput
+1050              AppendCodeLine sb, PrevLine, "Dim prm" & strSQLParam & " As ADODB.Parameter"
+1060              AppendCodeLine sb, PrevLine, "Set prm" & strSQLParam & " = cmd.CreateParameter(""" & strSQLParam & """, " & GetadDataType(rsParameters!TYPE_NAME, lSize) & ", adParamInputOutput, " & strSize & ", " & strVBParam & ")"
+1070              AppendCodeLine sb, PrevLine, strAddToCollectionCommand & " prm" & strSQLParam
+1080          Case adParamReturnValue
+1090              AppendCodeLine sb, PrevLine, "Dim prm" & strSQLParam & " As ADODB.Parameter"
+1100              AppendCodeLine sb, PrevLine, "Set prm" & strSQLParam & " = cmd.CreateParameter(""" & strSQLParam & """, " & GetadDataType(rsParameters!TYPE_NAME, lSize) & ", adParamReturnValue" & IIf(strSize = "", "", ", " & strSize) & ")"
+1110              AppendCodeLine sb, PrevLine, strAddToCollectionCommand & " prm" & strSQLParam
+1120          Case Else
+1130              Debug.Assert False
+1140          End Select
               
-1120          Select Case rsParameters!TYPE_NAME
+1150          Select Case rsParameters!TYPE_NAME
               Case "decimal"
-1130              AppendCodeLine sb, PrevLine, "prm" & strSQLParam & ".Precision = " & rsParameters!NUMERIC_PRECISION
-1140              AppendCodeLine sb, PrevLine, "prm" & strSQLParam & ".NumericScale = " & rsParameters!NUMERIC_SCALE
-1150          Case Else
+1160              AppendCodeLine sb, PrevLine, "prm" & strSQLParam & ".Precision = " & rsParameters!NUMERIC_PRECISION
+1170              AppendCodeLine sb, PrevLine, "prm" & strSQLParam & ".NumericScale = " & rsParameters!NUMERIC_SCALE
+1180          Case Else
                   ' Ignore
-1160          End Select
-1170          rsParameters.MoveNext
-1180      Wend
+1190          End Select
+1200          rsParameters.MoveNext
+1210      Wend
           
-1190      AppendCodeLine sb, PrevLine, "Dim strSQL As String"
-1200      AppendCodeLine sb, PrevLine, "strSQL = " & LINQ_SQL_GENERATOR & ".GetSQL(""" & dbConnection.Schema & "." & ProcedureName & """, " & strParamCollection & ", " & IsFunction & ", " & fReturnsRecords & ")"
-1210      AppendCodeLine sb, PrevLine, "strExtraInfo = strExtraInfo & strSQL"
-1220      AppendCodeLine sb, PrevLine, "SET cmd.ActiveConnection = m_Base.Connection"
+1220      AppendCodeLine sb, PrevLine, "Dim strSQL As String"
+1230      AppendCodeLine sb, PrevLine, "strSQL = " & LINQ_SQL_GENERATOR & ".GetSQL(""" & dbConnection.Schema & "." & ProcedureName & """, " & strParamCollection & ", " & IsFunction & ", " & fReturnsRecords & ")"
+1240      AppendCodeLine sb, PrevLine, "strExtraInfo = strExtraInfo & strSQL"
+1250      AppendCodeLine sb, PrevLine, "SET cmd.ActiveConnection = m_Base.Connection"
           
-1230      If fContainsUserDefinedDataTypes Then
-1240          AppendCodeLine sb, PrevLine, "cmd.CommandType = adCmdText"
-1250          AppendCodeLine sb, PrevLine, "cmd.CommandText = strSQL"
-1260      ElseIf IsFunction And fReturnsRecords Then
-1270          AppendCodeLine sb, PrevLine, "cmd.CommandType = adCmdTable"
-1280          If rsParameters.RecordCount <> 0 Then rsParameters.MoveFirst
+1260      If fContainsUserDefinedDataTypes Then
+1270          AppendCodeLine sb, PrevLine, "cmd.CommandType = adCmdText"
+1280          AppendCodeLine sb, PrevLine, "cmd.CommandText = strSQL"
+1290      ElseIf IsFunction And fReturnsRecords Then
+1300          AppendCodeLine sb, PrevLine, "cmd.CommandType = adCmdTable"
+1310          If rsParameters.RecordCount <> 0 Then rsParameters.MoveFirst
               Dim colFunctionParameters As Collection
-1290          Set colFunctionParameters = New Collection
-1300          While Not rsParameters.EOF
-1310              colFunctionParameters.Add "?"
-1320              rsParameters.MoveNext
-1330          Wend
+1320          Set colFunctionParameters = New Collection
+1330          While Not rsParameters.EOF
+1340              colFunctionParameters.Add "?"
+1350              rsParameters.MoveNext
+1360          Wend
               Dim strFunctionCall As String
-1340          strFunctionCall = dbConnection.Schema & "." & ProcedureName & "(" & JoinCollection(colFunctionParameters, ", ") & ")"
-1350          AppendCodeLine sb, PrevLine, "cmd.CommandText = """ & strFunctionCall & """"
-1360      Else
-1370          AppendCodeLine sb, PrevLine, "cmd.CommandType = adCmdStoredProc"
-1380          AppendCodeLine sb, PrevLine, "cmd.CommandText = """ & dbConnection.Schema & "." & ProcedureName & """"
-1390      End If
+1370          strFunctionCall = dbConnection.Schema & "." & ProcedureName & "(" & JoinCollection(colFunctionParameters, ", ") & ")"
+1380          AppendCodeLine sb, PrevLine, "cmd.CommandText = """ & strFunctionCall & """"
+1390      Else
+1400          AppendCodeLine sb, PrevLine, "cmd.CommandType = adCmdStoredProc"
+1410          AppendCodeLine sb, PrevLine, "cmd.CommandText = """ & dbConnection.Schema & "." & ProcedureName & """"
+1420      End If
           
-1400      If fContainsUserDefinedDataTypes Then
-1410          If Not IsFunction Then ' Stored Procedure
-1420              AppendCodeLine sb, PrevLine, "Dim rs As ADODB.Recordset"
-1430              AppendCodeLine sb, PrevLine, "Set rs = cmd.Execute(RecordsAffected)"
-1440              AppendCodeLine sb, PrevLine, "Dim colRecordsets As Collection"
-1450              AppendCodeLine sb, PrevLine, "Set colRecordsets = " & LINQ_SHARED_MODULE & ".ConvertToInMemoryRecordsets(rs, """ & ProcedureName & """)"
-1460              AppendCodeLine sb, PrevLine, "Dim rsReturnValues As ADODB.Recordset"
-1470              AppendCodeLine sb, PrevLine, "Set rsReturnValues = colRecordsets(colRecordsets.Count)"
-                  
-1480              If fReturnsRecords Then
-1490                  AppendCodeLine sb, PrevLine, "colRecordsets.Remove colRecordsets.Count"
-1500                  AppendCodeLine sb, PrevLine, "Set ReturnRecordsets = colRecordsets"
-1510                  AppendCodeLine sb, PrevLine, "Set ReturnRS = ReturnRecordsets(1)"
-1520              End If
+1430      If fContainsUserDefinedDataTypes Then
+1440          If IsFunction Then
+1450              If fReturnsRecords Then ' Table Valued Function
+1460                  AppendCodeLine sb, PrevLine, "Dim ReturnRS As ADODB.Recordset"
+1470                  AppendCodeLine sb, PrevLine, "Set ReturnRS = cmd.Execute"
+1480              Else ' Scalar Function
+1490                  AppendCodeLine sb, PrevLine, "Dim rsReturnValues As ADODB.Recordset"
+1500                  AppendCodeLine sb, PrevLine, "Set rsReturnValues = cmd.Execute"
+1510              End If
+1520          Else
+1530              If fReturnsRecords Then
+1540                  AppendCodeLine sb, PrevLine, "Dim rs As ADODB.Recordset"
+1550                  AppendCodeLine sb, PrevLine, "Set rs = cmd.Execute(RecordsAffected)"
+1560                  AppendCodeLine sb, PrevLine, "Dim colRecordsets As Collection"
+1570                  AppendCodeLine sb, PrevLine, "Set colRecordsets = " & LINQ_SHARED_MODULE & ".ConvertToInMemoryRecordsets(rs, """ & ProcedureName & """)"
+1580                  AppendCodeLine sb, PrevLine, "Dim rsReturnValues As ADODB.Recordset"
+1590                  AppendCodeLine sb, PrevLine, "Set rsReturnValues = colRecordsets(colRecordsets.Count)"
+1600                  AppendCodeLine sb, PrevLine, "colRecordsets.Remove colRecordsets.Count"
+1610                  AppendCodeLine sb, PrevLine, "Set ReturnRecordsets = colRecordsets"
+1620                  AppendCodeLine sb, PrevLine, "Set ReturnRS = ReturnRecordsets(1)"
+1630              Else
+1640                  AppendCodeLine sb, PrevLine, "Dim rsReturnValues As ADODB.Recordset"
+1650                  AppendCodeLine sb, PrevLine, "Set rsReturnValues = cmd.Execute(RecordsAffected)"
+1660              End If
+1670          End If
               
-1530          ElseIf fReturnsRecords Then ' Table Valued Function
-1540              AppendCodeLine sb, PrevLine, "Dim ReturnRS As ADODB.Recordset"
-1550              AppendCodeLine sb, PrevLine, "Set ReturnRS = cmd.Execute"
-1560          Else ' Scalar Function
-1570              AppendCodeLine sb, PrevLine, "Dim rsReturnValues As ADODB.Recordset"
-1580              AppendCodeLine sb, PrevLine, "Set rsReturnValues = cmd.Execute"
-1590          End If
-              
-1600          If rsParameters.RecordCount <> 0 Then rsParameters.MoveFirst
-1610          While Not rsParameters.EOF
-1620              strVBParam = GetVBParameterName(rsParameters!PARAMETER_NAME)
-1630              strSQLParam = GetSQLParameterName(rsParameters!PARAMETER_NAME)
-1640              Select Case rsParameters!PARAMETER_TYPE
+1680          If rsParameters.RecordCount <> 0 Then rsParameters.MoveFirst
+1690          While Not rsParameters.EOF
+1700              strVBParam = GetVBParameterName(rsParameters!PARAMETER_NAME)
+1710              strSQLParam = GetSQLParameterName(rsParameters!PARAMETER_NAME)
+1720              Select Case rsParameters!PARAMETER_TYPE
                   Case adParamInput
                       ' Ignore
-1650              Case adParamOutput, adParamInputOutput
-1660                  AppendCodeLine sb, PrevLine, strVBParam & " = rsReturnValues![" & strSQLParam & "].Value"
-1670              Case adParamReturnValue
-1680                  Debug.Assert rsParameters!PARAMETER_NAME = "@RETURN_VALUE"
-1690                  If IsFunction Then
-1700                      If DataTypeSuffix = "" Then
-1710                          AppendCodeLine sb, PrevLine, ProcedureName & " = rsReturnValues![" & strSQLParam & "].Value"
-1720                      Else
-1730                          AppendCodeLine sb, PrevLine, "Set " & ProcedureName & DataTypeSuffix & " = " & GetVBNullableConversion(strReturnDataType) & "(rsReturnValues![" & strSQLParam & "].Value)"
-1740                      End If
-1750                  Else
-1760                      If DataTypeSuffix = "" Then
-1770                          AppendCodeLine sb, PrevLine, "ReturnValue = rsReturnValues![" & strSQLParam & "].Value"
-1780                      Else
-1790                          AppendCodeLine sb, PrevLine, "If Not ReturnValue Is Nothing Then ReturnValue = rsReturnValues![" & strSQLParam & "].Value"
-1800                      End If
-1810                  End If
-1820              Case Else
-1830                  Debug.Assert False
-1840              End Select
-1850              rsParameters.MoveNext
-1860          Wend
-1870      Else
-1880          If IsFunction Then
-1890              AppendCodeLine sb, PrevLine, "Dim ReturnRS As New ADODB.Recordset"
-1900              AppendCodeLine sb, PrevLine, "ReturnRS.CursorLocation = adUseClient"
-1910              AppendCodeLine sb, PrevLine, "ReturnRS.LockType = adLockOptimistic"
-1920              AppendCodeLine sb, PrevLine, "ReturnRS.CursorType = adOpenStatic"
-1930              AppendCodeLine sb, PrevLine, "ReturnRS.Open cmd"
-1940          ElseIf fReturnsRecords Then
-1950              AppendCodeLine sb, PrevLine, "Dim rs As ADODB.Recordset"
-1960              AppendCodeLine sb, PrevLine, "Set rs = cmd.Execute(RecordsAffected)"
-1970              AppendCodeLine sb, PrevLine, "Set ReturnRecordsets = " & LINQ_SHARED_MODULE & ".ConvertToInMemoryRecordsets(rs, """ & ProcedureName & """)"
-1980              AppendCodeLine sb, PrevLine, "Set ReturnRS = ReturnRecordsets(1)"
-1990          Else
-2000              AppendCodeLine sb, PrevLine, "cmd.Execute RecordsAffected, , adExecuteNoRecords"
-2010          End If
-2020          If rsParameters.RecordCount <> 0 Then rsParameters.MoveFirst
-2030          While Not rsParameters.EOF
-2040              strVBParam = GetVBParameterName(rsParameters!PARAMETER_NAME)
-2050              strSQLParam = GetSQLParameterName(rsParameters!PARAMETER_NAME)
-2060              Select Case rsParameters!PARAMETER_TYPE
+1730              Case adParamOutput, adParamInputOutput
+1740                  AppendCodeLine sb, PrevLine, strVBParam & " = rsReturnValues![" & strSQLParam & "].Value"
+1750              Case adParamReturnValue
+1760                  Debug.Assert rsParameters!PARAMETER_NAME = "@RETURN_VALUE"
+1770                  If IsFunction Then
+1780                      If DataTypeSuffix = "" Then
+1790                          AppendCodeLine sb, PrevLine, ProcedureName & " = rsReturnValues![" & strSQLParam & "].Value"
+1800                      Else
+1810                          AppendCodeLine sb, PrevLine, "Set " & ProcedureName & DataTypeSuffix & " = " & GetVBNullableConversion(strReturnDataType) & "(rsReturnValues![" & strSQLParam & "].Value)"
+1820                      End If
+1830                  Else
+1840                      If DataTypeSuffix = "" Then
+1850                          AppendCodeLine sb, PrevLine, "ReturnValue = rsReturnValues![" & strSQLParam & "].Value"
+1860                      Else
+1870                          AppendCodeLine sb, PrevLine, "If Not ReturnValue Is Nothing Then ReturnValue = rsReturnValues![" & strSQLParam & "].Value"
+1880                      End If
+1890                  End If
+1900              Case Else
+1910                  Debug.Assert False
+1920              End Select
+1930              rsParameters.MoveNext
+1940          Wend
+1950      Else
+1960          If IsFunction Then
+1970              AppendCodeLine sb, PrevLine, "Dim ReturnRS As New ADODB.Recordset"
+1980              AppendCodeLine sb, PrevLine, "ReturnRS.CursorLocation = adUseClient"
+1990              AppendCodeLine sb, PrevLine, "ReturnRS.LockType = adLockOptimistic"
+2000              AppendCodeLine sb, PrevLine, "ReturnRS.CursorType = adOpenStatic"
+2010              AppendCodeLine sb, PrevLine, "ReturnRS.Open cmd"
+2020          ElseIf fReturnsRecords Then
+2030              AppendCodeLine sb, PrevLine, "Dim rs As ADODB.Recordset"
+2040              AppendCodeLine sb, PrevLine, "Set rs = cmd.Execute(RecordsAffected)"
+2050              AppendCodeLine sb, PrevLine, "Set ReturnRecordsets = " & LINQ_SHARED_MODULE & ".ConvertToInMemoryRecordsets(rs, """ & ProcedureName & """)"
+2060              AppendCodeLine sb, PrevLine, "Set ReturnRS = ReturnRecordsets(1)"
+2070          Else
+2080              AppendCodeLine sb, PrevLine, "cmd.Execute RecordsAffected, , adExecuteNoRecords"
+2090          End If
+2100          If rsParameters.RecordCount <> 0 Then rsParameters.MoveFirst
+2110          While Not rsParameters.EOF
+2120              strVBParam = GetVBParameterName(rsParameters!PARAMETER_NAME)
+2130              strSQLParam = GetSQLParameterName(rsParameters!PARAMETER_NAME)
+2140              Select Case rsParameters!PARAMETER_TYPE
                   Case adParamInput
                       ' Ignore
-2070              Case adParamOutput, adParamInputOutput
-2080                  AppendCodeLine sb, PrevLine, strVBParam & " = prm" & strVBParam & ".Value"
-2090              Case adParamReturnValue
-2100                  Debug.Assert rsParameters!PARAMETER_NAME = "@RETURN_VALUE"
-2110                  If IsFunction Then
-2120                      If DataTypeSuffix = "" Then
-2130                          AppendCodeLine sb, PrevLine, ProcedureName & " = prm" & strVBParam & ".Value"
-2140                      Else
-2150                          AppendCodeLine sb, PrevLine, "Set " & ProcedureName & DataTypeSuffix & " = " & GetVBNullableConversion(strReturnDataType) & "(prm" & strVBParam & ".Value)"
-2160                      End If
-2170                  Else
-2180                      If DataTypeSuffix = "" Then
-2190                          AppendCodeLine sb, PrevLine, "ReturnValue = prm" & strVBParam & ".Value"
-2200                      Else
-2210                          AppendCodeLine sb, PrevLine, "If Not ReturnValue Is Nothing Then ReturnValue = prm" & strVBParam & ".Value"
-2220                      End If
-2230                  End If
-2240              Case Else
-2250                  Debug.Assert False
-2260              End Select
-2270              rsParameters.MoveNext
-2280          Wend
-2290      End If
+2150              Case adParamOutput, adParamInputOutput
+2160                  AppendCodeLine sb, PrevLine, strVBParam & " = prm" & strVBParam & ".Value"
+2170              Case adParamReturnValue
+2180                  Debug.Assert rsParameters!PARAMETER_NAME = "@RETURN_VALUE"
+2190                  If IsFunction Then
+2200                      If DataTypeSuffix = "" Then
+2210                          AppendCodeLine sb, PrevLine, ProcedureName & " = prm" & strVBParam & ".Value"
+2220                      Else
+2230                          AppendCodeLine sb, PrevLine, "Set " & ProcedureName & DataTypeSuffix & " = " & GetVBNullableConversion(strReturnDataType) & "(prm" & strVBParam & ".Value)"
+2240                      End If
+2250                  Else
+2260                      If DataTypeSuffix = "" Then
+2270                          AppendCodeLine sb, PrevLine, "ReturnValue = prm" & strVBParam & ".Value"
+2280                      Else
+2290                          AppendCodeLine sb, PrevLine, "If Not ReturnValue Is Nothing Then ReturnValue = prm" & strVBParam & ".Value"
+2300                      End If
+2310                  End If
+2320              Case Else
+2330                  Debug.Assert False
+2340              End Select
+2350              rsParameters.MoveNext
+2360          Wend
+2370      End If
           
-2300      If Not IsFunction Then
-2310          sb.AppendLine ""
-2320          AppendCodeLine sb, PrevLine, ProcedureName & DataTypeSuffix & " = True"
-2330      ElseIf fReturnsRecords Then
-2340          sb.AppendLine ""
-2350          AppendCodeLine sb, PrevLine, "Set " & ProcedureName & DataTypeSuffix & " = " & LINQ_SHARED_MODULE & ".ConvertToInMemoryRecordset(ReturnRS, """ & ProcedureName & """)"
-2360      End If
-2370      sb.AppendLine ""
-2380      sb.AppendLine "PROC_EXIT:"
-2390      AppendCodeLine sb, PrevLine, "Exit Function"
-2400      sb.AppendLine ""
-2410      sb.AppendLine "PROC_ERROR:"
-2420      AppendCodeLine sb, PrevLine, "If m_Base.HandleError(""" & dbConnection.CodeClassName & """, """ & ProcedureName & DataTypeSuffix & """, Erl, Err.Number, Err.Description, strExtraInfo, ErrorOption) Then"
-2430      AppendCodeLine sb, PrevLine, "    cmd.ActiveConnection = m_Base.Connection"
-2440      AppendCodeLine sb, PrevLine, "    Resume"
-2450      AppendCodeLine sb, PrevLine, "End If"
-2460      AppendCodeLine sb, PrevLine, "Resume PROC_EXIT"
-2470      AppendCodeLine sb, PrevLine, "Resume"
-2480      sb.AppendLine "End Function"
-2490      GetSProcText = sb.Text
+2380      If Not IsFunction Then
+2390          sb.AppendLine ""
+2400          AppendCodeLine sb, PrevLine, ProcedureName & DataTypeSuffix & " = True"
+2410      ElseIf fReturnsRecords Then
+2420          sb.AppendLine ""
+2430          AppendCodeLine sb, PrevLine, "Set " & ProcedureName & DataTypeSuffix & " = " & LINQ_SHARED_MODULE & ".ConvertToInMemoryRecordset(ReturnRS, """ & ProcedureName & """)"
+2440      End If
+2450      sb.AppendLine ""
+2460      sb.AppendLine "PROC_EXIT:"
+2470      AppendCodeLine sb, PrevLine, "Exit Function"
+2480      sb.AppendLine ""
+2490      sb.AppendLine "PROC_ERROR:"
+2500      AppendCodeLine sb, PrevLine, "If m_Base.HandleError(""" & dbConnection.CodeClassName & """, """ & ProcedureName & DataTypeSuffix & """, Erl, Err.Number, Err.Description, strExtraInfo, ErrorOption) Then"
+2510      AppendCodeLine sb, PrevLine, "    cmd.ActiveConnection = m_Base.Connection"
+2520      AppendCodeLine sb, PrevLine, "    Resume"
+2530      AppendCodeLine sb, PrevLine, "End If"
+2540      AppendCodeLine sb, PrevLine, "Resume PROC_EXIT"
+2550      AppendCodeLine sb, PrevLine, "Resume"
+2560      sb.AppendLine "End Function"
+2570      GetSProcText = sb.Text
 
 PROC_EXIT:
-2500      On Error Resume Next
-2510      If Not conn Is Nothing Then
-2520          conn.Close
-2530          Set conn = Nothing
-2540      End If
-2550      Exit Function
+2580      On Error Resume Next
+2590      If Not conn Is Nothing Then
+2600          conn.Close
+2610          Set conn = Nothing
+2620      End If
+2630      Exit Function
 
 PROC_ERROR:
-2560      LogError "_LINQ", "GetSProcText", Erl, Err.Number, Err.Description, ProcedureName
-2570      Resume PROC_EXIT
-2580      Resume
+2640      LogError "_LINQ", "GetSProcText", Erl, Err.Number, Err.Description, ProcedureName
+2650      Resume PROC_EXIT
+2660      Resume
 
 End Function
 

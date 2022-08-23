@@ -13,7 +13,7 @@
 Option Compare Database
 Option Explicit
 
-Public Const TOOL_VERSION As String = "0.4.3"
+Public Const TOOL_VERSION As String = "0.4.5"
 
 Public Const DBC_CLASS_NAME As String = "cls_LINQ_2_SQL__Databases"
 Public Const LINQ_SOURCE_URL As String = "https://github.com/timgetsch/MicrosoftAccess-Tools/tree/master/_LINQ_2_SQL_AddIn"
