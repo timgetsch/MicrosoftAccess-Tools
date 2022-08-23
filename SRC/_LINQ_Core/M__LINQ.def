@@ -21,7 +21,7 @@ Public Const LINQ_REMOTE_CONNECTIONS As String = "USys_LinqRemoteConnections"
 Private Const LINQ_TEMPLATES_LIBRARY As String = "_LINQ_Templates"
 Private Const LINQ_NULLABLE_DATA_TYPES_LIBRARY As String = "NullableDataTypes"
 Private Const LINQ_TEMPLATE_LIBRARIES_TABLE As String = "TemplateLibraries"
-Privatse Const LINQ_ENUM_TEMPLATE As String = "cn_TEMPLATE"
+Private Const LINQ_ENUM_TEMPLATE As String = "cn_TEMPLATE"
 Public Const LINQ_SHARED_MODULE As String = "mod_LINQ_2_SQL_Shared"
 Public Const LINQ_SQL_GENERATOR As String = "mod_LINQ_2_SQL_Generator"
 
