@@ -156,7 +156,7 @@ Public Function GetSProcText(ConnectionID As Integer, ProcedureName As String, C
 1180      Wend
           
 1190      AppendCodeLine sb, PrevLine, "Dim strSQL As String"
-1200      AppendCodeLine sb, PrevLine, "strSQL = " & LINQ_SQL_GENERATOR & ".GetSQL(""" & dbConnection.Schema & "." & ProcedureName & """, " & strParamCollection & ")"
+1200      AppendCodeLine sb, PrevLine, "strSQL = " & LINQ_SQL_GENERATOR & ".GetSQL(""" & dbConnection.Schema & "." & ProcedureName & """, " & strParamCollection & ", " & IsFunction & ", " & fReturnsRecords & ")"
 1210      AppendCodeLine sb, PrevLine, "strExtraInfo = strExtraInfo & strSQL"
 1220      AppendCodeLine sb, PrevLine, "SET cmd.ActiveConnection = m_Base.Connection"
           
@@ -181,25 +181,26 @@ Public Function GetSProcText(ConnectionID As Integer, ProcedureName As String, C
 1390      End If
           
 1400      If fContainsUserDefinedDataTypes Then
-1410          AppendCodeLine sb, PrevLine, "Dim rs As ADODB.Recordset"
-1420          If IsFunction Then
-1430              AppendCodeLine sb, PrevLine, "Set rs = cmd.Execute"
-1440          Else
-1450              AppendCodeLine sb, PrevLine, "Set rs = cmd.Execute(RecordsAffected)"
-1460          End If
-1470          AppendCodeLine sb, PrevLine, "Dim colRecordsets As Collection"
-1480          AppendCodeLine sb, PrevLine, "Set colRecordsets = " & LINQ_SHARED_MODULE & ".ConvertToInMemoryRecordsets(rs, """ & ProcedureName & """)"
-1490          AppendCodeLine sb, PrevLine, "Dim rsReturnValues As ADODB.Recordset"
-1500          AppendCodeLine sb, PrevLine, "Set rsReturnValues = colRecordsets(colRecordsets.Count)"
-1510          AppendCodeLine sb, PrevLine, "colRecordsets.Remove colRecordsets.Count"
+1410          If Not IsFunction Then ' Stored Procedure
+1420              AppendCodeLine sb, PrevLine, "Dim rs As ADODB.Recordset"
+1430              AppendCodeLine sb, PrevLine, "Set rs = cmd.Execute(RecordsAffected)"
+1440              AppendCodeLine sb, PrevLine, "Dim colRecordsets As Collection"
+1450              AppendCodeLine sb, PrevLine, "Set colRecordsets = " & LINQ_SHARED_MODULE & ".ConvertToInMemoryRecordsets(rs, """ & ProcedureName & """)"
+1460              AppendCodeLine sb, PrevLine, "Dim rsReturnValues As ADODB.Recordset"
+1470              AppendCodeLine sb, PrevLine, "Set rsReturnValues = colRecordsets(colRecordsets.Count)"
+                  
+1480              If fReturnsRecords Then
+1490                  AppendCodeLine sb, PrevLine, "colRecordsets.Remove colRecordsets.Count"
+1500                  AppendCodeLine sb, PrevLine, "Set ReturnRecordsets = colRecordsets"
+1510                  AppendCodeLine sb, PrevLine, "Set ReturnRS = ReturnRecordsets(1)"
+1520              End If
               
-1520          If fReturnsRecords Then
-1530              If IsFunction Then
-1540                  AppendCodeLine sb, PrevLine, "Set ReturnRS = rsReturnValues"
-1550              Else
-1560                  AppendCodeLine sb, PrevLine, "Set ReturnRecordsets = colRecordsets"
-1570                  AppendCodeLine sb, PrevLine, "Set ReturnRS = ReturnRecordsets(1)"
-1580              End If
+1530          ElseIf fReturnsRecords Then ' Table Valued Function
+1540              AppendCodeLine sb, PrevLine, "Dim ReturnRS As ADODB.Recordset"
+1550              AppendCodeLine sb, PrevLine, "Set ReturnRS = cmd.Execute"
+1560          Else ' Scalar Function
+1570              AppendCodeLine sb, PrevLine, "Dim rsReturnValues As ADODB.Recordset"
+1580              AppendCodeLine sb, PrevLine, "Set rsReturnValues = cmd.Execute"
 1590          End If
               
 1600          If rsParameters.RecordCount <> 0 Then rsParameters.MoveFirst
