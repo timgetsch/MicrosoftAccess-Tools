@@ -86,28 +86,28 @@ Public Function GetSQL(ProcedureName As String, Parameters As Object, Optional I
 350       Else
 360           sb.AppendLine "EXEC @RETURN_VALUE = " & ProcedureName
 370       End If
-          Dim strIndent As String
-380       strIndent = Space$(8)
-          Dim fLooped As Boolean
-390       For Each p In Parameters
-400           Select Case p.Direction
-              Case adParamInput
-410               sb.Append strIndent & IIf(fLooped, ", ", "  ")
-420               sb.AppendLine "@" & p.Name & " = @" & p.Name
-430               fLooped = True
-440           Case adParamInputOutput, adParamOutput
-450               sb.Append strIndent & IIf(fLooped, ", ", "  ")
-460               sb.AppendLine "@" & p.Name & " = @" & p.Name & " OUT"
-470               fLooped = True
-480           Case adParamReturnValue
-                  ' Ignore
-490           Case Else
-500               Err.Raise 1, , "Unexpected Parameters(""" & p.Name & """).Direction: " & p.Direction
-510           End Select
-520       Next p
-530       sb.AppendLine
+380       If Not IsFunction Or Not ReturnsRecords Then
+              Dim strIndent As String
+390           strIndent = Space$(8)
+              Dim fLooped As Boolean
+400           For Each p In Parameters
+410               Select Case p.Direction
+                  Case adParamInput
+420                   sb.Append strIndent & IIf(fLooped, ", ", "  ")
+430                   sb.AppendLine "@" & p.Name & " = @" & p.Name
+440                   fLooped = True
+450               Case adParamInputOutput, adParamOutput
+460                   sb.Append strIndent & IIf(fLooped, ", ", "  ")
+470                   sb.AppendLine "@" & p.Name & " = @" & p.Name & " OUT"
+480                   fLooped = True
+490               Case adParamReturnValue
+                      ' Ignore
+500               Case Else
+510                   Err.Raise 1, , "Unexpected Parameters(""" & p.Name & """).Direction: " & p.Direction
+520               End Select
+530           Next p
+540           sb.AppendLine
           
-540       If Not IsFunction Or Not ReturnsRecords Then
 550           sb.AppendLine "SELECT @RETURN_VALUE AS RETURN_VALUE"
 560           For Each p In Parameters
 570               Select Case p.Direction
