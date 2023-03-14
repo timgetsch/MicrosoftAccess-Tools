@@ -41,6 +41,7 @@ Const LOG_CASE_ELSE_DESC As String = "Unexpected Case Else Hit"
 
 Const ERROR_CONNECTION_WAS_FORCIBLY_CLOSED As Long = -2147467259         ' [Microsoft]TCP Provider: An existing connection was forcibly closed by the remote host.
 Const ERROR_CONTAINS_CONNECTION_WAS_FORCIBLY_CLOSED = "An existing connection was forcibly closed"
+Const ERROR_CONTAINS_CONNECTION_WAS_ABORTED = "An established connection was aborted by the software in your host machine"
 Const ERROR_CONTAINS_CONNECTION_ATTEMPT_FAILED = "A connection attempt failed"
 Const ERROR_CONTAINS_COMMINICATION_LINK_FAILURE = "Communication link failure"
 Const ERROR_OPERATION_REQUIRES_AN_OLE_DB_SESSION As Long = 3709          ' Requested operation requires an OLE DB Session object, which is not supported by the current provider.
@@ -213,37 +214,39 @@ Public Function HandleError(ObjectName As String, ProcedureName As String, Error
 120                   strReconnectReason = ERROR_CONTAINS_COMMINICATION_LINK_FAILURE
 130               ElseIf ErrDescription Like "*" & ERROR_CONTAINS_CONNECTION_ATTEMPT_FAILED & "*" Then
 140                   strReconnectReason = ERROR_CONTAINS_CONNECTION_ATTEMPT_FAILED
-150               End If
-160           Case Else
+150               ElseIf ErrDescription Like "*" & ERROR_CONTAINS_CONNECTION_WAS_ABORTED & "*" Then
+160                   strReconnectReason = ERROR_CONTAINS_CONNECTION_WAS_ABORTED
+170               End If
+180           Case Else
                   ' We will process this later
-170           End Select
-180       End If
+190           End Select
+200       End If
           
-190       If strReconnectReason <> "" Then
-200           LogError ObjectName, ProcedureName, ErrorLine, ErrNumber, strReconnectReason, ExtraInfo, True, False
-210           ReConnect 0, ProcedureName
-220           HandleError = True
-230           Exit Function
-240       End If
+210       If strReconnectReason <> "" Then
+220           LogError ObjectName, ProcedureName, ErrorLine, ErrNumber, strReconnectReason, ExtraInfo, True, False
+230           ReConnect 0, ProcedureName
+240           HandleError = True
+250           Exit Function
+260       End If
           
-250       Select Case ErrorOption
+270       Select Case ErrorOption
           Case eoLogAndRaiseError, eoLogError
-260           ReConnect 0, ProcedureName
-270           LogError ObjectName, ProcedureName, ErrorLine, ErrNumber, ErrDescription, ExtraInfo, True, ErrorOption = eoLogAndRaiseError
-280       Case eoRaiseError
-290           ReConnect 0, ProcedureName
-300           Err.Raise ErrNumber, , ErrDescription
-310       Case eoIgnoreError
+280           ReConnect 0, ProcedureName
+290           LogError ObjectName, ProcedureName, ErrorLine, ErrNumber, ErrDescription, ExtraInfo, True, ErrorOption = eoLogAndRaiseError
+300       Case eoRaiseError
+310           ReConnect 0, ProcedureName
+320           Err.Raise ErrNumber, , ErrDescription
+330       Case eoIgnoreError
               ' Make sure we create a new connection for timeouts
-320           Select Case ErrNumber
+340           Select Case ErrNumber
               Case ERROR_QUERY_TIMEOUT_EXPIRED
-330               If ErrDescription Like "*" & ERROR_ENDS_WITH_QUERY_TIMEOUT_EXPIRED Then
-340                   ReConnect , ProcedureName
-350               End If
-360           Case Else
+350               If ErrDescription Like "*" & ERROR_ENDS_WITH_QUERY_TIMEOUT_EXPIRED Then
+360                   ReConnect , ProcedureName
+370               End If
+380           Case Else
                   ' Ignore anything else
-370           End Select
-380       Case Else
-390           LogError "cls_LINQ_2_SQL__BaseClass", "HandleError", Erl, LOG_CASE_ELSE, LOG_CASE_ELSE_DESC, ErrorOption, False, True
-400       End Select
+390           End Select
+400       Case Else
+410           LogError "cls_LINQ_2_SQL__BaseClass", "HandleError", Erl, LOG_CASE_ELSE, LOG_CASE_ELSE_DESC, ErrorOption, False, True
+420       End Select
 End Function
