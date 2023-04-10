@@ -42,7 +42,7 @@ PROC_EXIT:
 110       Exit Property
 
 PROC_ERROR:
-120       LogError "mod_LINQ_2_SQL_Shared", "CurrentVBProject", Erl, Err.Number, Err.Description
+120       LogError "mod_LINQ_2_SQL_Shared", "CurrentVBProject", Erl, Err.Number, Err.Description, , True, True
 130       Resume PROC_EXIT
 140       Resume
 End Property
@@ -58,7 +58,7 @@ PROC_EXIT:
 40        Exit Property
 
 PROC_ERROR:
-50        LogError "mod_LINQ_2_SQL_Shared", "App", Erl, Err.Number, Err.Description
+50        LogError "mod_LINQ_2_SQL_Shared", "App", Erl, Err.Number, Err.Description, , True, True
 60        Resume PROC_EXIT
 70        Resume
 End Property
@@ -77,7 +77,7 @@ PROC_EXIT:
 70        Exit Function
 
 PROC_ERROR:
-80        LogError "mod_LINQ_2_SQL_Shared", "GetApp", Erl, Err.Number, Err.Description
+80        LogError "mod_LINQ_2_SQL_Shared", "GetApp", Erl, Err.Number, Err.Description, , True, True
 90        Resume PROC_EXIT
 100       Resume
 End Function
@@ -111,7 +111,7 @@ PROC_EXIT:
 180       Exit Function
           
 PROC_ERROR:
-190       LogError "mod_LINQ_2_SQL_Shared", "GetSQLConnectString", Erl, Err.Number, Err.Description
+190       LogError "mod_LINQ_2_SQL_Shared", "GetSQLConnectString", Erl, Err.Number, Err.Description, Database, True, True
 200       Resume PROC_EXIT
 210       Resume
 End Function
@@ -135,7 +135,7 @@ PROC_EXIT:
 110       Exit Function
 
 PROC_ERROR:
-120       LogError "mod_LINQ_2_SQL_Shared", "GetConnectionSettings", Erl, Err.Number, Err.Description
+120       LogError "mod_LINQ_2_SQL_Shared", "GetConnectionSettings", Erl, Err.Number, Err.Description, ConnectionID, True, True
 130       Resume PROC_EXIT
 140       Resume
 End Function
@@ -157,7 +157,7 @@ PROC_EXIT:
 90        Exit Function
 
 PROC_ERROR:
-100       LogError "mod_LINQ_2_SQL_Shared", "ConvertToInMemoryRecordsets", Erl, Err.Number, Err.Description
+100       LogError "mod_LINQ_2_SQL_Shared", "ConvertToInMemoryRecordsets", Erl, Err.Number, Err.Description, strRecordsetName, True, True
 110       Resume PROC_EXIT
 120       Resume
 End Function
@@ -234,7 +234,7 @@ PROC_EXIT:
 30        Exit Function
 
 PROC_ERROR:
-40        LogError "mod_LINQ_2_SQL_Shared", "GetSQL", Erl, Err.Number, Err.Description
+40        LogError "mod_LINQ_2_SQL_Shared", "GetSQL", Erl, Err.Number, Err.Description, ProcedureName, True, True
 50        Resume PROC_EXIT
 60        Resume
 End Function
