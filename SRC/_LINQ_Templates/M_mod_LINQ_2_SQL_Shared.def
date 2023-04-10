@@ -211,18 +211,18 @@ PROC_EXIT:
 320       Exit Function
 
 PROC_ERROR:
-330       Select Case Err.Number
-          Case 3367 ' Object is already in collection. Cannot append.
-340           LogError "mod_LINQ_2_SQL_Shared", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo
-350           Resume Next ' Skip over duplicate columns
-360       Case 3001 ' Arguments are of the wrong type, are out of acceptable range, or are in conflict with one another.
-370           LogError "mod_LINQ_2_SQL_Shared", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo
-380           Resume Next ' Skip over columns that are missing names or are somehow not valid
-390       Case Else
-400           LogError "mod_LINQ_2_SQL_Shared", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo
-410           Resume PROC_EXIT
-420           Resume
-430       End Select
+      '    Select Case Err.Number
+      '    Case 3367 ' Object is already in collection. Cannot append.
+      '        LogError "mod_LINQ_2_SQL_Shared", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo, True
+      '        Resume Next ' Skip over duplicate columns
+      '    Case 3001 ' Arguments are of the wrong type, are out of acceptable range, or are in conflict with one another.
+      '        LogError "mod_LINQ_2_SQL_Shared", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo, True
+      '        Resume Next ' Skip over columns that are missing names or are somehow not valid
+      '    Case Else
+330           LogError "mod_LINQ_2_SQL_Shared", "ConvertToInMemoryRecordset", Erl, Err.Number, Err.Description, strRecordsetName & " " & strDebugInfo, True, True
+340           Resume PROC_EXIT
+350           Resume
+      '    End Select
 End Function
 
 Public Function GetSQL(ProcedureName As String, Parameters As ADODB.Parameters) As String
